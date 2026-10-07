@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Incruste live</title>
+<style>
+:root{--bg:#111;--ink:#f2f2f2;--surface:#222;--key:#3ddc84;--body:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body)}
+main{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 24px) 16px 40px}
+h1{font-size:1.4rem;margin:0 0 6px}p{margin:0 0 14px;color:#bbb}
+.big{display:block;width:100%;box-sizing:border-box;padding:16px;border-radius:8px;border:1px solid var(--key);background:var(--key);color:#000;font:700 1rem var(--body);text-align:center;cursor:pointer}
+input[type=file]{display:none}
+ol{padding-left:20px;color:#bbb}
+</style></head><body><main>
+<h1>Incruste live</h1>
+<p>Choisis l'image de référence (capture d'écran ou photo du plan), puis autorise la caméra. Le fond vert est retiré en direct.</p>
+<label class="big" for="ref">Choisir l'image de référence</label>
+<input id="ref" type="file" accept="image/*">
+<ol><li>Caméra du téléphone, ou source HDMI via un dongle USB.</li><li>Touche « Pipette » puis le vert pour régler la clé.</li><li>« Capture » enregistre l'image.</li></ol>
+</main>
+<style>
+.lkbtn{display:inline-flex;align-items:center;gap:8px;margin:8px 0 0;padding:8px 12px;border-radius:6px;border:1px solid var(--key);background:transparent;color:var(--ink);font:600 .85rem var(--body);cursor:pointer}
+.lkbtn:hover{background:var(--surface)}
+#lk[hidden]{display:none!important}
+#lk{position:fixed;inset:0;z-index:40;background:#000;color:#fff;display:flex;flex-direction:column;font:14px var(--body)}
+#lk .tb{display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 8px) 8px 8px}
+#lk .tb p{flex:1;margin:0;font-size:.85rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#lk button,#lk select{background:#222;color:#fff;border:1px solid #555;border-radius:4px;font:600 .85rem var(--body);padding:8px 10px;cursor:pointer;max-width:42vw}
+#lk button.on{background:var(--key);border-color:var(--key);color:#000}
+#lkwrap{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#lkc{max-width:100%;max-height:100%;touch-action:none;background:#111}
+#lkmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:rgba(0,0,0,.75);font-size:1rem;line-height:1.4}
+#lkmsg[hidden]{display:none}
+#lk .ct{padding:8px 10px calc(env(safe-area-inset-bottom,0px) + 10px);background:#111;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px;max-height:34vh;overflow:auto}
+#lk .ct label{display:flex;align-items:center;gap:8px;font-size:.78rem;color:#cfd8d5}
+#lk .ct label span{width:74px;flex:0 0 74px}
+#lk .ct input[type=range]{flex:1;min-width:0}
+#lk .row{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+@media (max-width:700px){#lk .ct{grid-template-columns:1fr}}
+#lksnap{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px}
+#lksnap[hidden]{display:none}
+#lksnap img{max-width:100%;max-height:78vh;object-fit:contain}
+#lksnap p{color:#fff;margin:0;font-size:.85rem}
+</style>
+<div id="lk" hidden role="dialog" aria-modal="true" aria-label="Incruste live">
+<div class="tb"><p id="lkcap"></p><select id="lkcam" aria-label="Caméra"></select><button id="lkclose" type="button">Fermer</button></div>
+<div id="lkwrap"><canvas id="lkc"></canvas><div id="lkmsg" hidden></div></div>
+<div class="ct">
+<label><span>Seuil</span><input id="lksim" type="range" min="0" max="0.6" step="0.005" value="0.18"></label>
+<label><span>Douceur</span><input id="lksm" type="range" min="0.005" max="0.4" step="0.005" value="0.12"></label>
+<label><span>Anti-spill</span><input id="lksp" type="range" min="0" max="1" step="0.02" value="0.6"></label>
+<label><span>Échelle</span><input id="lksc" type="range" min="0.2" max="2.5" step="0.01" value="1"></label>
+<label><span>Position X</span><input id="lkx" type="range" min="-1" max="1" step="0.005" value="0"></label>
+<label><span>Position Y</span><input id="lky" type="range" min="-1" max="1" step="0.005" value="0"></label>
+<div class="row"><button id="lkpick" type="button">Pipette (touche le vert)</button><button id="lkmir" type="button">Miroir</button><button id="lkchk" type="button">Voir le masque</button><button id="lksnapbtn" type="button">Capture</button></div>
+</div>
+</div>
+<div id="lksnap" hidden><img id="lksnapimg" alt="Capture"><p>Appui long sur l'image pour l'enregistrer.</p><button id="lksnapclose" type="button" style="background:#222;color:#fff;border:1px solid #555;border-radius:4px;padding:8px 14px;font:600 .9rem var(--body)">Fermer</button></div>
+<script>
+(function(){
+var lk=document.getElementById('lk'),cv=document.getElementById('lkc'),msg=document.getElementById('lkmsg'),cap=document.getElementById('lkcap'),sel=document.getElementById('lkcam');
+var gl=null,prog=null,texBg,texV,vid=null,stream=null,raf=0,bgImg=null,last=null;
+var S={sim:.18,sm:.12,sp:.6,sc:1,x:0,y:0,mir:false,chk:false,key:[0,0],pick:false};
+function cbcr(r,g,b){return[-0.169*r-0.331*g+0.5*b,0.5*r-0.419*g-0.081*b]}
+S.key=cbcr(0.1,0.7,0.25);
+var VS='attribute vec2 p;varying vec2 u;void main(){u=p*.5+.5;gl_Position=vec4(p,0.,1.);}';
+var FS='precision mediump float;varying vec2 u;uniform sampler2D bg,vd;uniform vec2 key,off,wh;uniform float sim,sm,sp,mir,chk,ready;'+
+'void main(){vec4 b=texture2D(bg,u);if(ready<.5){gl_FragColor=b;return;}'+
+'vec2 v=vec2((u.x-.5-off.x)/wh.x+.5,(u.y-.5-off.y)/wh.y+.5);if(mir>.5)v.x=1.-v.x;'+
+'float inside=step(0.,v.x)*step(v.x,1.)*step(0.,v.y)*step(v.y,1.);vec3 c=texture2D(vd,v).rgb;'+
+'vec2 cc=vec2(-.169*c.r-.331*c.g+.5*c.b,.5*c.r-.419*c.g-.081*c.b);float d=distance(cc,key);float a=smoothstep(sim,sim+sm,d)*inside;'+
+'float ex=max(0.,c.g-max(c.r,c.b));c.g-=sp*ex;'+
+'if(chk>.5){gl_FragColor=vec4(vec3(a),1.);return;}gl_FragColor=vec4(mix(b.rgb,c,a),1.);}';
+function sh(t,s){var o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(o));return o}
+function tex(){var t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);return t}
+function initGL(){if(gl)return true;gl=cv.getContext('webgl',{preserveDrawingBuffer:true,antialias:false})||cv.getContext('experimental-webgl',{preserveDrawingBuffer:true});if(!gl)return false;
+prog=gl.createProgram();gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);gl.useProgram(prog);
+var b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);var l=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,2,gl.FLOAT,false,0,0);
+texBg=tex();texV=tex();gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.uniform1i(gl.getUniformLocation(prog,'bg'),0);gl.uniform1i(gl.getUniformLocation(prog,'vd'),1);return true}
+function U(n){return gl.getUniformLocation(prog,n)}
+function frame(){raf=requestAnimationFrame(frame);if(!gl||lk.hidden)return;
+var ok=vid&&vid.readyState>=2&&vid.videoWidth>0;
+gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,texV);
+if(ok){gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,vid);}
+var ca=cv.width/cv.height,va=ok?vid.videoWidth/vid.videoHeight:16/9;
+gl.uniform2f(U('key'),S.key[0],S.key[1]);gl.uniform2f(U('off'),S.x*.5,S.y*.5);gl.uniform2f(U('wh'),S.sc*va/ca,S.sc);
+gl.uniform1f(U('sim'),S.sim);gl.uniform1f(U('sm'),S.sm);gl.uniform1f(U('sp'),S.sp);gl.uniform1f(U('mir'),S.mir?1:0);gl.uniform1f(U('chk'),S.chk?1:0);gl.uniform1f(U('ready'),ok?1:0);
+gl.viewport(0,0,cv.width,cv.height);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);}
+function setMsg(t){if(t){msg.textContent=t;msg.hidden=false}else msg.hidden=true}
+function loadBg(src,cb){var im=new Image();im.onload=function(){bgImg=im;var w=im.naturalWidth,h=im.naturalHeight,m=1280;if(w>m){h=Math.round(h*m/w);w=m}cv.width=w;cv.height=h;
+gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texBg);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,im);cb&&cb()};im.onerror=function(){setMsg("Image de réf introuvable.")};im.src=src}
+function stopStream(){if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}if(vid){vid.srcObject=null}}
+function startCam(id){stopStream();if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setMsg("La caméra n'est pas accessible dans ce cadre. Ouvre le lien du site directement dans Safari ou Chrome (pas dans une appli) et autorise la caméra.");return}
+var v={width:{ideal:1920},height:{ideal:1080}};if(id)v.deviceId={exact:id};else v.facingMode='environment';
+navigator.mediaDevices.getUserMedia({video:v,audio:false}).then(function(s){stream=s;if(!vid){vid=document.createElement('video');vid.muted=true;vid.playsInline=true;vid.setAttribute('playsinline','')}
+vid.srcObject=s;vid.play().catch(function(){});setMsg('');return navigator.mediaDevices.enumerateDevices()}).then(function(ds){if(!ds)return;var cur=stream&&stream.getVideoTracks()[0]&&stream.getVideoTracks()[0].getSettings().deviceId;sel.innerHTML='';ds.filter(function(d){return d.kind==='videoinput'}).forEach(function(d,i){var o=document.createElement('option');o.value=d.deviceId;o.textContent=d.label||('Caméra '+(i+1));if(d.deviceId===cur)o.selected=true;sel.appendChild(o)})})
+.catch(function(e){setMsg(e&&e.name==='NotAllowedError'?"Caméra refusée. Autorise la caméra pour ce site (réglages du navigateur) ou ouvre le lien directement dans Safari/Chrome.":"Caméra introuvable ("+(e&&e.name||'erreur')+"). Branche la source vidéo puis réessaie.")})}
+function open(src,c,btn){if(!initGL()){setMsg("WebGL indisponible sur cet appareil.");lk.hidden=false;return}last=btn;cap.textContent=c;lk.hidden=false;document.body.style.overflow='hidden';setMsg('');loadBg(src,function(){startCam(sel.value||null)});if(!raf)raf=requestAnimationFrame(frame)}
+function close(){lk.hidden=true;document.body.style.overflow='';stopStream();if(raf){cancelAnimationFrame(raf);raf=0}if(last)last.focus()}
+[].forEach.call(document.querySelectorAll('.lkbtn'),function(b){b.addEventListener('click',function(){open(b.dataset.img,b.dataset.cap,b)})});
+document.getElementById('lkclose').onclick=close;
+document.addEventListener('keydown',function(e){if(!lk.hidden&&e.key==='Escape')close()});
+sel.onchange=function(){startCam(sel.value)};
+[['lksim','sim'],['lksm','sm'],['lksp','sp'],['lksc','sc'],['lkx','x'],['lky','y']].forEach(function(p){var el=document.getElementById(p[0]);el.addEventListener('input',function(){S[p[1]]=parseFloat(el.value)})});
+function tog(id,k){var b=document.getElementById(id);b.onclick=function(){S[k]=!S[k];b.classList.toggle('on',S[k])}}
+tog('lkmir','mir');tog('lkchk','chk');
+var pb=document.getElementById('lkpick');pb.onclick=function(){S.pick=!S.pick;pb.classList.toggle('on',S.pick)};
+var pc=document.createElement('canvas');pc.width=pc.height=1;var px=pc.getContext('2d',{willReadFrequently:true});
+cv.addEventListener('pointerdown',function(e){if(!S.pick||!vid||!vid.videoWidth)return;var r=cv.getBoundingClientRect();var ux=(e.clientX-r.left)/r.width,uy=1-(e.clientY-r.top)/r.height;
+var va=vid.videoWidth/vid.videoHeight,ca=cv.width/cv.height,wx=S.sc*va/ca,wy=S.sc;var vx=(ux-.5-S.x*.5)/wx+.5,vy=(uy-.5-S.y*.5)/wy+.5;if(S.mir)vx=1-vx;if(vx<0||vx>1||vy<0||vy>1)return;
+px.drawImage(vid,Math.floor(vx*vid.videoWidth),Math.floor((1-vy)*vid.videoHeight),1,1,0,0,1,1);var d=px.getImageData(0,0,1,1).data;S.key=cbcr(d[0]/255,d[1]/255,d[2]/255);S.pick=false;pb.classList.remove('on')});
+var sn=document.getElementById('lksnap'),si=document.getElementById('lksnapimg');
+document.getElementById('lksnapbtn').onclick=function(){cv.toBlob(function(b){if(!b)return;si.src=URL.createObjectURL(b);sn.hidden=false},'image/jpeg',.92)};
+document.getElementById('lksnapclose').onclick=function(){sn.hidden=true;if(si.src)URL.revokeObjectURL(si.src)};
+window.__lk={S:S,open:open};
+})();
+</script>
+<script>
+document.getElementById('ref').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;window.__lk.open(URL.createObjectURL(f),f.name,document.querySelector('label.big'));e.target.value=''});
+</script></body></html>
