@@ -55,6 +55,7 @@ ol{padding-left:20px;color:#bbb}
 <label><span>Position Y</span><input id="lky" type="range" min="-1" max="1" step="0.005" value="0"></label>
 <label><span>Plume masque</span><input id="lkmf" type="range" min="0" max="30" step="1" value="0"></label>
 <div class="row" id="lkbgrow" hidden><button id="lkbgi" type="button" class="on">Fond : image</button><button id="lkbgv" type="button">Fond : vidéo</button><button id="lkbgp" type="button">⏸ Pause</button><button id="lkbgr" type="button">⏮ Début</button></div>
+<div class="row" id="lkbgrow2" hidden><input id="lkbgt" type="range" min="0" max="10000" step="1" value="0" aria-label="Position dans la vidéo" style="flex:1 1 100%;min-width:0"><span id="lkbgl" style="font:600 .8rem var(--body);flex:1 1 100%;color:#cfd8d5;text-align:center">00:00:00:00</span><button id="lkb1m" type="button">−1 s</button><button id="lkbfm" type="button">◀ −1 image</button><button id="lkbfp" type="button">+1 image ▶</button><button id="lkb1p" type="button">+1 s</button></div>
 <div class="row m"><button id="lkmr" type="button">▭ Rectangle</button><button id="lkme" type="button">◯ Ellipse</button><button id="lkml" type="button">✎ Lasso</button><button id="lkmu" type="button">Annuler</button><button id="lkmc" type="button">Effacer</button><button id="lkmi" type="button">Inverser</button><button id="lkmo" type="button" class="on">Contours</button></div>
 <div class="row"><button id="lkpick" type="button">Pipette (touche le vert)</button><button id="lkmir" type="button">Miroir</button><button id="lkchk" type="button">Voir le masque</button><button id="lksnapbtn" type="button">Capture</button></div>
 </div>
@@ -68,7 +69,7 @@ var S={sim:.18,sm:.12,sp:.6,sc:1,x:0,y:0,mir:false,chk:false,key:[0,0],pick:fals
 function cbcr(r,g,b){return[-0.169*r-0.331*g+0.5*b,0.5*r-0.419*g-0.081*b]}
 S.key=cbcr(0.1,0.7,0.25);
 var M={shapes:[],tool:null,inv:false,fe:0,cur:null,dirty:true,out:true};
-var bgv=null,bgMode='img',vidSrc=null,lastSrc=null;
+var bgv=null,bgMode='img',vidSrc=null,lastSrc=null,fps=25,scrub=false;
 var mk=document.createElement('canvas'),ov=document.getElementById('lkov'),wrap=document.getElementById('lkwrap');
 var VS='attribute vec2 p;varying vec2 u;void main(){u=p*.5+.5;gl_Position=vec4(p,0.,1.);}';
 var FS='precision mediump float;varying vec2 u;uniform sampler2D bg,vd,mk;uniform vec2 key,off,wh;uniform float sim,sm,sp,mir,chk,ready,mon;'+
@@ -88,7 +89,7 @@ function U(n){return gl.getUniformLocation(prog,n)}
 function frame(){raf=requestAnimationFrame(frame);if(!gl||lk.hidden)return;
 var ok=vid&&vid.readyState>=2&&vid.videoWidth>0;
 if(M.dirty){buildMask();M.dirty=false}
-drawOv();
+drawOv();if(bgMode==='vid'&&bgv&&bgv.duration){if(!scrub)document.getElementById('lkbgt').value=Math.round(bgv.currentTime/bgv.duration*10000);document.getElementById('lkbgl').textContent=tc(bgv.currentTime)+'  /  '+tc(bgv.duration)+'  ·  '+fps+' i/s'}
 if(bgMode==='vid'&&bgv&&bgv.readyState>=2&&bgv.videoWidth>0){gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texBg);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,bgv)}
 gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,texV);
 if(ok){gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,vid);}
@@ -124,8 +125,10 @@ var v={width:{ideal:1920},height:{ideal:1080}};if(id)v.deviceId={exact:id};else 
 navigator.mediaDevices.getUserMedia({video:v,audio:false}).then(function(s){stream=s;if(!vid){vid=document.createElement('video');vid.muted=true;vid.playsInline=true;vid.setAttribute('playsinline','')}
 vid.srcObject=s;vid.play().catch(function(){});setMsg('');return navigator.mediaDevices.enumerateDevices()}).then(function(ds){if(!ds)return;var cur=stream&&stream.getVideoTracks()[0]&&stream.getVideoTracks()[0].getSettings().deviceId;sel.innerHTML='';ds.filter(function(d){return d.kind==='videoinput'}).forEach(function(d,i){var o=document.createElement('option');o.value=d.deviceId;o.textContent=d.label||('Caméra '+(i+1));if(d.deviceId===cur)o.selected=true;sel.appendChild(o)})})
 .catch(function(e){setMsg(e&&e.name==='NotAllowedError'?"Caméra refusée. Autorise la caméra pour ce site (réglages du navigateur) ou ouvre le lien directement dans Safari/Chrome.":"Caméra introuvable ("+(e&&e.name||'erreur')+"). Branche la source vidéo puis réessaie.")})}
-function bgUi(){var row=document.getElementById('lkbgrow');row.hidden=!vidSrc;document.getElementById('lkbgi').hidden=!lastSrc;document.getElementById('lkbgi').classList.toggle('on',bgMode==='img');document.getElementById('lkbgv').classList.toggle('on',bgMode==='vid')}
-function setBgMode(m){if(m==='vid'){if(!vidSrc)return;bgMode='vid';if(!bgv){bgv=document.createElement('video');bgv.muted=true;bgv.loop=true;bgv.playsInline=true;bgv.setAttribute('playsinline','');bgv.preload='auto';
+function tc(t){var f=Math.floor((t%1)*fps+1e-6),s=Math.floor(t),m=Math.floor(s/60),h=Math.floor(m/60);function z(n){return (n<10?'0':'')+n}return z(h)+':'+z(m%60)+':'+z(s%60)+':'+z(f)}
+function seekBy(d){if(!bgv||!bgv.duration)return;bgv.pause();document.getElementById('lkbgp').textContent='▶ Lecture';bgv.currentTime=Math.min(bgv.duration,Math.max(0,bgv.currentTime+d))}
+function bgUi(){var row=document.getElementById('lkbgrow');row.hidden=!vidSrc;document.getElementById('lkbgrow2').hidden=!(vidSrc&&bgMode==='vid');document.getElementById('lkbgi').hidden=!lastSrc;document.getElementById('lkbgi').classList.toggle('on',bgMode==='img');document.getElementById('lkbgv').classList.toggle('on',bgMode==='vid')}
+function setBgMode(m){if(m==='vid'){if(!vidSrc)return;bgMode='vid';if(!bgv){bgv=document.createElement('video');bgv.muted=true;bgv.loop=true;bgv.playsInline=true;bgv.setAttribute('playsinline','');bgv.preload='auto';if(bgv.requestVideoFrameCallback){var lm=-1,lp=-1;var cb=function(n,md){if(lp>=0&&md.presentedFrames-lp===1&&md.mediaTime>lm){var f=1/(md.mediaTime-lm);if(f>10&&f<121)fps=Math.round(f*100)/100}lm=md.mediaTime;lp=md.presentedFrames;bgv.requestVideoFrameCallback(cb)};bgv.requestVideoFrameCallback(cb)}
 bgv.addEventListener('loadedmetadata',function(){if(bgMode!=='vid')return;var w=bgv.videoWidth,h=bgv.videoHeight,mx=1280;if(w>mx){h=Math.round(h*mx/w);w=mx}cv.width=w;cv.height=h;M.dirty=true})}
 if(bgv.getAttribute('src')!==vidSrc)bgv.src=vidSrc;else if(bgv.videoWidth){cv.width=Math.min(1280,bgv.videoWidth);cv.height=Math.round(cv.width*bgv.videoHeight/bgv.videoWidth);M.dirty=true}
 var pr=bgv.play();if(pr&&pr.catch)pr.catch(function(){});document.getElementById('lkbgp').textContent='⏸ Pause'}
@@ -169,6 +172,12 @@ document.getElementById('lkbgi').onclick=function(){setBgMode('img')};
 document.getElementById('lkbgv').onclick=function(){setBgMode('vid')};
 document.getElementById('lkbgp').onclick=function(){if(!bgv||bgMode!=='vid')return;if(bgv.paused){bgv.play();this.textContent='⏸ Pause'}else{bgv.pause();this.textContent='▶ Lecture'}};
 document.getElementById('lkbgr').onclick=function(){if(bgv){bgv.currentTime=0}};
+
+var sl=document.getElementById('lkbgt');
+sl.addEventListener('input',function(){if(!bgv||!bgv.duration)return;scrub=true;bgv.pause();document.getElementById('lkbgp').textContent='▶ Lecture';bgv.currentTime=sl.value/10000*bgv.duration});
+['change','pointerup','touchend'].forEach(function(ev){sl.addEventListener(ev,function(){scrub=false})});
+document.getElementById('lkb1m').onclick=function(){seekBy(-1)};document.getElementById('lkb1p').onclick=function(){seekBy(1)};
+document.getElementById('lkbfm').onclick=function(){seekBy(-1/fps)};document.getElementById('lkbfp').onclick=function(){seekBy(1/fps)};
 window.__lk={S:S,M:M,open:open};
 })();
 </script>
