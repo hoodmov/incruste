@@ -554,6 +554,145 @@ window.__lk={S:S,M:M,open:open,setFs:setFs,H:function(){var r=cv.getBoundingClie
 })();
 </script>
 
+<style>
+#edbar{position:fixed;left:50%;transform:translateX(-50%);bottom:max(12px,env(safe-area-inset-bottom));z-index:40;display:flex;gap:6px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px;box-shadow:0 6px 24px rgba(0,0,0,.28);max-width:calc(100vw - 16px)}
+#edbar button{font:600 .85rem var(--body);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:9px 14px;cursor:pointer;white-space:nowrap;min-height:40px}
+#edbar button.on{background:var(--key);border-color:var(--key);color:var(--chipfg)}
+#edbar .cnt{font:600 .75rem var(--body);color:var(--muted);padding:0 6px;white-space:nowrap}
+#edmenu{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(12px,env(safe-area-inset-bottom)) + 58px);z-index:41;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:4px;box-shadow:0 6px 24px rgba(0,0,0,.28)}
+#edmenu[hidden]{display:none}
+#edmenu button{font:500 .9rem var(--body);color:var(--ink);background:transparent;border:0;text-align:left;padding:10px 14px;border-radius:8px;cursor:pointer}
+#edmenu button:hover{background:var(--bg)}
+body.editing .ed{outline:1.5px dashed var(--muted);outline-offset:2px;cursor:text;border-radius:3px;min-width:2ch}
+body.editing .ed:focus{outline:2px solid var(--key);background:var(--bg)}
+.ed-mod{color:var(--gm)!important;font-weight:700}
+.chip.ed-mod{color:var(--chipfg)!important;box-shadow:0 0 0 2px var(--gm)}
+.ed-mod::after{content:"  (prévu : " attr(data-orig) ")";font:400 .68rem var(--body);color:var(--muted);text-transform:none;letter-spacing:0;white-space:normal}
+.chip.ed-mod::after{display:none}
+.edextra{display:none;margin-top:8px;gap:8px;flex-wrap:wrap;align-items:flex-start}
+body.editing .edextra{display:flex}
+.edextra label{font:600 .68rem var(--body);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:block;margin-bottom:3px}
+.edextra select,.edextra textarea{font:400 .95rem var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px;width:100%;box-sizing:border-box}
+.edextra textarea{min-height:56px;resize:vertical}
+.edextra .st{flex:0 0 150px}.edextra .nt{flex:1 1 220px}
+.notev{margin:8px 0 0;padding:6px 10px;border-left:4px solid var(--gm);font-size:.95rem}
+.stbadge{display:inline-block;font:700 .7rem var(--body);text-transform:uppercase;letter-spacing:.07em;border-radius:3px;padding:2px 7px;margin-left:8px;color:var(--chipfg)}
+.stbadge.ok{background:var(--key)}.stbadge.no{background:var(--fd)}
+#rp{position:fixed;inset:0;z-index:60;background:var(--bg);color:var(--ink);overflow:auto;padding:0 0 40px}
+#rp[hidden]{display:none}
+#rp .rpbar{position:sticky;top:0;z-index:2;background:var(--surface);border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 16px}
+#rp .rpbar button{font:600 .85rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 12px;cursor:pointer}
+#rp .rpbar label{font:500 .85rem var(--body);display:flex;gap:6px;align-items:center}
+#rp .rpbody{padding:16px;max-width:1100px;margin:0 auto}
+#rp h1{font:700 1.9rem var(--display);margin:0 0 4px}
+#rp h2{font:700 1.4rem var(--display);margin:22px 0 6px;border-bottom:2px solid var(--key)}
+#rp h3{font:600 .95rem var(--body);margin:12px 0 4px;color:var(--muted)}
+#rp .meta{color:var(--muted);font-size:.9rem;margin:0 0 8px}
+#rp table{border-collapse:collapse;width:100%;font-size:.85rem;background:var(--surface)}
+#rp th,#rp td{border:1px solid var(--line);padding:5px 7px;text-align:left;vertical-align:top}
+#rp th{background:var(--bg);font:600 .7rem var(--body);text-transform:uppercase;letter-spacing:.06em}
+#rp td.m{color:var(--gm);font-weight:700}#rp td.m small{display:block;color:var(--muted);font-weight:400}
+#rp .tw{overflow-x:auto}
+@media print{body.rp-open>*:not(#rp){display:none!important}#rp{position:static;overflow:visible;background:#fff;color:#000}#rp .rpbar{display:none}#rp table{background:#fff}#rp td.m{color:#000;text-decoration:underline}}
+</style>
+<div id="edbar" role="toolbar" aria-label="Édition des fiches"><button id="edtog" type="button">✎ Modifier</button><button id="edrep" type="button">📋 Compte-rendu</button><button id="edmore" type="button" aria-label="Sauvegarde">⋯</button><span class="cnt" id="edcnt"></span></div>
+<div id="edmenu" hidden><button id="edexp" type="button">⬇ Exporter la sauvegarde (.json)</button><button id="edimp" type="button">⬆ Importer une sauvegarde</button><button id="edrst" type="button">↺ Tout remettre aux valeurs prévues</button></div>
+<input type="file" id="edfile" accept="application/json,.json" hidden>
+<div id="rp" hidden role="dialog" aria-modal="true" aria-label="Compte-rendu caméra"></div>
+<script>
+(function(){
+var KEY='lgi.edits.v1',mem={},E={};
+function load(){try{var s=localStorage.getItem(KEY);return s?JSON.parse(s):{}}catch(e){return mem}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(E))}catch(e){mem=E}}
+E=load();
+var FIELDS=['lens','foc','Diaph','Distance','Hauteur caméra','Inclinaison','Lumière'];
+var shots=[];
+function txt(el){return el.textContent.replace(/\s+/g,' ').trim()}
+[].forEach.call(document.querySelectorAll('.shot'),function(sh){
+  if(sh.classList.contains('isref'))return;
+  var info=sh.querySelector('.shot-info'),pic=sh.querySelector('.pic');
+  if(!info||!pic||!info.querySelector('.lens'))return;
+  var id=pic.getAttribute('data-full').replace(/^.*\//,'').replace(/\.jpg$/,'');
+  var els={lens:info.querySelector('.lens .chip'),foc:info.querySelector('.foc'),'Lumière':info.querySelector('.light p')};
+  [].forEach.call(info.querySelectorAll('.grid > div'),function(d){els[txt(d.querySelector('dt'))]=d.querySelector('dd')});
+  var day=sh.closest('.day'),seq=sh.closest('.seq'),h2=seq&&seq.querySelector('h2'),pl=info.querySelector('.plan');
+  var rec={id:id,sh:sh,els:els,info:info,day:day?day.id:'',seq:h2?txt(h2):'',n:(pl.querySelector('.n')||{textContent:''}).textContent,plan:txt(pl).replace(/^#\d+\s*/,''),orig:{}};
+  FIELDS.forEach(function(f){var el=els[f];if(el){el.classList.add('ed');rec.orig[f]=txt(el);el.setAttribute('data-f',f);el.setAttribute('data-id',id)}});
+  var ex=document.createElement('div');ex.className='edextra';
+  ex.innerHTML='<div class="st"><label>Statut</label><select><option value="">À tourner</option><option value="ok">Tourné</option><option value="no">Non tourné</option></select></div><div class="nt"><label>Note tournage (pour le montage)</label><textarea placeholder="ex : tourné au 50 pour raccord avec le plan précédent"></textarea></div>';
+  info.appendChild(ex);
+  var nv=document.createElement('p');nv.className='notev';nv.hidden=true;info.appendChild(nv);
+  var bd=document.createElement('span');bd.className='stbadge';bd.hidden=true;pl.appendChild(bd);
+  rec.sel=ex.querySelector('select');rec.ta=ex.querySelector('textarea');rec.nv=nv;rec.bd=bd;
+  shots.push(rec);
+});
+var byId={};shots.forEach(function(r){byId[r.id]=r});
+function val(r,f){var e=E[r.id];return e&&e[f]!=null?e[f]:r.orig[f]}
+function setE(id,f,v){var r=byId[id];if(!E[id])E[id]={};if(v===''||v==null||(r.orig[f]!=null&&v===r.orig[f]&&f!=='note'&&f!=='st'))delete E[id][f];else E[id][f]=v;if(!Object.keys(E[id]).length)delete E[id];save()}
+function render(r){
+  FIELDS.forEach(function(f){var el=r.els[f];if(!el)return;var v=val(r,f);if(document.activeElement!==el&&txt(el)!==v)el.textContent=v;
+    var m=v!==r.orig[f];el.classList.toggle('ed-mod',m);if(m)el.setAttribute('data-orig',r.orig[f]);else el.removeAttribute('data-orig')});
+  var e=E[r.id]||{};r.sel.value=e.st||'';if(document.activeElement!==r.ta)r.ta.value=e.note||'';
+  r.nv.hidden=!e.note;r.nv.textContent=e.note?'Note tournage : '+e.note:'';
+  r.bd.hidden=!e.st;r.bd.className='stbadge '+(e.st||'');r.bd.textContent=e.st==='ok'?'Tourné':e.st==='no'?'Non tourné':'';
+}
+function count(){var n=0;shots.forEach(function(r){FIELDS.forEach(function(f){if(val(r,f)!==r.orig[f])n++})});var c=document.getElementById('edcnt');c.textContent=n?n+' modif.':'';return n}
+function renderAll(){shots.forEach(render);count()}
+renderAll();
+document.addEventListener('input',function(ev){var t=ev.target;
+  if(t.classList&&t.classList.contains('ed')){var id=t.getAttribute('data-id'),f=t.getAttribute('data-f');setE(id,f,txt(t));var r=byId[id],m=txt(t)!==r.orig[f];t.classList.toggle('ed-mod',m);if(m)t.setAttribute('data-orig',r.orig[f]);else t.removeAttribute('data-orig');count()}
+});
+document.addEventListener('focusout',function(ev){var t=ev.target;if(t.classList&&t.classList.contains('ed')){var r=byId[t.getAttribute('data-id')];if(!txt(t)){setE(r.id,t.getAttribute('data-f'),'')}render(r);count()}});
+document.addEventListener('keydown',function(ev){var t=ev.target;if(t.classList&&t.classList.contains('ed')&&ev.key==='Enter'){ev.preventDefault();t.blur()}});
+document.addEventListener('paste',function(ev){var t=ev.target;if(t.classList&&t.classList.contains('ed')){ev.preventDefault();var s=(ev.clipboardData||window.clipboardData).getData('text').replace(/\s+/g,' ');document.execCommand('insertText',false,s)}});
+shots.forEach(function(r){
+  r.sel.addEventListener('change',function(){setE(r.id,'st',r.sel.value);render(r)});
+  r.ta.addEventListener('input',function(){setE(r.id,'note',r.ta.value.trim()?r.ta.value:'');r.nv.hidden=!r.ta.value.trim();r.nv.textContent=r.ta.value.trim()?'Note tournage : '+r.ta.value:''});
+});
+var tog=document.getElementById('edtog');
+function setEdit(on){document.body.classList.toggle('editing',on);tog.classList.toggle('on',on);tog.textContent=on?'✓ Terminer':'✎ Modifier';
+  shots.forEach(function(r){FIELDS.forEach(function(f){var el=r.els[f];if(el){if(on)el.setAttribute('contenteditable','true');else el.removeAttribute('contenteditable')}})})}
+tog.onclick=function(){setEdit(!document.body.classList.contains('editing'))};
+var menu=document.getElementById('edmenu');
+document.getElementById('edmore').onclick=function(){menu.hidden=!menu.hidden};
+document.addEventListener('click',function(ev){if(!menu.hidden&&!ev.target.closest('#edmenu,#edmore'))menu.hidden=true});
+function dl(name,mime,data){var b=new Blob([data],{type:mime}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}
+document.getElementById('edexp').onclick=function(){menu.hidden=true;dl('incruste-sauvegarde-'+new Date().toISOString().slice(0,10)+'.json','application/json',JSON.stringify({v:1,edits:E},null,1))};
+var fi=document.getElementById('edfile');
+document.getElementById('edimp').onclick=function(){menu.hidden=true;fi.click()};
+fi.onchange=function(){var f=fi.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var j=JSON.parse(rd.result);if(j&&j.edits){E=j.edits;save();renderAll();alert('Sauvegarde importée.')}else alert('Fichier non reconnu.')}catch(e){alert('Fichier non reconnu.')}fi.value=''};rd.readAsText(f)};
+document.getElementById('edrst').onclick=function(){menu.hidden=true;if(confirm('Remettre toutes les valeurs prévues ? (les modifications et notes seront effacées)')){E={};save();renderAll()}};
+/* compte-rendu */
+var COLS=[['lens','Optique'],['foc','Focale'],['Diaph','Diaph'],['Distance','Distance'],['Hauteur caméra','Hauteur cam.'],['Inclinaison','Inclinaison'],['Lumière','Lumière']];
+var ST={'':'À tourner',ok:'Tourné',no:'Non tourné'};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function rows(only){var out=[];shots.forEach(function(r){var e=E[r.id]||{},mod=FIELDS.some(function(f){return val(r,f)!==r.orig[f]})||!!e.note||!!e.st;if(only&&!mod)return;out.push({r:r,e:e})});return out}
+function buildReport(only){
+  var list=rows(only),days={},order=[];list.forEach(function(x){var d=x.r.day;if(!days[d]){days[d]={};order.push(d)}(days[d][x.r.seq]=days[d][x.r.seq]||[]).push(x)});
+  var nmod=0;shots.forEach(function(r){if(FIELDS.some(function(f){return val(r,f)!==r.orig[f]}))nmod++});
+  var h='<h1>Compte-rendu caméra – La Grande Incruste 3</h1><p class="meta">Édité le '+new Date().toLocaleDateString('fr-FR')+' · '+list.length+' plan(s) listé(s) · '+nmod+' plan(s) dont les réglages diffèrent du prévu. Valeurs réelles ; en orange, les réglages modifiés (prévu entre parenthèses).</p>';
+  order.forEach(function(d){h+='<h2>'+esc(d)+'</h2>';Object.keys(days[d]).forEach(function(s){h+='<h3>'+esc(s)+'</h3><div class="tw"><table><thead><tr><th>#</th><th>Plan</th><th>Statut</th>'+COLS.map(function(c){return'<th>'+c[1]+'</th>'}).join('')+'<th>Note</th></tr></thead><tbody>';
+    days[d][s].forEach(function(x){var r=x.r;h+='<tr><td>'+esc(r.n)+'</td><td>'+esc(r.plan)+'</td><td>'+ST[x.e.st||'']+'</td>'+COLS.map(function(c){var v=val(r,c[0]),m=v!==r.orig[c[0]];return'<td'+(m?' class="m"':'')+'>'+esc(v)+(m?'<small>prévu : '+esc(r.orig[c[0]])+'</small>':'')+'</td>'}).join('')+'<td>'+esc(x.e.note||'')+'</td></tr>'});
+    h+='</tbody></table></div>'})});
+  if(!list.length)h+='<p>Aucun plan modifié pour le moment.</p>';
+  return h}
+function csv(only){var q=function(s){return'"'+String(s).replace(/"/g,'""')+'"'};var L=[['Jour','Séquence','#','Plan','Statut'].concat(COLS.map(function(c){return c[1]})).concat(COLS.map(function(c){return c[1]+' (prévu)'})).concat(['Modifié','Note']).map(q).join(';')];
+  rows(only).forEach(function(x){var r=x.r,mod=FIELDS.some(function(f){return val(r,f)!==r.orig[f]});L.push([r.day,r.seq,r.n,r.plan,ST[x.e.st||'']].concat(COLS.map(function(c){return val(r,c[0])})).concat(COLS.map(function(c){return r.orig[c[0]]})).concat([mod?'oui':'non',x.e.note||'']).map(q).join(';'))});
+  return '﻿'+L.join('\r\n')}
+var rp=document.getElementById('rp');
+function openReport(){rp.hidden=false;document.body.classList.add('rp-open');document.body.style.overflow='hidden';
+  rp.innerHTML='<div class="rpbar"><button id="rpx" type="button">✕ Fermer</button><label><input type="checkbox" id="rpo"> Seulement les plans modifiés</label><button id="rpp" type="button">🖨 Imprimer / PDF</button><button id="rpc" type="button">⬇ CSV (Excel)</button><button id="rph" type="button">⬇ HTML</button></div><div class="rpbody" id="rpb"></div>';
+  var o=document.getElementById('rpo'),b=document.getElementById('rpb');function up(){b.innerHTML=buildReport(o.checked)}up();o.onchange=up;
+  document.getElementById('rpx').onclick=closeReport;document.getElementById('rpp').onclick=function(){window.print()};
+  document.getElementById('rpc').onclick=function(){dl('compte-rendu-camera.csv','text/csv;charset=utf-8',csv(o.checked))};
+  document.getElementById('rph').onclick=function(){var st=[].map.call(document.querySelectorAll('#rp'),function(){return''}).join('');dl('compte-rendu-camera.html','text/html;charset=utf-8','<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compte-rendu caméra</title><style>body{font:14px system-ui,sans-serif;margin:16px;color:#141817}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #ccc;padding:4px 6px;text-align:left;vertical-align:top}th{background:#eee;font-size:10px;text-transform:uppercase}td.m{color:#c75f12;font-weight:700}small{display:block;color:#666;font-weight:400}h2{border-bottom:2px solid #0f8a52}h3{color:#555}.tw{overflow-x:auto}</style>'+buildReport(o.checked)+st)}}
+function closeReport(){rp.hidden=true;document.body.classList.remove('rp-open');document.body.style.overflow=''}
+document.getElementById('edrep').onclick=openReport;
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!rp.hidden)closeReport()});
+window.__lged={E:function(){return E},shots:shots,render:renderAll};
+})();
+</script>
+
 <script>
 (function(){
 var pics=[].slice.call(document.querySelectorAll('.pic')),lb=document.getElementById('lb'),im=document.getElementById('lbimg'),cap=document.getElementById('lbcap'),i=0,last=null;
