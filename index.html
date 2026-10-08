@@ -602,7 +602,7 @@ body.editing .edextra{display:flex}
 </style>
 <div id="edbar" role="toolbar" aria-label="Édition des fiches"><button id="edtog" type="button">✎ Modifier</button><button id="edrep" type="button">📋 Compte-rendu</button><button id="edmore" type="button" aria-label="Sauvegarde">⋯</button><span class="cnt" id="edcnt"></span><button id="edsync" type="button" class="cnt" style="border:0;background:transparent;cursor:pointer" aria-label="Appareils connectés"></button></div>
 <div id="edpop" hidden></div>
-<div id="edmenu" hidden><button id="edgh" type="button">☁ Synchro entre appareils (GitHub)</button><button id="edexp" type="button">⬇ Exporter la sauvegarde (.json)</button><button id="edimp" type="button">⬆ Importer une sauvegarde</button><button id="edrst" type="button">↺ Tout remettre aux valeurs prévues</button></div>
+<div id="edmenu" hidden><button id="edtx" type="button">📜 Tous les textes</button><button id="edgh" type="button">☁ Synchro entre appareils (GitHub)</button><button id="edexp" type="button">⬇ Exporter la sauvegarde (.json)</button><button id="edimp" type="button">⬆ Importer une sauvegarde</button><button id="edrst" type="button">↺ Tout remettre aux valeurs prévues</button></div>
 <input type="file" id="edfile" accept="application/json,.json" hidden>
 <div id="rp" hidden role="dialog" aria-modal="true" aria-label="Compte-rendu caméra"></div>
 <script>
@@ -754,6 +754,90 @@ function closeReport(){rp.hidden=true;document.body.classList.remove('rp-open');
 document.getElementById('edrep').onclick=openReport;
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!rp.hidden)closeReport()});
 window.__lged={E:function(){return E},shots:shots,render:renderAll};
+})();
+</script>
+
+<style>
+.txtbtn{display:inline-flex;align-items:center;gap:10px;margin:10px 0 0 8px;padding:10px 16px;border-radius:6px;border:1px solid var(--key);background:transparent;color:var(--ink);font:600 .95rem var(--body);cursor:pointer}.txtbtn .pl{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--key);color:var(--chipfg);font-size:.8rem}.txtbtn:hover{background:var(--surface)}
+.txtbtn:first-child,h2+.txtbtn{margin-left:0}
+#tx{position:fixed;inset:0;z-index:70;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+#tx[hidden]{display:none}
+#tx .txbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--surface);border-bottom:1px solid var(--line);padding:10px 14px}
+#tx .txbar button,#tx .txbar select,#tx .txbar input{font:600 .85rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 12px}
+#tx .txbar .tt{flex:1;min-width:140px;font:700 1.15rem var(--display);letter-spacing:.02em}
+#tx .txtabs{display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px;background:var(--surface);border-bottom:1px solid var(--line)}
+#tx .txtabs button{font:600 .8rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
+#tx .txtabs button.on{background:var(--key);border-color:var(--key);color:var(--chipfg)}
+#tx .txbody{flex:1;overflow:auto;padding:16px 16px 60px;-webkit-overflow-scrolling:touch}
+#tx .txin{max-width:760px;margin:0 auto;font-size:var(--txs,1.05rem);line-height:1.55}
+#tx .txin p{margin:0 0 .9em}
+#tx .txin h3{font:700 1.3em var(--display);margin:1.2em 0 .5em;border-bottom:2px solid var(--key)}
+#tx .txin .spk{font-weight:700;letter-spacing:.04em;margin:1.1em 0 .15em;color:var(--key)}
+#tx .txin .dir{color:var(--muted)}
+#tx .txin a{color:var(--vz)}
+#tx .txin a.tc{font:600 .8em var(--mono);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:1px 6px;text-decoration:none}
+#tx .txlist{max-width:760px;margin:0 auto}
+#tx .txlist button{display:block;width:100%;text-align:left;font:500 1rem var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:0 0 8px;cursor:pointer}
+#tx .txlist small{color:var(--muted);display:block;margin-top:2px}
+</style>
+<div id="tx" hidden role="dialog" aria-modal="true" aria-label="Texte du sketch"></div>
+<script>
+(function(){
+var MAP={"Intro Hotu": 1, "Love Actually (V1 + V2 Franck Leboeuf)": 2, "L'Exorciste": 1, "La Femme de ménage (en rouge au plan)": 1, "Tapie": 1, "L'Odyssée": 1, "Fast & Furious": 1, "Titanic": 1, "Titanic short": 1, "Dune": 1, "James Bond – Casino poker": 1, "Le Comte de Monte-Cristo": 1, "Les Choristes": 1, "Terminator (V1 + V2 Franck Leboeuf)": 2, "Stranger Things": 1, "Le Seigneur des anneaux": 1, "Star Wars – Kylo": 1, "Star Wars – Vador": 1, "Gourou": 1, "Un dimanche à la campagne": 1, "INA – Piercings": 1, "INA – Mode": 1, "INA – Internet": 1, "Qui veut épouser mon fils": 1, "Qui veut être mon associé": 1, "Danse avec les stars": 1, "The Voice": 1, "Tous les sports (extérieurs)": 1, "Tous les sports (studio)": 1, "Couronnement roi Charles": 1, "Couronnement roi Charles – short": 1, "Fort Boyard": 1, "1000% Logique": 1, "Maillon faible": 1, "JT 2h": 1, "Pink – So What": 1, "Gims – Parisienne": 1, "Gold – Plus près des étoiles": 1, "Gold – Laissez-nous chanter": 1, "Le 5ème Beatles – Hello Goodbye": 1, "Michael Jackson – Thriller": 1, "Miley Cyrus – Wrecking Ball": 1, "Vanessa Carlton": 1, "Céline Dion JO": 1, "Mariah Carey – It's Time": 1, "Fruit Love Island": 1, "Trump": 1, "Love Cam Coldplay": 1, "Tiny Desk": 1, "Poltronesofà": 1, "Poltronesofà – Franck Leboeuf": 1, "Lipsync voiture": 1, "ITW Sophie Adenot – ISS": 2};
+var DATA=null,loading=null;
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function load(){if(DATA)return Promise.resolve(DATA);if(!loading)loading=fetch('textes.json').then(function(r){if(!r.ok)throw new Error('http '+r.status);return r.json()}).then(function(j){DATA=j;return j});return loading}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function inl(s){
+  s=esc(s);
+  s=s.replace(/\[(TC ?:[^\]]*)\]\((https?:[^)\s]+)\)/g,'<a class="tc" href="$2" target="_blank" rel="noopener">$1</a>');
+  s=s.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+  s=s.replace(/&lt;(https?:[^&\s]+)&gt;/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+  s=s.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\*([^*\n]+)\*/g,'<i>$1</i>');
+  return s}
+function md(t){
+  var out=[];t.split(/\n\s*\n/).forEach(function(p){
+    p=p.replace(/^\s+|\s+$/g,'');if(!p)return;
+    var m=p.match(/^#+\s+(.*)$/);if(m&&p.indexOf('\n')<0){out.push('<h3>'+inl(m[1])+'</h3>');return}
+    var h=inl(p).replace(/ {2,}\n|\n/g,'<br>');
+    var cls='';
+    if(/^<b>[^<]{1,70}<\/b>(\s*\([^)]*\))?$/.test(h))cls=' class="spk"';
+    else if(/^<i>[^<]*<\/i>$/.test(h))cls=' class="dir"';
+    out.push('<p'+cls+'>'+h+'</p>')});
+  return out.join('')}
+var tx=document.getElementById('tx');
+function size(d){var v=parseFloat(lsGet('lgi.txs')||'1.05');v=Math.min(1.8,Math.max(.85,v+d));lsSet('lgi.txs',String(v));tx.style.setProperty('--txs',v+'rem')}
+function frame(title,inner){
+  tx.innerHTML='<div class="txbar"><button id="txx" type="button">✕ Fermer</button><span class="tt">'+esc(title)+'</span><button id="txm" type="button" aria-label="Texte plus petit">A−</button><button id="txp" type="button" aria-label="Texte plus grand">A+</button></div>'+inner;
+  document.getElementById('txx').onclick=close;
+  document.getElementById('txm').onclick=function(){size(-.1)};document.getElementById('txp').onclick=function(){size(.1)}}
+function open(){tx.hidden=false;document.body.style.overflow='hidden';tx.style.setProperty('--txs',(lsGet('lgi.txs')||'1.05')+'rem')}
+function close(){tx.hidden=true;document.body.style.overflow=''}
+function showDoc(ids,k,title){
+  var d=DATA.docs[ids[k]];
+  var tabs=ids.length>1?'<div class="txtabs">'+ids.map(function(i,n){return'<button type="button" data-n="'+n+'" class="'+(n===k?'on':'')+'">'+esc(DATA.docs[i].t)+'</button>'}).join('')+'</div>':'';
+  frame(title,tabs+'<div class="txbody"><div class="txin">'+md(d.x)+'<p class="dir" style="margin-top:2em">Texte copié du Google Doc « '+esc(d.t)+' » le jour de la mise en ligne. <a href="'+esc(d.u)+'" target="_blank" rel="noopener">Ouvrir le Google Doc d’origine</a></p></div></div>');
+  [].forEach.call(tx.querySelectorAll('.txtabs button'),function(b){b.onclick=function(){showDoc(ids,+b.getAttribute('data-n'),title)}});
+  tx.querySelector('.txbody').scrollTop=0}
+function openSeq(name){open();frame(name,'<div class="txbody"><div class="txin">Chargement…</div></div>');
+  load().then(function(){var ids=(DATA.seq[name]||[]);if(!ids.length){frame(name,'<div class="txbody"><div class="txin">Pas de texte pour cette séquence.</div></div>');return}showDoc(ids,0,name)}).catch(function(){frame(name,'<div class="txbody"><div class="txin">Impossible de charger les textes (hors ligne ?).</div></div>')})}
+function openAll(){open();frame('Tous les textes','<div class="txbody"><div class="txin">Chargement…</div></div>');
+  load().then(function(){
+    var ids=Object.keys(DATA.docs).sort(function(a,b){return DATA.docs[a].t.localeCompare(DATA.docs[b].t,'fr',{numeric:true})});
+    frame('Tous les textes','<div class="txbar" style="border-top:0"><input id="txq" type="search" placeholder="Rechercher un mot dans tous les textes…" style="flex:1"></div><div class="txbody"><div class="txlist" id="txl"></div></div>');
+    var L=document.getElementById('txl'),q=document.getElementById('txq');
+    function draw(){var s=q.value.trim().toLowerCase();L.innerHTML='';ids.forEach(function(i){var d=DATA.docs[i],hit=!s||d.t.toLowerCase().indexOf(s)>=0||d.x.toLowerCase().indexOf(s)>=0;if(!hit)return;
+      var b=document.createElement('button');b.type='button';b.innerHTML=esc(d.t)+(s&&d.x.toLowerCase().indexOf(s)>=0?'<small>… '+esc(d.x.substr(Math.max(0,d.x.toLowerCase().indexOf(s)-40),120).replace(/\[[^\]]*\]\([^)]*\)/g,'').replace(/[*#\\]/g,'').replace(/\s+/g,' '))+' …</small>':'');
+      b.onclick=function(){showDoc([i],0,d.t)};L.appendChild(b)})}
+    q.oninput=draw;draw()}).catch(function(){frame('Tous les textes','<div class="txbody"><div class="txin">Impossible de charger les textes (hors ligne ?).</div></div>')})}
+[].forEach.call(document.querySelectorAll('article.seq'),function(a){
+  var h=a.querySelector('h2');if(!h)return;var n=h.textContent.trim();if(!MAP[n])return;
+  var b=document.createElement('button');b.type='button';b.className='txtbtn';b.innerHTML='<span class="pl">📜</span> Voir le texte';
+  b.onclick=function(){openSeq(n)};
+  var v=a.querySelector('.vidbtn');if(v)v.insertAdjacentElement('afterend',b);else h.insertAdjacentElement('afterend',b)});
+var mb=document.getElementById('edtx');if(mb)mb.onclick=function(){document.getElementById('edmenu').hidden=true;openAll()};
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!tx.hidden)close()});
 })();
 </script>
 
