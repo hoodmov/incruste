@@ -559,6 +559,11 @@ window.__lk={S:S,M:M,open:open,setFs:setFs,H:function(){var r=cv.getBoundingClie
 #edbar button{font:600 .85rem var(--body);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:9px 14px;cursor:pointer;white-space:nowrap;min-height:40px}
 #edbar button.on{background:var(--key);border-color:var(--key);color:var(--chipfg)}
 #edbar .cnt{font:600 .75rem var(--body);color:var(--muted);padding:0 6px;white-space:nowrap}
+#edpop{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(12px,env(safe-area-inset-bottom)) + 58px);z-index:41;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:0 6px 24px rgba(0,0,0,.28);min-width:260px;max-width:calc(100vw - 24px);font:400 .9rem var(--body)}
+#edpop[hidden]{display:none}#edpop h4{margin:0 0 6px;font:700 .75rem var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+#edpop ul{list-style:none;margin:0 0 8px;padding:0}#edpop li{display:flex;gap:8px;align-items:center;padding:4px 0}
+#edpop .dot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none}#edpop .dot.on{background:var(--key)}
+#edpop small{color:var(--muted);margin-left:auto;white-space:nowrap}#edpop button{font:600 .85rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 12px;cursor:pointer}
 #edmenu{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(12px,env(safe-area-inset-bottom)) + 58px);z-index:41;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:4px;box-shadow:0 6px 24px rgba(0,0,0,.28)}
 #edmenu[hidden]{display:none}
 #edmenu button{font:500 .9rem var(--body);color:var(--ink);background:transparent;border:0;text-align:left;padding:10px 14px;border-radius:8px;cursor:pointer}
@@ -595,14 +600,15 @@ body.editing .edextra{display:flex}
 #rp .tw{overflow-x:auto}
 @media print{body.rp-open>*:not(#rp){display:none!important}#rp{position:static;overflow:visible;background:#fff;color:#000}#rp .rpbar{display:none}#rp table{background:#fff}#rp td.m{color:#000;text-decoration:underline}}
 </style>
-<div id="edbar" role="toolbar" aria-label="Édition des fiches"><button id="edtog" type="button">✎ Modifier</button><button id="edrep" type="button">📋 Compte-rendu</button><button id="edmore" type="button" aria-label="Sauvegarde">⋯</button><span class="cnt" id="edcnt"></span><span class="cnt" id="edsync"></span></div>
+<div id="edbar" role="toolbar" aria-label="Édition des fiches"><button id="edtog" type="button">✎ Modifier</button><button id="edrep" type="button">📋 Compte-rendu</button><button id="edmore" type="button" aria-label="Sauvegarde">⋯</button><span class="cnt" id="edcnt"></span><button id="edsync" type="button" class="cnt" style="border:0;background:transparent;cursor:pointer" aria-label="Appareils connectés"></button></div>
+<div id="edpop" hidden></div>
 <div id="edmenu" hidden><button id="edgh" type="button">☁ Synchro entre appareils (GitHub)</button><button id="edexp" type="button">⬇ Exporter la sauvegarde (.json)</button><button id="edimp" type="button">⬆ Importer une sauvegarde</button><button id="edrst" type="button">↺ Tout remettre aux valeurs prévues</button></div>
 <input type="file" id="edfile" accept="application/json,.json" hidden>
 <div id="rp" hidden role="dialog" aria-modal="true" aria-label="Compte-rendu caméra"></div>
 <script>
 (function(){
 var KEY='lgi.edits.v2',OLD='lgi.edits.v1',TK='lgi.gh',mem=null,S={},E={};
-var GH={repo:'hoodmov/incruste',path:'data/edits.json',branch:'main'};
+var GH={repo:'hoodmov/incruste',path:'data/edits.json',branch:'data',pres:'data/presence.json'};
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function load(){var s=lsGet(KEY);if(s){try{return JSON.parse(s)}catch(e){}}
@@ -672,7 +678,8 @@ document.getElementById('edrst').onclick=function(){menu.hidden=true;if(confirm(
 /* synchro GitHub */
 var dirty=false,timer=null,busy=false,stEl=document.getElementById('edsync');
 function token(){return lsGet(TK)||''}
-function status(t){if(stEl)stEl.textContent=t}
+var stBase='',online=[];function status(t){stBase=t;paintSt()}
+function paintSt(){if(stEl)stEl.textContent=stBase+(online.length>1?' · '+online.length+' 👥':'')}
 function dec(b){var bin=atob(b.replace(/\s/g,'')),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new TextDecoder().decode(u)}
 function enc(s){var u=new TextEncoder().encode(s),r='';for(var i=0;i<u.length;i++)r+=String.fromCharCode(u[i]);return btoa(r)}
 function hdr(){var h={Accept:'application/vnd.github+json'};if(token())h.Authorization='Bearer '+token();return h}
@@ -689,10 +696,33 @@ function sync(n){if(busy)return Promise.resolve();busy=true;status('☁ …');
         if(!r.ok)throw new Error('http '+r.status);dirty=false;status('☁ synchronisé')})}
     dirty=false;status(token()?'☁ synchronisé':'☁ lecture seule')}).catch(function(e){status('⚠ hors ligne')}).then(function(){busy=false})}
 function schedulePush(){status('☁ …');clearTimeout(timer);timer=setTimeout(function(){sync()},1500)}
+
+/* présence */
+var DID=lsGet('lgi.did');if(!DID){DID=Math.random().toString(36).slice(2,10);lsSet('lgi.did',DID)}
+function guess(){var u=navigator.userAgent;return /iPad/.test(u)?'iPad':/iPhone/.test(u)?'iPhone':/Android/.test(u)?'Android':/Mac/.test(u)?(navigator.maxTouchPoints>1?'iPad':'Mac'):/Windows/.test(u)?'PC':'Appareil'}
+function myName(){return lsGet('lgi.name')||guess()}
+function pget(){return fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+GH.pres+'?ref='+GH.branch+'&t='+Date.now(),{headers:hdr(),cache:'no-store'}).then(function(r){
+  if(r.status===404)return{sha:null,d:{}};if(!r.ok)throw new Error('http '+r.status);return r.json().then(function(j){var d={};try{d=JSON.parse(dec(j.content)).devices||{}}catch(e){}return{sha:j.sha,d:d}})})}
+function calc(d){var now=Date.now();online=Object.keys(d).filter(function(k){return now-d[k].t<150000}).map(function(k){return Object.assign({id:k},d[k])});paintSt()}
+var pbusy=false;
+function beat(n){if(!token()||pbusy)return Promise.resolve();pbusy=true;
+  return pget().then(function(P){var d=P.d,now=Date.now();Object.keys(d).forEach(function(k){if(now-d[k].t>86400000)delete d[k]});d[DID]={n:myName(),t:now};calc(d);
+    var body={message:'présence',content:enc(JSON.stringify({v:1,devices:d})),branch:GH.branch};if(P.sha)body.sha=P.sha;
+    return fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+GH.pres,{method:'PUT',headers:hdr(),body:JSON.stringify(body)}).then(function(r){pbusy=false;if((r.status===409||r.status===422)&&(n||0)<2)return beat((n||0)+1)})}).catch(function(){}).then(function(){pbusy=false})}
+setInterval(function(){if(!document.hidden)beat()},60000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)beat()});
+var pop=document.getElementById('edpop');
+function ago(t){var m=Math.round((Date.now()-t)/60000);return m<1?'à l’instant':m<60?'il y a '+m+' min':m<1440?'il y a '+Math.round(m/60)+' h':'il y a '+Math.round(m/1440)+' j'}
+function showPop(d){var ids=Object.keys(d).sort(function(a,b){return d[b].t-d[a].t}),now=Date.now();
+  pop.innerHTML='<h4>Appareils synchronisés</h4><ul>'+(ids.length?ids.map(function(k){var on=now-d[k].t<150000;return'<li><span class="dot'+(on?' on':'')+'"></span><b>'+esc(d[k].n)+(k===DID?' (toi)':'')+'</b><small>'+(on?'en ligne':ago(d[k].t))+'</small></li>'}).join(''):'<li>Aucun appareil vu pour l’instant.</li>')+'</ul>'+(token()?'<button id="edname" type="button">✎ Nommer cet appareil</button>':'<p style="margin:0;color:var(--muted)">Mode lecture seule : ajoute le jeton (menu ⋯) pour apparaître ici.</p>');
+  var nb=document.getElementById('edname');if(nb)nb.onclick=function(){var v=prompt('Nom de cet appareil (visible par les autres) :',myName());if(v&&v.trim()){lsSet('lgi.name',v.trim().slice(0,24));beat().then(function(){pget().then(function(P){showPop(P.d)})})}}}
+stEl.onclick=function(ev){ev.stopPropagation();if(!pop.hidden){pop.hidden=true;return}menu.hidden=true;pop.hidden=false;pop.innerHTML='<h4>Appareils synchronisés</h4><p style="margin:0">…</p>';(token()?beat():Promise.resolve()).then(pget).then(function(P){calc(P.d);showPop(P.d)}).catch(function(){pop.innerHTML='<h4>Appareils synchronisés</h4><p style="margin:0">Impossible de charger (hors ligne ?).</p>'})};
+document.addEventListener('click',function(ev){if(!pop.hidden&&!ev.target.closest('#edpop,#edsync'))pop.hidden=true});
+setTimeout(function(){beat()},1500);
 document.getElementById('edgh').onclick=function(){menu.hidden=true;
   var t=prompt("Colle ici ton jeton GitHub (fine-grained, uniquement sur le dépôt hoodmov/incruste, permission « Contents : Read and write »). Il reste stocké seulement sur cet appareil. Laisse vide pour déconnecter.",token());
   if(t===null)return;t=t.trim();if(t)lsSet(TK,t);else try{localStorage.removeItem(TK)}catch(e){}
-  sync()};
+  sync().then(beat)};
 document.addEventListener('visibilitychange',function(){if(!document.hidden&&!document.activeElement.classList.contains('ed'))sync()});
 setInterval(function(){if(!document.hidden&&token()&&!busy&&!dirty&&!(document.activeElement&&(document.activeElement.classList.contains('ed')||document.activeElement.tagName==='TEXTAREA')))sync()},30000);
 sync();
