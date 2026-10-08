@@ -595,16 +595,21 @@ body.editing .edextra{display:flex}
 #rp .tw{overflow-x:auto}
 @media print{body.rp-open>*:not(#rp){display:none!important}#rp{position:static;overflow:visible;background:#fff;color:#000}#rp .rpbar{display:none}#rp table{background:#fff}#rp td.m{color:#000;text-decoration:underline}}
 </style>
-<div id="edbar" role="toolbar" aria-label="Édition des fiches"><button id="edtog" type="button">✎ Modifier</button><button id="edrep" type="button">📋 Compte-rendu</button><button id="edmore" type="button" aria-label="Sauvegarde">⋯</button><span class="cnt" id="edcnt"></span></div>
-<div id="edmenu" hidden><button id="edexp" type="button">⬇ Exporter la sauvegarde (.json)</button><button id="edimp" type="button">⬆ Importer une sauvegarde</button><button id="edrst" type="button">↺ Tout remettre aux valeurs prévues</button></div>
+<div id="edbar" role="toolbar" aria-label="Édition des fiches"><button id="edtog" type="button">✎ Modifier</button><button id="edrep" type="button">📋 Compte-rendu</button><button id="edmore" type="button" aria-label="Sauvegarde">⋯</button><span class="cnt" id="edcnt"></span><span class="cnt" id="edsync"></span></div>
+<div id="edmenu" hidden><button id="edgh" type="button">☁ Synchro entre appareils (GitHub)</button><button id="edexp" type="button">⬇ Exporter la sauvegarde (.json)</button><button id="edimp" type="button">⬆ Importer une sauvegarde</button><button id="edrst" type="button">↺ Tout remettre aux valeurs prévues</button></div>
 <input type="file" id="edfile" accept="application/json,.json" hidden>
 <div id="rp" hidden role="dialog" aria-modal="true" aria-label="Compte-rendu caméra"></div>
 <script>
 (function(){
-var KEY='lgi.edits.v1',mem={},E={};
-function load(){try{var s=localStorage.getItem(KEY);return s?JSON.parse(s):{}}catch(e){return mem}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(E))}catch(e){mem=E}}
-E=load();
+var KEY='lgi.edits.v2',OLD='lgi.edits.v1',TK='lgi.gh',mem=null,S={},E={};
+var GH={repo:'hoodmov/incruste',path:'data/edits.json',branch:'main'};
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function load(){var s=lsGet(KEY);if(s){try{return JSON.parse(s)}catch(e){}}
+  var o=lsGet(OLD),r={};if(o){try{var j=JSON.parse(o);Object.keys(j).forEach(function(id){Object.keys(j[id]).forEach(function(f){r[id+'|'+f]={v:j[id][f],t:1}})})}catch(e){}}return r}
+function rebuildE(){E={};Object.keys(S).forEach(function(k){var x=S[k];if(x&&x.v!=null){var i=k.indexOf('|'),id=k.slice(0,i),f=k.slice(i+1);(E[id]=E[id]||{})[f]=x.v}})}
+function save(){lsSet(KEY,JSON.stringify(S))}
+S=load();rebuildE();
 var FIELDS=['lens','foc','Diaph','Distance','Hauteur caméra','Inclinaison','Lumière'];
 var shots=[];
 function txt(el){return el.textContent.replace(/\s+/g,' ').trim()}
@@ -628,7 +633,8 @@ function txt(el){return el.textContent.replace(/\s+/g,' ').trim()}
 });
 var byId={};shots.forEach(function(r){byId[r.id]=r});
 function val(r,f){var e=E[r.id];return e&&e[f]!=null?e[f]:r.orig[f]}
-function setE(id,f,v){var r=byId[id];if(!E[id])E[id]={};if(v===''||v==null||(r.orig[f]!=null&&v===r.orig[f]&&f!=='note'&&f!=='st'))delete E[id][f];else E[id][f]=v;if(!Object.keys(E[id]).length)delete E[id];save()}
+function setE(id,f,v){var r=byId[id],del=(v===''||v==null||(r.orig[f]!=null&&v===r.orig[f]&&f!=='note'&&f!=='st'));
+  S[id+'|'+f]={v:del?null:v,t:Date.now()};rebuildE();save();dirty=true;schedulePush()}
 function render(r){
   FIELDS.forEach(function(f){var el=r.els[f];if(!el)return;var v=val(r,f);if(document.activeElement!==el&&txt(el)!==v)el.textContent=v;
     var m=v!==r.orig[f];el.classList.toggle('ed-mod',m);if(m)el.setAttribute('data-orig',r.orig[f]);else el.removeAttribute('data-orig')});
@@ -657,11 +663,39 @@ var menu=document.getElementById('edmenu');
 document.getElementById('edmore').onclick=function(){menu.hidden=!menu.hidden};
 document.addEventListener('click',function(ev){if(!menu.hidden&&!ev.target.closest('#edmenu,#edmore'))menu.hidden=true});
 function dl(name,mime,data){var b=new Blob([data],{type:mime}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}
-document.getElementById('edexp').onclick=function(){menu.hidden=true;dl('incruste-sauvegarde-'+new Date().toISOString().slice(0,10)+'.json','application/json',JSON.stringify({v:1,edits:E},null,1))};
+document.getElementById('edexp').onclick=function(){menu.hidden=true;dl('incruste-sauvegarde-'+new Date().toISOString().slice(0,10)+'.json','application/json',JSON.stringify({v:2,items:S},null,1))};
 var fi=document.getElementById('edfile');
 document.getElementById('edimp').onclick=function(){menu.hidden=true;fi.click()};
-fi.onchange=function(){var f=fi.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var j=JSON.parse(rd.result);if(j&&j.edits){E=j.edits;save();renderAll();alert('Sauvegarde importée.')}else alert('Fichier non reconnu.')}catch(e){alert('Fichier non reconnu.')}fi.value=''};rd.readAsText(f)};
-document.getElementById('edrst').onclick=function(){menu.hidden=true;if(confirm('Remettre toutes les valeurs prévues ? (les modifications et notes seront effacées)')){E={};save();renderAll()}};
+fi.onchange=function(){var f=fi.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var j=JSON.parse(rd.result),it=j.items;if(!it&&j.edits){it={};Object.keys(j.edits).forEach(function(id){Object.keys(j.edits[id]).forEach(function(k){it[id+'|'+k]={v:j.edits[id][k],t:Date.now()}})})}
+  if(it){var now=Date.now();Object.keys(it).forEach(function(k){S[k]={v:it[k].v,t:it[k].t>1?it[k].t:now}});rebuildE();save();renderAll();dirty=true;schedulePush();alert('Sauvegarde importée.')}else alert('Fichier non reconnu.')}catch(e){alert('Fichier non reconnu.')}fi.value=''};rd.readAsText(f)};
+document.getElementById('edrst').onclick=function(){menu.hidden=true;if(confirm('Remettre toutes les valeurs prévues sur TOUS vos appareils ? (modifications et notes effacées)')){var now=Date.now();Object.keys(S).forEach(function(k){S[k]={v:null,t:now}});rebuildE();save();renderAll();dirty=true;schedulePush()}};
+/* synchro GitHub */
+var dirty=false,timer=null,busy=false,stEl=document.getElementById('edsync');
+function token(){return lsGet(TK)||''}
+function status(t){if(stEl)stEl.textContent=t}
+function dec(b){var bin=atob(b.replace(/\s/g,'')),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new TextDecoder().decode(u)}
+function enc(s){var u=new TextEncoder().encode(s),r='';for(var i=0;i<u.length;i++)r+=String.fromCharCode(u[i]);return btoa(r)}
+function hdr(){var h={Accept:'application/vnd.github+json'};if(token())h.Authorization='Bearer '+token();return h}
+function remote(){return fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+GH.path+'?ref='+GH.branch+'&t='+Date.now(),{headers:hdr(),cache:'no-store'}).then(function(r){
+  if(r.status===404)return{sha:null,items:{}};if(!r.ok)throw new Error('http '+r.status);return r.json().then(function(j){var it={};try{it=JSON.parse(dec(j.content)).items||{}}catch(e){}return{sha:j.sha,items:it}})})}
+function mergeIn(it){var ch=false;Object.keys(it).forEach(function(k){var x=it[k];if(!S[k]||x.t>S[k].t){S[k]=x;ch=true}});return ch}
+function localNewer(it){return Object.keys(S).some(function(k){return !it[k]||S[k].t>it[k].t})}
+function sync(n){if(busy)return Promise.resolve();busy=true;status('☁ …');
+  return remote().then(function(R){var ch=mergeIn(R.items);if(ch){rebuildE();save();renderAll()}
+    if(token()&&(dirty||localNewer(R.items))){
+      var body={message:'Édition tournage',content:enc(JSON.stringify({v:2,items:S})),branch:GH.branch};if(R.sha)body.sha=R.sha;
+      return fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+GH.path,{method:'PUT',headers:hdr(),body:JSON.stringify(body)}).then(function(r){
+        if(r.status===409||r.status===422){busy=false;if((n||0)<3)return sync((n||0)+1);throw new Error('conflit')}
+        if(!r.ok)throw new Error('http '+r.status);dirty=false;status('☁ synchronisé')})}
+    dirty=false;status(token()?'☁ synchronisé':'☁ lecture seule')}).catch(function(e){status('⚠ hors ligne')}).then(function(){busy=false})}
+function schedulePush(){status('☁ …');clearTimeout(timer);timer=setTimeout(function(){sync()},1500)}
+document.getElementById('edgh').onclick=function(){menu.hidden=true;
+  var t=prompt("Colle ici ton jeton GitHub (fine-grained, uniquement sur le dépôt hoodmov/incruste, permission « Contents : Read and write »). Il reste stocké seulement sur cet appareil. Laisse vide pour déconnecter.",token());
+  if(t===null)return;t=t.trim();if(t)lsSet(TK,t);else try{localStorage.removeItem(TK)}catch(e){}
+  sync()};
+document.addEventListener('visibilitychange',function(){if(!document.hidden&&!document.activeElement.classList.contains('ed'))sync()});
+setInterval(function(){if(!document.hidden&&token()&&!busy&&!dirty&&!(document.activeElement&&(document.activeElement.classList.contains('ed')||document.activeElement.tagName==='TEXTAREA')))sync()},30000);
+sync();
 /* compte-rendu */
 var COLS=[['lens','Optique'],['foc','Focale'],['Diaph','Diaph'],['Distance','Distance'],['Hauteur caméra','Hauteur cam.'],['Inclinaison','Inclinaison'],['Lumière','Lumière']];
 var ST={'':'À tourner',ok:'Tourné',no:'Non tourné'};
