@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Incruste live</title>
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#111111">
 <style>
 :root{--bg:#111;--ink:#f2f2f2;--surface:#222;--key:#3ddc84;--body:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body)}
@@ -236,4 +237,5 @@ window.__lk={S:S,M:M,open:open,setFs:setFs,H:function(){var r=cv.getBoundingClie
 document.getElementById('ref').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var u=URL.createObjectURL(f),b=document.querySelector('label.big');
 if(f.type.indexOf('video')===0)window.__lk.open(null,f.name,b,u);else window.__lk.open(u,f.name,b);e.target.value=''});
 </script>
-<script src="diffusion.js"></script></body></html>
+<script src="diffusion.js"></script>
+<script src="offline.js"></script></body></html>
