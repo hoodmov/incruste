@@ -133,7 +133,7 @@ if(!M.out&&!M.tool)return;c.lineWidth=2;c.setLineDash([6,4]);c.strokeStyle='#00e
 M.shapes.concat(M.cur?[M.cur]:[]).forEach(function(s){if(s.pts.length<2&&s.t!=='l')return;pth(c,s,w,h);c.fill();c.stroke()});
 if(M.inv){c.setLineDash([]);c.fillStyle='#00e5ff';c.font='600 12px system-ui';c.fillText('masque inversé',8,16)}}
 function setMsg(t){if(t){msg.textContent=t;msg.hidden=false}else msg.hidden=true}
-function loadBg(src,cb){lastSrc=src;var im=new Image();im.onload=function(){bgImg=im;var w=im.naturalWidth,h=im.naturalHeight,m=1280;if(w>m){h=Math.round(h*m/w);w=m}cv.width=w;cv.height=h;M.dirty=true;
+function loadBg(src,cb){lastSrc=src;var im=new Image();im.crossOrigin='anonymous';im.onload=function(){bgImg=im;var w=im.naturalWidth,h=im.naturalHeight,m=1280;if(w>m){h=Math.round(h*m/w);w=m}cv.width=w;cv.height=h;M.dirty=true;
 gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texBg);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,im);cb&&cb()};im.onerror=function(){setMsg("Image de réf introuvable.")};im.src=src}
 function stopStream(){if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}if(vid){vid.srcObject=null}}
 function startCam(id){stopStream();if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setMsg("La caméra n'est pas accessible dans ce cadre. Ouvre le lien du site directement dans Safari ou Chrome (pas dans une appli) et autorise la caméra.");return}
