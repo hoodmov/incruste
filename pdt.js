@@ -6,6 +6,7 @@ var bar=document.getElementById('edbar');
 if(bar){var b=document.createElement('button');b.type='button';b.id='edpdt';b.textContent='🗓 PDT';b.setAttribute('aria-label','Plan de travail (Google Sheets)');
   b.onclick=function(){window.open(URL_PDT,'_blank','noopener')};var rp=document.getElementById('edrep');bar.insertBefore(b,rp?rp.nextSibling:bar.firstChild)}
 var css=document.createElement('style');css.textContent='.pdtline{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 0;padding:8px 12px;border:1px solid var(--line,#444);border-left:4px solid var(--key,#3ddc84);border-radius:6px;background:var(--surface,#222);font:600 .85rem var(--body,system-ui)}.pdtline span small{display:block;font:500 .65rem var(--body,system-ui);text-transform:uppercase;letter-spacing:.06em;color:var(--muted,#999)}.pdtline a{margin-left:auto;align-self:center;font:600 .8rem var(--body,system-ui);color:inherit}';
+css.textContent+='.pdtseq{display:flex;flex-wrap:wrap;gap:4px 12px;margin:4px 0 8px;font:600 .8rem var(--body,system-ui);color:var(--muted,#999)}.pdtseq b{color:var(--key,#3ddc84)}';
 document.head.appendChild(css);
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 fetch('pdt.json',{cache:'no-cache'}).then(function(r){return r.json()}).then(function(P){
@@ -13,5 +14,6 @@ fetch('pdt.json',{cache:'no-cache'}).then(function(r){return r.json()}).then(fun
     var items=[['Lieu',p.lieu],['Installation',p.install],['Convocation',p.conv],['PAT',p.pat],['Pause repas',p.repas],['Fin prévue',p.fin]].filter(function(x){return x[1]});
     if(!items.length)return;var el=document.createElement('div');el.className='pdtline';
     el.innerHTML=items.map(function(x){return '<span><small>'+x[0]+'</small>'+esc(x[1])+'</span>'}).join('')+'<a href="'+URL_PDT+'" target="_blank" rel="noopener">Voir le PDT ↗</a>';
-    head.insertAdjacentElement('afterend',el)})}).catch(function(){});
+    head.insertAdjacentElement('afterend',el);
+    (p.seqs||[]).forEach(function(q){var arts=d.querySelectorAll('article.seq');for(var i=0;i<arts.length;i++){var h2=arts[i].querySelector('h2');if(!h2||arts[i].querySelector('.pdtseq'))continue;var t=h2.textContent.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');if(t.indexOf(q.m)<0)continue;var b=document.createElement('div');b.className='pdtseq';b.innerHTML='<b>'+q.d+' → '+q.f+'</b><span>Séq. '+esc(q.n)+'</span><span>Plan '+esc(q.p)+'</span>';h2.insertAdjacentElement('afterend',b);break}})})}).catch(function(){});
 })();

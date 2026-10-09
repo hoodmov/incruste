@@ -1,3 +1,89 @@
-{"J1":{"date":"mardi 13/10","lieu":"Famous Studio, Bagnolet","install":"09:00","pat":"10:00","repas":"12:30","fin":"19:00"},
- "J2":{"date":"mercredi 14/10","lieu":"Famous Studio","conv":"09:00","install":"09:00","pat":"09:30","repas":"13:00","fin":"19:00"},
- "J3":{"date":"jeudi 15/10","lieu":"Famous Studio, Bagnolet","install":"09:00"}}
+{
+ "J1": {
+  "date": "mardi 13/10",
+  "lieu": "Famous Studio, Bagnolet",
+  "install": "09:00",
+  "pat": "10:00",
+  "repas": "12:30–13:30",
+  "fin": "19:00",
+  "seqs": [
+   {
+    "m": "fruit love",
+    "d": "10:00",
+    "f": "10:45",
+    "n": "47",
+    "p": "1"
+   },
+   {
+    "m": "lipsync",
+    "d": "11:00",
+    "f": "11:45",
+    "n": "55",
+    "p": "1"
+   },
+   {
+    "m": "pape",
+    "d": "12:00",
+    "f": "12:30",
+    "n": "62",
+    "p": "1"
+   },
+   {
+    "m": "exorciste",
+    "d": "13:45",
+    "f": "14:45",
+    "n": "3",
+    "p": "1 + 2"
+   },
+   {
+    "m": "fort boyard",
+    "d": "15:00",
+    "f": "15:45",
+    "n": "33",
+    "p": "1"
+   },
+   {
+    "m": "zidane",
+    "d": "16:00",
+    "f": "16:30",
+    "n": "59",
+    "p": "1 + 2 bonus"
+   },
+   {
+    "m": "macron",
+    "d": "16:45",
+    "f": "17:15",
+    "n": "60",
+    "p": "1"
+   },
+   {
+    "m": "dune",
+    "d": "17:30",
+    "f": "18:00",
+    "n": "9",
+    "p": "1"
+   },
+   {
+    "m": "seigneur",
+    "d": "18:15",
+    "f": "19:00",
+    "n": "16",
+    "p": "1"
+   }
+  ]
+ },
+ "J2": {
+  "date": "mercredi 14/10",
+  "lieu": "Famous Studio",
+  "conv": "09:00",
+  "install": "09:00",
+  "pat": "09:30",
+  "repas": "13:00",
+  "fin": "19:00"
+ },
+ "J3": {
+  "date": "jeudi 15/10",
+  "lieu": "Famous Studio, Bagnolet",
+  "install": "09:00"
+ }
+}
