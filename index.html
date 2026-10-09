@@ -354,11 +354,9 @@ nav.days a:focus-visible,.pic:focus-visible,button:focus-visible{outline:3px sol
 #pl .plrow>label{flex:1 1 140px;display:flex;flex-direction:column;gap:3px;font-size:.74rem;color:var(--muted,#aaa)}
 #pl .plrow select,#pl .plrow input,#pl textarea{width:100%;font-size:.95rem;color:var(--ink,#fff)}
 #pl textarea{min-height:56px;resize:vertical}
-#plai{width:100%;margin:6px 0;background:var(--key,#3ddc84);color:#000;border-color:var(--key,#3ddc84)}
-#plai:disabled,#plok:disabled{opacity:.5}
+#plok:disabled{opacity:.5}
 #plok{width:100%;margin-top:8px;padding:12px}
 #plst{margin:4px 0;font-size:.82rem;color:var(--muted,#aaa);min-height:1.2em}
-#pl .ai{outline:2px solid var(--key,#3ddc84)}
 #plbn{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 10px);z-index:65;background:var(--key,#3ddc84);color:#000;border:0;border-radius:999px;padding:9px 14px;font:700 .85rem var(--body,system-ui);cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.4)}
 #plbn[hidden]{display:none}
 </style>
@@ -367,7 +365,7 @@ nav.days a:focus-visible,.pic:focus-visible,button:focus-visible{outline:3px sol
 'use strict';
 var GH={repo:'hoodmov/incruste',path:'data/plans.json',branch:'data'};
 var RAW='https://raw.githubusercontent.com/'+GH.repo+'/'+GH.branch+'/';
-var CK='lgi.plans.v1',AK='lgi.ak',TK='lgi.gh';
+var CK='lgi.plans.v1',TK='lgi.gh';
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function token(){return lsGet(TK)||''}
@@ -384,7 +382,7 @@ function shotHtml(r){var u=imgUrl(r),cap='＋ '+r.seq+' · '+r.title,cls=/FD/.te
   '<div class="shot-info"><p class="plan"><span class="n">＋</span>'+esc(r.title)+'</p><div class="lens"><span class="chip '+cls+'">'+esc(r.lens||'—')+'</span><span class="foc">'+esc(r.foc||'—')+'</span></div>'+
   '<dl class="grid">'+dd('Diaph',r.ap)+dd('Distance',r.dist)+dd('Hauteur caméra',r.h)+dd('Inclinaison',r.inc)+'</dl>'+
   '<div class="light"><h4>Lumière</h4><p>'+esc(r.lum||'—')+'</p></div>'+(r.read?'<p class="read"><b>Lecture du screen :</b> '+esc(r.read)+'</p>':'')+
-  '<p class="planmeta">＋ Plan ajouté'+(r.by?' par '+esc(r.by):'')+(r.ai?' · infos estimées par IA':'')+' · <button type="button" class="plandel" data-id="'+esc(r.id)+'">🗑 Supprimer</button></p></div></div>'}
+  '<p class="planmeta">＋ Plan ajouté'+(r.by?' par '+esc(r.by):'')+' · <button type="button" class="plandel" data-id="'+esc(r.id)+'">🗑 Supprimer</button></p></div></div>'}
 function renderAll(P){Object.keys(P).sort(function(a,b){return P[a].t-P[b].t}).forEach(function(id){var r=P[id];if(!r||r.del)return;var day=document.getElementById(r.day);if(!day)return;
   var art=null;[].forEach.call(day.querySelectorAll('article.seq'),function(a){var h=a.querySelector('h2');if(h&&h.textContent.trim()===r.seq)art=a});
   var html=shotHtml(r);if(art)art.insertAdjacentHTML('beforeend',html);else day.insertAdjacentHTML('beforeend','<article class="seq"><div class="keep"><h2>'+esc(r.seq)+'</h2>'+html+'</div></article>')})}
@@ -426,7 +424,7 @@ ready(function(){
   '<label class="plfile"><input type="file" id="plfile" accept="image/*"><span>📷 Choisir une image (photothèque, fichiers ou appareil photo)</span></label><img id="plprev" alt="" hidden>'+
   '<div class="plrow"><label>Jour<select id="pld"></select></label><label>Séquence<select id="pls"></select></label></div>'+
   '<div class="plrow" id="plsnr" hidden><label>Nom de la nouvelle séquence<input type="text" id="plsn" placeholder="ex : Gladiator"></label></div>'+
-  '<button type="button" id="plai" disabled>🔎 Deviner les infos à partir de l\'image</button><p id="plst"></p>'+
+  '<p id="plst"></p>'+
   '<div class="plrow"><label style="flex-basis:100%">Description du plan<input type="text" id="pltt" placeholder="ex : Camille en gros plan, face caméra"></label></div>'+
   '<div class="plrow"><label>Optique<input type="text" id="pllens" list="pllenses"></label><label>Focale<input type="text" id="plfoc" placeholder="50 mm"></label><label>Diaph<input type="text" id="plap" placeholder="f/4"></label></div>'+
   '<div class="plrow"><label>Distance<input type="text" id="pldist" placeholder="0,9 m"></label><label>Hauteur caméra<input type="text" id="plh2" placeholder="1,50 m"></label><label>Inclinaison<input type="text" id="plinc" placeholder="0° (face)"></label></div>'+
@@ -441,15 +439,13 @@ ready(function(){
   $('pld').innerHTML=days.map(function(d){var jn=d.querySelector('.jn'),dt=d.querySelector('.dt');return '<option value="'+esc(d.id)+'">'+esc((jn?jn.textContent:d.id)+(dt?' · '+dt.textContent:''))+'</option>'}).join('');
   function seqs(){var d=document.getElementById($('pld').value),o='';if(d)[].forEach.call(d.querySelectorAll('article.seq h2'),function(h){var t=h.textContent.trim();o+='<option value="'+esc(t)+'">'+esc(t)+'</option>'});$('pls').innerHTML=o+'<option value="__new">➕ Nouvelle séquence…</option>';$('plsnr').hidden=true}
   $('pld').onchange=seqs;$('pls').onchange=function(){$('plsnr').hidden=$('pls').value!=='__new'};seqs();
-  var img={full:null,ai:null,aiUsed:false};
+  var img={full:null,ai:null};
   function st(t){$('plst').textContent=t||''}
   function chk(){$('plok').disabled=!(img.full&&$('pltt').value.trim())}
   ['pltt'].forEach(function(i){$(i).addEventListener('input',chk)});
-  function open(){m.hidden=false;document.body.style.overflow='hidden';$('plai').disabled=!img.ai;st(lsGet(AK)?'':'Astuce : ajoute une clé d\'analyse (⋯ → 🔑) pour que l\'IA devine les infos.')}
+  function open(){m.hidden=false;document.body.style.overflow='hidden';st('')}
   function close(){m.hidden=true;document.body.style.overflow=''}
   nb.onclick=open;$('plx').onclick=close;
-  if(menu){var kb=document.createElement('button');kb.type='button';kb.id='plkey';kb.textContent='🔑 Clé d\'analyse IA (Anthropic)';menu.insertBefore(kb,menu.firstChild);
-    kb.onclick=function(){menu.hidden=true;var v=prompt('Clé API Anthropic (sk-ant-…) pour deviner les infos d\'un plan.\nElle reste uniquement sur cet appareil. Laisse vide pour la supprimer.',lsGet(AK)||'');if(v===null)return;v=v.trim();try{if(v)localStorage.setItem(AK,v);else localStorage.removeItem(AK)}catch(e){}alert(v?'Clé enregistrée sur cet appareil.':'Clé supprimée.')}}
   function toBlob(c,q){return new Promise(function(ok){c.toBlob(ok,'image/jpeg',q)})}
   function b64(blob){return new Promise(function(ok){var r=new FileReader();r.onload=function(){ok(String(r.result).split(',')[1])};r.readAsDataURL(blob)})}
   function scaled(src,w,h,max){var k=Math.min(1,max/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(src,0,0,c.width,c.height);return c}
@@ -457,22 +453,12 @@ ready(function(){
     return new Promise(function(ok,ko){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){ok({src:im,w:im.naturalWidth,h:im.naturalHeight})};im.onerror=function(){ko(new Error('Format d\'image non lisible (essaie une photo JPEG ou PNG).'))};im.src=u})})}
   $('plfile').onchange=function(e){var f=e.target.files[0];if(!f)return;st('Lecture de l\'image…');
     loadImg(f).then(function(o){var c1=scaled(o.src,o.w,o.h,1920),c2=scaled(o.src,o.w,o.h,1280);return Promise.all([toBlob(c1,.86),toBlob(c2,.8)]).then(function(b){return Promise.all([b[0],b64(b[1])])})}).then(function(r){
-      img.full=r[0];img.ai=r[1];img.aiUsed=false;var u=URL.createObjectURL(r[0]);$('plprev').src=u;$('plprev').hidden=false;$('plai').disabled=false;chk();
-      st(Math.round(r[0].size/1024)+' Ko'+(lsGet(AK)?'':' · ajoute une clé (⋯ → 🔑) pour deviner les infos'))}).catch(function(er){st('Erreur : '+er.message)});e.target.value=''};
-  var PROMPT=function(){return "Tu aides un chef opérateur (caméra Sony FX6, capteur plein format) sur l'émission « La Grande Incruste 3 » : le présentateur est filmé sur fond vert puis incrusté dans des plans de films, séries, clips ou émissions TV. On te donne l'image de RÉFÉRENCE d'un plan. Estime les réglages de tournage devant fond vert pour raccorder à cette image.\n\nRéponds UNIQUEMENT par un objet JSON (sans texte autour) avec ces clés :\n- titre : description courte du cadre (ex : « Camille assis sur la banquette arrière (lipsync) »)\n- lens : une valeur parmi "+Object.keys(lenses).map(function(l){return '« '+l+' »'}).join(', ')+"\n- foc : focale en équivalent plein format (ex : « 50 mm »)\n- diaph : ouverture (ex : « f/4 »)\n- distance : distance caméra-sujet (ex : « 0,9 m »)\n- hauteur : hauteur de la caméra (ex : « 1,50 m »)\n- inclinaison : (ex : « 0° (face) », « légère contre-plongée 5° »)\n- lumiere : direction, dureté, température de couleur approximative, contre-jour, ambiance (1 à 2 phrases)\n- lecture : une phrase sur le cadre (valeur de plan, orientation, fond)\n- confiance : « haute », « moyenne » ou « basse »\n\nRègles : G Master pour fonds verts, XR et télé récente ; Canon FD pour les images vintage ou de films anciens. Tout est une estimation à partir d'une seule image : reste réaliste, en français, avec virgule décimale.\n\nExemple de fiche existante : lens « G Master 24-70 », foc « 50 mm », diaph « f/4 », distance « 0,9 m », hauteur « 1,50 m », inclinaison « 0° (face) », lumière « Plein soleil tropical : key dure haute ¾ face gauche (5600 K), fill ciel bleu, pas de contre marqué. »"};
-  $('plai').onclick=function(){var k=lsGet(AK);if(!k){alert('Ajoute d\'abord ta clé d\'analyse : ⋯ → 🔑 Clé d\'analyse IA.');return}if(!img.ai)return;
-    var b=$('plai');b.disabled=true;st('Analyse en cours…');
-    fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:900,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:img.ai}},{type:'text',text:PROMPT()}]}]})}).then(function(r){
-      return r.json().then(function(j){if(!r.ok)throw new Error(r.status===401?'clé refusée':r.status===429?'trop de demandes, réessaie dans un instant':(j.error&&j.error.message)||('http '+r.status));return j})}).then(function(j){
-      var t=(j.content||[]).map(function(c){return c.text||''}).join(''),a=t.indexOf('{'),z=t.lastIndexOf('}');if(a<0||z<0)throw new Error('réponse inattendue');var o=JSON.parse(t.slice(a,z+1));
-      var map={pltt:'titre',pllens:'lens',plfoc:'foc',plap:'diaph',pldist:'distance',plh2:'hauteur',plinc:'inclinaison',pllum:'lumiere',plread:'lecture'};
-      Object.keys(map).forEach(function(i){if(o[map[i]]){$(i).value=o[map[i]];$(i).classList.add('ai')}});img.aiUsed=true;chk();
-      st('Estimation IA (confiance '+(o.confiance||'?')+') — vérifie et corrige avant d\'ajouter.')}).catch(function(e){st('Analyse impossible : '+e.message)}).then(function(){b.disabled=false})};
+      img.full=r[0];var u=URL.createObjectURL(r[0]);$('plprev').src=u;$('plprev').hidden=false;chk();
+      st(Math.round(r[0].size/1024)+' Ko')}).catch(function(er){st('Erreur : '+er.message)});e.target.value=''};
   $('plok').onclick=function(){if(!token()){alert("Active d'abord la synchro (⋯ → ☁ Synchro entre appareils) : le plan doit être enregistré pour tous les appareils.");return}
     var seq=$('pls').value==='__new'?$('plsn').value.trim():$('pls').value;if(!seq){alert('Donne un nom de séquence.');return}
     var id='p-'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),b=$('plok');b.disabled=true;st('Envoi de l\'image…');
-    var rec={id:id,day:$('pld').value,seq:seq,title:$('pltt').value.trim(),lens:$('pllens').value.trim(),foc:$('plfoc').value.trim(),ap:$('plap').value.trim(),dist:$('pldist').value.trim(),h:$('plh2').value.trim(),inc:$('plinc').value.trim(),lum:$('pllum').value.trim(),read:$('plread').value.trim(),by:lsGet('lgi.name')||'',ai:img.aiUsed,t:Date.now()};
+    var rec={id:id,day:$('pld').value,seq:seq,title:$('pltt').value.trim(),lens:$('pllens').value.trim(),foc:$('plfoc').value.trim(),ap:$('plap').value.trim(),dist:$('pldist').value.trim(),h:$('plh2').value.trim(),inc:$('plinc').value.trim(),lum:$('pllum').value.trim(),read:$('plread').value.trim(),by:lsGet('lgi.name')||'',t:Date.now()};
     b64(img.full).then(function(data){return fetch(api('plans/'+id+'.jpg'),{method:'PUT',headers:hdr(),body:JSON.stringify({message:'plan '+id,content:data,branch:GH.branch})})}).then(function(r){if(!r.ok)throw new Error('envoi image : GitHub '+r.status);st('Enregistrement du plan…');
       return wupd(function(P){P[id]=rec;return P})}).then(function(P){lsSet(CK,JSON.stringify(P));st('Ajouté. Rechargement…');location.reload()}).catch(function(e){st('Échec : '+e.message);b.disabled=false})};
 });
