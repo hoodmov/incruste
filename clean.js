@@ -34,6 +34,7 @@ function putFile(path,data,n){n=n||0;return fetch(api(path)+'?ref='+BR+'&t='+Dat
 /* clean plates livrés avec le site (img/clean/NNN.jpg, attribut data-clean) */
 var ST={};[].forEach.call(document.querySelectorAll('.pic[data-clean]'),function(p){var id=idOf(p.getAttribute('data-full'));if(id)ST[id]=p.getAttribute('data-clean')});
 function cleanUrl(id){if(!id)return null;if(LOC[id])return LOC[id];if(C[id]){return C[id].del?(ST[id]||null):RAW+'clean/'+id+'.jpg?v='+C[id].t}return ST[id]||null}
+window.lgiCleanUrl=function(id){return cleanUrl(id)};window.lgiIdOf=idOf;
 window.lkMapSrc=function(src){if(!on)return src;var u=cleanUrl(idOf(src));return u||src};
 function cur(){var s=window.lkSrc&&window.lkSrc();return s?{src:s,id:idOf(s)}:null}
 function has(id){return !!cleanUrl(id)}
