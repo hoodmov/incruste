@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Incruste live</title>
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#0b0b0b"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0b0b;--ink:#f1f0eb;--surface:#1a1a19;--key:#3ddc84;--body:"IBM Plex Sans",system-ui,-apple-system,sans-serif;--display:"Big Shoulders Display","Arial Narrow",sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body)}
+main{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 24px) 16px 40px}
+h1{font:900 2.2rem/1 var(--display);text-transform:uppercase;margin:0 0 10px}p{margin:0 0 16px;color:#9d9c96}
+.big{display:block;width:100%;box-sizing:border-box;padding:16px;border-radius:12px;border:0;background:var(--ink);color:var(--bg);font:600 1rem var(--body);text-align:center;cursor:pointer;transition:transform .16s cubic-bezier(.23,1,.32,1)}.big:active{transform:scale(.98)}
+input[type=file]{display:none}
+ol{padding-left:20px;color:#9d9c96;margin-top:20px}ol li{margin:4px 0}
+</style></head><body><main>
+<h1>Incruste live</h1>
+<p>Choisis l'image de référence (capture d'écran ou photo du plan), puis autorise la caméra. Le fond vert est retiré en direct.</p>
+<label class="big" for="ref">Choisir l'image ou la vidéo de référence</label>
+<input id="ref" type="file" accept="image/*,video/*">
+<ol><li>Caméra du téléphone, ou source HDMI via un dongle USB.</li><li>Touche « Pipette » puis le vert pour régler la clé.</li><li>« Capture » enregistre l'image.</li></ol>
+</main>

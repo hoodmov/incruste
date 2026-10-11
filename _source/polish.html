@@ -83,12 +83,12 @@ h1,h2,h3,.dt,.jn,.foc{font-family:var(--display)}
 /* réglages en pastilles */
 .grid{gap:8px;background:transparent;border:0;border-radius:0;overflow:visible}
 .grid div{background:var(--soft);border-radius:var(--r-ctl);padding:8px 12px}
-.grid dt{font:500 .64rem var(--mono);letter-spacing:.08em}
+.grid dt{font:500 .7rem var(--mono);letter-spacing:.08em}
 .grid dd{font:600 1.12rem var(--body);font-variant-numeric:tabular-nums}
 /* lignes de régie : Lumière / Face match / Lecture / VFX / Note lumière */
 .light,.read,.vfx,.lfx{display:grid;grid-template-columns:96px minmax(0,1fr) auto;column-gap:10px;align-items:baseline;margin:0;padding:8px 0 0;border:0;border-top:1px solid var(--line)}
 .light{padding-top:0;row-gap:0}
-.light h4,.light .ratio::before,.vfx::before,.lfx::before,.read b{font:500 .64rem/1.9 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.light h4,.light .ratio::before,.vfx::before,.lfx::before,.read b{font:500 .7rem/1.9 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 .light h4{grid-column:1;padding-top:8px}
 .light>p:not(.ratio){grid-column:2;margin:0;padding-top:8px;font-size:.92rem;line-height:1.45}
 .light>.edrst{grid-column:3}
@@ -108,6 +108,39 @@ h1,h2,h3,.dt,.jn,.foc{font-family:var(--display)}
 /* téléphone : images pleine largeur (demandé), carte à bords droits */
 @media (max-width:760px){.shot-pic .pic img{max-height:none}}
 @media (max-width:600px){.shot{border-radius:0;margin-inline:-12px;box-shadow:none;border-block:1px solid var(--line)}.shot-info{padding:14px 12px 4px}.shot-pic .lkbtn{margin:0}.light,.read,.vfx,.lfx,.light .ratio{grid-template-columns:84px minmax(0,1fr) auto}}
+/* ===== Système commun : mêmes polices, graisses, rayons et couleurs sur toutes les fenêtres ===== */
+:root{--r-pop:14px;--lbl:500 .7rem/1.6 var(--mono)}
+/* libellés de champs partout : mono, petites capitales espacées, gris */
+.edextra label,#pl label:not(.plfile),.pdtline span small,.pdtline em,#rp th{font:var(--lbl);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+/* champs de saisie */
+.edextra select,.edextra textarea,#pl input:not([type=file]),#pl select,#pl textarea,#tx .txbar input,#tx .txbar select{font:500 .92rem var(--body);color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:9px 11px}
+.edextra select:focus-visible,.edextra textarea:focus-visible,#pl input:focus-visible,#pl select:focus-visible,#pl textarea:focus-visible{outline:2px solid var(--key);outline-offset:1px}
+::placeholder{color:color-mix(in srgb,var(--muted) 80%,transparent)}
+/* boutons des barres et fenêtres */
+#tx .txbar button,#rp .rpbar button,#rp .rpbar label,#pl button,#edmenu button{font:600 .85rem var(--body);border-radius:10px}
+#tx .txbar button,#rp .rpbar button{background:var(--soft);border:1px solid var(--line);color:var(--ink)}
+#tx .txbar #txx,#rp .rpbar button:first-child{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+#edmenu,#edpop{border-radius:var(--r-pop)}
+#edbar button{font-weight:600}
+/* titres de fenêtres en police d'affiche */
+#tx .txbar .tt,#pl .plh,#rp h1,#rp h2{font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.01em}
+#pl .plh{font-size:1.35rem}
+#rp h1{font-weight:900}
+#pl .plbox{border-radius:var(--r-card);padding:18px}
+#pl .plfile{border-radius:12px;font:600 .92rem var(--body);text-transform:none;letter-spacing:0;color:var(--ink);background:var(--soft)}
+#pl #plok{width:100%;padding:12px;background:var(--ink);color:var(--surface);border:0;border-radius:12px;font:600 .95rem var(--body)}
+#pl #plok:disabled{opacity:.4;cursor:not-allowed}
+/* fenêtres sombres (zoom, vidéo) : mêmes boutons que Incruste live */
+#lb button,#vb button{background:#222221;color:#f1f0eb;border:1px solid #2c2c2a;border-radius:10px;font:600 .85rem var(--body);min-height:36px}
+#lb #lbclose,#vb #vbclose{background:#f1f0eb;color:#0b0b0b;border-color:#f1f0eb}
+#lb .bar p,#vb .bar p{font:500 .85rem var(--body);color:#d9d8d2}
+/* bandeau PDT (lieu / installation) : carte, plus de barre verte à gauche */
+.pdtline{border:1px solid var(--line);border-left-width:1px;border-left-color:var(--line);border-radius:var(--r-pop);background:var(--surface);font:600 .88rem var(--body);padding:10px 14px}
+.pdtline a{font:600 .8rem var(--body)}
+.pdtseq{font:500 .78rem var(--mono);color:var(--muted)}
+.pdtseq b{color:var(--ink);font-weight:600}
+/* nombres partout alignés */
+.pdtline,.pdtseq,#rp td,.dmeta span,nav.days a span{font-variant-numeric:tabular-nums}
 </style>
 <script>
 (function(){

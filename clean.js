@@ -53,7 +53,7 @@ document.head.appendChild(css);
 var ct=lk.querySelector('.ct');
 var row=document.createElement('div');row.className='row';row.id='cprow';
 row.innerHTML='<button id="cptog" type="button">Fond : clean plate</button><button id="cpmk" type="button" hidden>🧽 Créer un clean plate</button><label id="cpimpl" style="display:inline-flex"><button id="cpimp" type="button">⬆ Importer un clean (Gemini…)</button></label><input id="cpfile" type="file" accept="image/*" hidden><button id="cpdel" type="button">🗑 Supprimer le clean</button>';
-if(ct)ct.insertBefore(row,ct.firstChild);
+var gf=document.getElementById('lkgfond');if(gf)gf.insertBefore(row,gf.children[1]||null);else if(ct)ct.insertBefore(row,ct.firstChild);
 var tog=document.getElementById('cptog'),bdel=document.getElementById('cpdel'),fin=document.getElementById('cpfile');
 function ui(){var c=cur(),h=c&&has(c.id);tog.hidden=!h;bdel.hidden=!(c&&C[c.id]&&!C[c.id].del&&token())&&!(c&&LOC[c.id]);
   tog.textContent=on?'Fond : clean plate ✓':'Fond : réf d’origine';tog.classList.toggle('on',on)}

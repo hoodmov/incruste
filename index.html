@@ -471,58 +471,86 @@ ready(function(){
 </script>
 
 <style>
-.lkbtn{display:inline-flex;align-items:center;gap:8px;margin:8px 0 0;padding:8px 12px;border-radius:6px;border:1px solid var(--key);background:transparent;color:var(--ink);font:600 .85rem var(--body);cursor:pointer}
-.lkbtn:hover{background:var(--surface)}
+/* Incruste live : mêmes polices, couleurs et rayons que le site (direction D), vert = état actif */
+.lkbtn{display:inline-flex;align-items:center;gap:8px;margin:8px 0 0;padding:8px 12px;border-radius:12px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font:600 .85rem var(--body);cursor:pointer}
 #lk[hidden]{display:none!important}
-#lk{position:fixed;inset:0;z-index:40;background:#000;color:#fff;display:flex;flex-direction:column;font:14px var(--body)}
-#lk .tb{display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 8px) 8px 8px}
-#lk .tb p{flex:1;margin:0;font-size:.85rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#lk button,#lk select{background:#222;color:#fff;border:1px solid #555;border-radius:4px;font:600 .85rem var(--body);padding:8px 10px;cursor:pointer;max-width:42vw}
-#lk button.on{background:var(--key);border-color:var(--key);color:#000}
+#lk,#lksnap{--lk-bg:#0b0b0b;--lk-panel:#141414;--lk-ctl:#222221;--lk-ctl2:#2b2b29;--lk-line:#2c2c2a;--lk-ink:#f1f0eb;--lk-mut:#9d9c96;--lk-acc:#3ddc84;--lk-accink:#06120c;--lk-f:"IBM Plex Sans",system-ui,-apple-system,sans-serif;--lk-m:"IBM Plex Mono",ui-monospace,Menlo,monospace;--lk-d:"Big Shoulders Display","Barlow Condensed","Arial Narrow",sans-serif}
+#lk{position:fixed;inset:0;z-index:40;background:var(--lk-bg);color:var(--lk-ink);display:flex;flex-direction:column;font:14px/1.4 var(--lk-f);accent-color:var(--lk-acc)}
+#lk .tb{display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 8px;border-bottom:1px solid var(--lk-line)}
+#lk .tb p{flex:1;margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:800 1.15rem/1.1 var(--lk-d);text-transform:uppercase;letter-spacing:.01em}
+#lk button,#lk select,#lksnap button{background:var(--lk-ctl);color:var(--lk-ink);border:1px solid var(--lk-line);border-radius:10px;font:600 .82rem var(--lk-f);padding:8px 12px;cursor:pointer;max-width:42vw;min-height:36px;transition:background-color .15s ease,border-color .15s ease,color .15s ease,transform .16s cubic-bezier(.23,1,.32,1);touch-action:manipulation}
+#lk select{padding-right:8px}
+#lk button:active,#lksnap button:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){#lk button:not(.on):hover,#lksnap button:hover{background:var(--lk-ctl2)}}
+#lk button:focus-visible,#lk select:focus-visible,#lk input:focus-visible{outline:2px solid var(--lk-acc);outline-offset:2px}
+#lk button.on{background:var(--lk-acc);border-color:var(--lk-acc);color:var(--lk-accink)}
+#lk #lkclose{background:var(--lk-ink);color:var(--lk-bg);border-color:var(--lk-ink)}
+#lk button[hidden]{display:none}
 #lkwrap{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
 #lkc{max-width:100%;max-height:100%;touch-action:none;background:#111}
-#lkmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:rgba(0,0,0,.75);font-size:1rem;line-height:1.4}
+#lkmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:rgb(0 0 0 / .72);font:500 1rem/1.45 var(--lk-f)}
 #lkmsg[hidden]{display:none}
-#lk .ct{padding:8px 10px calc(env(safe-area-inset-bottom,0px) + 10px);background:#111;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px;max-height:34vh;overflow:auto}
-#lk .ct label{display:flex;align-items:center;gap:8px;font-size:.78rem;color:#cfd8d5}
-#lk .ct label span{width:74px;flex:0 0 74px}
-#lk .ct input[type=range]{flex:1;min-width:0}
-#lk .row{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+#lk .ct{background:var(--lk-panel);border-top:1px solid var(--lk-line);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));max-height:36vh;overflow:auto;overscroll-behavior:contain;padding-bottom:env(safe-area-inset-bottom,0px)}
+#lk .grp{padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+#lk .grp+.grp{border-left:1px solid var(--lk-line)}
+#lk .grp h5{margin:0;font:500 .7rem/1.6 var(--lk-m);text-transform:uppercase;letter-spacing:.1em;color:var(--lk-mut)}
+#lk .ct label{display:grid;grid-template-columns:72px minmax(0,1fr) 44px;align-items:center;gap:8px;font-size:.8rem;color:var(--lk-ink)}
+#lk .ct label span{color:var(--lk-mut)}
+#lk .ct output{font:500 .72rem var(--lk-m);color:var(--lk-ink);text-align:right;font-variant-numeric:tabular-nums}
+#lk input[type=range]{-webkit-appearance:none;appearance:none;width:100%;min-width:0;height:24px;background:transparent;margin:0}
+#lk input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(var(--lk-acc),var(--lk-acc)) 0/var(--p,50%) 100% no-repeat,var(--lk-ctl2)}
+#lk input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--lk-ctl2)}
+#lk input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:var(--lk-acc)}
+#lk input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--lk-ink);margin-top:-7px;box-shadow:0 1px 3px rgb(0 0 0 / .5)}
+#lk input[type=range]::-moz-range-thumb{width:18px;height:18px;border:0;border-radius:50%;background:var(--lk-ink)}
+#lk .row{display:flex;flex-wrap:wrap;gap:6px}
+#lk .row[hidden]{display:none}
+#lk .tc{flex:1 1 100%;text-align:center;font:500 .8rem var(--lk-m);color:var(--lk-ink);font-variant-numeric:tabular-nums}
+#lkhint{margin:0;font-size:.78rem;line-height:1.45;color:var(--lk-mut)}
 #lkov{position:absolute;pointer-events:none}
 #lk.fs .tb,#lk.fs .ct,#lk.fs #lkov{display:none!important}
 #lk.fs #lkwrap{position:fixed;inset:0;background:#000}
 #lk.fs #lkc{max-width:100vw;max-height:100vh;background:#000}
-#lkfsx{display:none;position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:12px;z-index:60;background:rgba(0,0,0,.55);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;padding:10px 14px;font:600 .9rem var(--body);opacity:0;transition:opacity .25s;cursor:pointer}
+#lkfsx{display:none;position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:12px;z-index:60;background:rgb(0 0 0 / .55)!important;color:#fff;border:1px solid rgb(255 255 255 / .35)!important;border-radius:10px;padding:10px 14px;font:600 .88rem var(--lk-f);opacity:0;transition:opacity .25s;cursor:pointer}
 #lk.fs #lkfsx{display:block}#lk.fs #lkfsx.vis{opacity:1}
-#lk .row[hidden]{display:none}
-#lk .row.m{border-top:1px solid #333;padding-top:6px}
-@media (max-width:700px){#lk .ct{grid-template-columns:1fr}}
-#lksnap{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px}
+@media (max-width:1100px){#lk .ct{grid-template-columns:repeat(2,minmax(0,1fr))}#lk .grp:nth-child(3){border-left:0}#lk .grp:nth-child(n+3){border-top:1px solid var(--lk-line)}}
+@media (max-width:700px){#lk .ct{grid-template-columns:1fr;max-height:42vh}#lk .grp+.grp{border-left:0;border-top:1px solid var(--lk-line)}#lk .tb p{font-size:1rem}#lk .tb button,#lk .tb select{padding:8px 10px}}
+#lksnap{position:fixed;inset:0;z-index:50;background:rgb(0 0 0 / .92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:12px;font-family:var(--lk-f)}
 #lksnap[hidden]{display:none}
-#lksnap img{max-width:100%;max-height:78vh;object-fit:contain}
+#lksnap img{max-width:100%;max-height:78vh;object-fit:contain;border-radius:8px}
 #lksnap p{color:#fff;margin:0;font-size:.85rem}
+@media (prefers-reduced-motion:no-preference){#lk{transition:opacity .2s cubic-bezier(.23,1,.32,1);transition-behavior:allow-discrete}@starting-style{#lk:not([hidden]){opacity:0}}}
 </style>
 <div id="lk" hidden role="dialog" aria-modal="true" aria-label="Incruste live">
 <div class="tb"><p id="lkcap"></p><select id="lkcam" aria-label="Caméra"></select><button id="lkfs" type="button">⛶ Plein écran</button><button id="lkclose" type="button">Fermer</button></div>
 <button id="lkfsx" type="button">✕ Quitter le plein écran</button><div id="lkwrap"><canvas id="lkc"></canvas><canvas id="lkov"></canvas><div id="lkmsg" hidden></div></div>
 <div class="ct">
+<section class="grp" id="lkgfond"><h5>Fond</h5>
+<div class="row" id="lkbgrow" hidden><button id="lkbgi" type="button" class="on">Fond : image</button><button id="lkbgv" type="button">Fond : vidéo</button><button id="lkbgp" type="button">⏸ Pause</button><button id="lkbgr" type="button">⏮ Début</button></div>
+<div class="row" id="lkbgrow2" hidden><input id="lkbgt" type="range" min="0" max="10000" step="1" value="0" aria-label="Position dans la vidéo" style="flex:1 1 100%;min-width:0"><span id="lkbgl" class="tc">00:00:00:00</span><button id="lkb1m" type="button">−1 s</button><button id="lkbfm" type="button">◀ −1 image</button><button id="lkbfp" type="button">+1 image ▶</button><button id="lkb1p" type="button">+1 s</button></div>
+<div class="row"><button id="lksnapbtn" type="button">Capture</button><button id="lkreset" type="button">↺ Réinitialiser tout</button></div>
+</section>
+<section class="grp"><h5>Détourage</h5>
 <label><span>Seuil</span><input id="lksim" type="range" min="0" max="0.6" step="0.005" value="0.18"></label>
 <label><span>Douceur</span><input id="lksm" type="range" min="0.005" max="0.4" step="0.005" value="0.12"></label>
 <label><span>Anti-spill</span><input id="lksp" type="range" min="0" max="1" step="0.02" value="0.6"></label>
+<div class="row"><button id="lkpick" type="button">Pipette (touche le vert)</button><button id="lkchk" type="button">Voir le masque</button></div>
+</section>
+<section class="grp"><h5>Cadrage</h5>
 <label><span>Échelle</span><input id="lksc" type="range" min="0.2" max="2.5" step="0.01" value="1"></label>
 <label><span>Rotation</span><input id="lkrot" type="range" min="-180" max="180" step="0.1" value="0"></label>
 <label><span>Position X</span><input id="lkx" type="range" min="-1" max="1" step="0.005" value="0"></label>
 <label><span>Position Y</span><input id="lky" type="range" min="-1" max="1" step="0.005" value="0"></label>
-<label><span>Plume masque</span><input id="lkmf" type="range" min="0" max="30" step="1" value="0"></label>
-<div class="row"><button id="lkreset" type="button">↺ Réinitialiser tout</button><button id="lkrcad" type="button">↺ Cadrage</button><button id="lkfr" type="button" class="on">Cadre / poignées</button></div>
-<p id="lkhint" style="grid-column:1/-1;margin:0;font-size:.74rem;color:#9aa5a1">Glisser sur l'image = déplacer · molette ou pincer = échelle · Maj + molette ou 2 doigts qui tournent = rotation · poignée ● du haut = rotation · poignée ■ du coin = échelle</p>
-<div class="row" id="lkbgrow" hidden><button id="lkbgi" type="button" class="on">Fond : image</button><button id="lkbgv" type="button">Fond : vidéo</button><button id="lkbgp" type="button">⏸ Pause</button><button id="lkbgr" type="button">⏮ Début</button></div>
-<div class="row" id="lkbgrow2" hidden><input id="lkbgt" type="range" min="0" max="10000" step="1" value="0" aria-label="Position dans la vidéo" style="flex:1 1 100%;min-width:0"><span id="lkbgl" style="font:600 .8rem var(--body);flex:1 1 100%;color:#cfd8d5;text-align:center">00:00:00:00</span><button id="lkb1m" type="button">−1 s</button><button id="lkbfm" type="button">◀ −1 image</button><button id="lkbfp" type="button">+1 image ▶</button><button id="lkb1p" type="button">+1 s</button></div>
+<div class="row"><button id="lkrcad" type="button">↺ Cadrage</button><button id="lkfr" type="button" class="on">Cadre / poignées</button><button id="lkmir" type="button">Miroir</button></div>
+<p id="lkhint">Glisser = déplacer · molette ou pincer = échelle · Maj + molette ou 2 doigts = rotation · poignée ● = rotation · poignée ■ = échelle</p>
+</section>
+<section class="grp"><h5>Masque</h5>
+<label><span>Plume</span><input id="lkmf" type="range" min="0" max="30" step="1" value="0"></label>
 <div class="row m"><button id="lkmr" type="button">▭ Rectangle</button><button id="lkme" type="button">◯ Ellipse</button><button id="lkml" type="button">✎ Lasso</button><button id="lkmu" type="button">Annuler</button><button id="lkmc" type="button">Effacer</button><button id="lkmi" type="button">Inverser</button><button id="lkmo" type="button" class="on">Contours</button></div>
-<div class="row"><button id="lkpick" type="button">Pipette (touche le vert)</button><button id="lkmir" type="button">Miroir</button><button id="lkchk" type="button">Voir le masque</button><button id="lksnapbtn" type="button">Capture</button></div>
+</section>
 </div>
 </div>
-<div id="lksnap" hidden><img id="lksnapimg" alt="Capture"><p>Appui long sur l'image pour l'enregistrer.</p><button id="lksnapclose" type="button" style="background:#222;color:#fff;border:1px solid #555;border-radius:4px;padding:8px 14px;font:600 .9rem var(--body)">Fermer</button></div>
+<div id="lksnap" hidden><img id="lksnapimg" alt="Capture"><p>Appui long sur l'image pour l'enregistrer.</p><button id="lksnapclose" type="button">Fermer</button></div>
 <script>
 (function(){
 var lk=document.getElementById('lk'),cv=document.getElementById('lkc'),msg=document.getElementById('lkmsg'),cap=document.getElementById('lkcap'),sel=document.getElementById('lkcam');
@@ -688,6 +716,18 @@ lk.addEventListener('pointerdown',function(){if(lk.classList.contains('fs'))fsSh
 window.__lk={S:S,M:M,open:open,setFs:setFs,H:function(){var r=cv.getBoundingClientRect();return handles(r.width,r.height)}};
 })();
 </script>
+<script>
+/* Valeurs affichées à côté des curseurs + remplissage de piste */
+(function(){var lk=document.getElementById('lk');if(!lk)return;
+var F={lksim:function(v){return v.toFixed(2)},lksm:function(v){return v.toFixed(2)},lksp:function(v){return Math.round(v*100)+'%'},lksc:function(v){return '×'+v.toFixed(2)},lkrot:function(v){return Math.round(v)+'°'},lkx:function(v){return (v>0?'+':'')+v.toFixed(2)},lky:function(v){return (v>0?'+':'')+v.toFixed(2)},lkmf:function(v){return Math.round(v)+' px'}};
+var R=[].slice.call(lk.querySelectorAll('.ct label input[type=range]'));
+R.forEach(function(r){var o=document.createElement('output');o.setAttribute('for',r.id);r.parentNode.appendChild(o);r._o=o});
+function upd(){R.concat([document.getElementById('lkbgt')]).forEach(function(r){if(!r)return;var v=+r.value,mn=+r.min,mx=+r.max;r.style.setProperty('--p',((v-mn)/(mx-mn)*100)+'%');if(r._o){var t=(F[r.id]||String)(v);if(r._o.textContent!==t)r._o.textContent=t}})}
+lk.addEventListener('input',upd);var t=null;
+new MutationObserver(function(){clearInterval(t);if(!lk.hidden){upd();t=setInterval(upd,300)}}).observe(lk,{attributes:true,attributeFilter:['hidden']});upd();
+})();
+</script>
+
 
 <style>
 #edbar{position:fixed;left:50%;transform:translateX(-50%);bottom:max(12px,env(safe-area-inset-bottom));z-index:40;display:flex;gap:6px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px;box-shadow:0 6px 24px rgba(0,0,0,.28);max-width:calc(100vw - 16px)}
@@ -1134,12 +1174,12 @@ h1,h2,h3,.dt,.jn,.foc{font-family:var(--display)}
 /* réglages en pastilles */
 .grid{gap:8px;background:transparent;border:0;border-radius:0;overflow:visible}
 .grid div{background:var(--soft);border-radius:var(--r-ctl);padding:8px 12px}
-.grid dt{font:500 .64rem var(--mono);letter-spacing:.08em}
+.grid dt{font:500 .7rem var(--mono);letter-spacing:.08em}
 .grid dd{font:600 1.12rem var(--body);font-variant-numeric:tabular-nums}
 /* lignes de régie : Lumière / Face match / Lecture / VFX / Note lumière */
 .light,.read,.vfx,.lfx{display:grid;grid-template-columns:96px minmax(0,1fr) auto;column-gap:10px;align-items:baseline;margin:0;padding:8px 0 0;border:0;border-top:1px solid var(--line)}
 .light{padding-top:0;row-gap:0}
-.light h4,.light .ratio::before,.vfx::before,.lfx::before,.read b{font:500 .64rem/1.9 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.light h4,.light .ratio::before,.vfx::before,.lfx::before,.read b{font:500 .7rem/1.9 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 .light h4{grid-column:1;padding-top:8px}
 .light>p:not(.ratio){grid-column:2;margin:0;padding-top:8px;font-size:.92rem;line-height:1.45}
 .light>.edrst{grid-column:3}
@@ -1159,6 +1199,39 @@ h1,h2,h3,.dt,.jn,.foc{font-family:var(--display)}
 /* téléphone : images pleine largeur (demandé), carte à bords droits */
 @media (max-width:760px){.shot-pic .pic img{max-height:none}}
 @media (max-width:600px){.shot{border-radius:0;margin-inline:-12px;box-shadow:none;border-block:1px solid var(--line)}.shot-info{padding:14px 12px 4px}.shot-pic .lkbtn{margin:0}.light,.read,.vfx,.lfx,.light .ratio{grid-template-columns:84px minmax(0,1fr) auto}}
+/* ===== Système commun : mêmes polices, graisses, rayons et couleurs sur toutes les fenêtres ===== */
+:root{--r-pop:14px;--lbl:500 .7rem/1.6 var(--mono)}
+/* libellés de champs partout : mono, petites capitales espacées, gris */
+.edextra label,#pl label:not(.plfile),.pdtline span small,.pdtline em,#rp th{font:var(--lbl);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+/* champs de saisie */
+.edextra select,.edextra textarea,#pl input:not([type=file]),#pl select,#pl textarea,#tx .txbar input,#tx .txbar select{font:500 .92rem var(--body);color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:9px 11px}
+.edextra select:focus-visible,.edextra textarea:focus-visible,#pl input:focus-visible,#pl select:focus-visible,#pl textarea:focus-visible{outline:2px solid var(--key);outline-offset:1px}
+::placeholder{color:color-mix(in srgb,var(--muted) 80%,transparent)}
+/* boutons des barres et fenêtres */
+#tx .txbar button,#rp .rpbar button,#rp .rpbar label,#pl button,#edmenu button{font:600 .85rem var(--body);border-radius:10px}
+#tx .txbar button,#rp .rpbar button{background:var(--soft);border:1px solid var(--line);color:var(--ink)}
+#tx .txbar #txx,#rp .rpbar button:first-child{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+#edmenu,#edpop{border-radius:var(--r-pop)}
+#edbar button{font-weight:600}
+/* titres de fenêtres en police d'affiche */
+#tx .txbar .tt,#pl .plh,#rp h1,#rp h2{font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.01em}
+#pl .plh{font-size:1.35rem}
+#rp h1{font-weight:900}
+#pl .plbox{border-radius:var(--r-card);padding:18px}
+#pl .plfile{border-radius:12px;font:600 .92rem var(--body);text-transform:none;letter-spacing:0;color:var(--ink);background:var(--soft)}
+#pl #plok{width:100%;padding:12px;background:var(--ink);color:var(--surface);border:0;border-radius:12px;font:600 .95rem var(--body)}
+#pl #plok:disabled{opacity:.4;cursor:not-allowed}
+/* fenêtres sombres (zoom, vidéo) : mêmes boutons que Incruste live */
+#lb button,#vb button{background:#222221;color:#f1f0eb;border:1px solid #2c2c2a;border-radius:10px;font:600 .85rem var(--body);min-height:36px}
+#lb #lbclose,#vb #vbclose{background:#f1f0eb;color:#0b0b0b;border-color:#f1f0eb}
+#lb .bar p,#vb .bar p{font:500 .85rem var(--body);color:#d9d8d2}
+/* bandeau PDT (lieu / installation) : carte, plus de barre verte à gauche */
+.pdtline{border:1px solid var(--line);border-left-width:1px;border-left-color:var(--line);border-radius:var(--r-pop);background:var(--surface);font:600 .88rem var(--body);padding:10px 14px}
+.pdtline a{font:600 .8rem var(--body)}
+.pdtseq{font:500 .78rem var(--mono);color:var(--muted)}
+.pdtseq b{color:var(--ink);font-weight:600}
+/* nombres partout alignés */
+.pdtline,.pdtseq,#rp td,.dmeta span,nav.days a span{font-variant-numeric:tabular-nums}
 </style>
 <script>
 (function(){
