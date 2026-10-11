@@ -94,7 +94,8 @@ function render(r){
   r.bd.hidden=!e.st;r.bd.className='stbadge '+(e.st||'');r.bd.textContent=e.st==='ok'?'Tourné':e.st==='no'?'Non tourné':'';
 }
 function count(){var n=0;shots.forEach(function(r){FIELDS.forEach(function(f){if(val(r,f)!==r.orig[f])n++})});var c=document.getElementById('edcnt');c.textContent=n?n+' modif.':'';return n}
-function renderAll(){shots.forEach(render);count()}
+function renderAll(){shots.forEach(render);count();try{document.dispatchEvent(new CustomEvent('lgi:st'))}catch(e){}}
+window.lgiEd={st:function(id){var e=E[id]||{};return e.st||''},setSt:function(id,v){if(!byId[id])return;setE(id,'st',v);render(byId[id]);try{document.dispatchEvent(new CustomEvent('lgi:st'))}catch(e){}}};
 renderAll();
 document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('.edrst');if(!b)return;ev.preventDefault();ev.stopPropagation();var id=b.getAttribute('data-id'),f=b.getAttribute('data-f'),r=byId[id];if(!r)return;setE(id,f,r.orig[f]);render(r);count()},true);
 document.addEventListener('input',function(ev){var t=ev.target;

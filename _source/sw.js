@@ -31,6 +31,7 @@ self.addEventListener('fetch',e=>{const req=e.request;if(req.method!=='GET')retu
   if(u.hostname==='raw.githubusercontent.com'){e.respondWith((async()=>{const c=await caches.open(RUN);const h=await c.match(u.href);if(h)return h;
     const r=await fetch(u.href,{mode:'cors'});if(r.ok)c.put(u.href,r.clone());return r})());return}
   if(u.hostname==='cdn.jsdelivr.net'&&u.pathname.includes('onnxruntime-web')){e.respondWith(cacheFirst(req,RUN));return}
+  if(u.hostname==='cdnjs.cloudflare.com'&&u.pathname.includes('qrcode-generator')){e.respondWith(cacheFirst(req,RUN));return}
   if(u.hostname==='fonts.googleapis.com'||u.hostname==='fonts.gstatic.com'){e.respondWith((async()=>{const c=await caches.open(RUN);const h=await c.match(req);
     const n=fetch(req).then(r=>{c.put(req,r.clone());return r}).catch(()=>h);return h||n})())}
 });

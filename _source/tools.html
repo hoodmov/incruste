@@ -1,0 +1,161 @@
+<style>
+/* ===== Outils plateau sur les fiches : tourné, progression, optiques du jour, calcul optique, nuit rouge, en cours, QR ===== */
+.tg{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tgbtn{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:8px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--soft);color:var(--ink);font:600 .88rem var(--body);cursor:pointer;touch-action:manipulation}
+.tgbtn .ck{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--muted);font-size:.72rem;line-height:1;color:transparent}
+.tgbtn.on{background:var(--key);border-color:var(--key);color:var(--chipfg)}
+.tgbtn.on .ck{border-color:currentColor;background:currentColor;color:var(--key)}
+.qrbtn{min-height:40px;padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--muted);font:600 .8rem var(--body);cursor:pointer;margin-left:auto}
+.shot.done{opacity:.55}
+.shot.done .shot-info .lens{background:color-mix(in srgb,var(--ink) 55%,var(--surface))}
+body.hidedone .shot.done .shot-pic,body.hidedone .shot.done .shot-info>*:not(.plan):not(.tg){display:none}
+body.hidedone .shot.done{grid-template-columns:1fr;opacity:.7}
+/* barre du jour : progression + filtres */
+.daytools{display:grid;gap:10px;margin:14px 0 0}
+.prog{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.prog .bar{flex:1 1 180px;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.prog .bar i{display:block;height:100%;width:0;background:var(--key);border-radius:inherit;transition:width .3s cubic-bezier(.23,1,.32,1)}
+.prog b{font:800 1.3rem/1 var(--display);font-variant-numeric:tabular-nums}
+.prog small{font:500 .74rem var(--mono);color:var(--muted)}
+.prog .hd{min-height:36px;padding:6px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 .8rem var(--body);cursor:pointer}
+.prog .hd.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.lenses{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lenses>span{font:500 .7rem var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:4px}
+.lenses button{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:5px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 .78rem var(--body);cursor:pointer}
+.lenses button i{width:10px;height:10px;border-radius:3px;background:var(--muted)}
+.lenses button i.gm{background:var(--gm)}.lenses button i.fd{background:var(--fd)}.lenses button i.vz{background:var(--vz)}
+.lenses button small{font:500 .72rem var(--mono);color:var(--muted)}
+.lenses button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.lenses button.on small{color:color-mix(in srgb,var(--surface) 70%,transparent)}
+.lensplans{font:500 .78rem/1.6 var(--mono);color:var(--muted)}
+.lensplans a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);margin-right:8px}
+.day.lensf .shot:not(.lensmatch){opacity:.28}
+/* calcul optique */
+.optc{display:grid;grid-template-columns:96px minmax(0,1fr) auto;column-gap:10px;align-items:baseline;margin:0;padding:8px 0 0;border-top:1px solid var(--line);font:500 .8rem/1.55 var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.optc::before{content:"Champ / net";font:500 .7rem/1.9 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+@media (max-width:600px){.optc{grid-template-columns:84px minmax(0,1fr) auto}}
+/* en cours / suivante */
+.nowcard{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin:14px 0 0}
+.nowcard>div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px;display:grid;gap:2px}
+.nowcard em{font:500 .7rem var(--mono);font-style:normal;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.nowcard b{font:800 1.25rem/1.1 var(--display);text-transform:uppercase}
+.nowcard a{color:inherit;text-decoration:none}
+.nowcard small{font:500 .78rem var(--mono);color:var(--muted)}
+.nowcard .late{color:var(--fd)}.nowcard .ahead{color:var(--key)}
+.nowcard>div.now{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+/* QR */
+#qrbox{position:fixed;inset:0;z-index:80;background:rgb(0 0 0 / .6);display:grid;place-items:center;padding:16px}
+#qrbox[hidden]{display:none}
+#qrbox .in{background:var(--surface);color:var(--ink);border-radius:18px;padding:20px;width:min(360px,100%);display:grid;gap:12px;justify-items:center;text-align:center}
+#qrbox h3{margin:0;font:800 1.35rem/1.1 var(--display);text-transform:uppercase}
+#qrbox .code{background:#fff;padding:12px;border-radius:12px;width:100%;aspect-ratio:1;display:grid;place-items:center}
+#qrbox .code svg,#qrbox .code img{width:100%;height:auto;display:block}
+#qrbox p{margin:0;font:500 .76rem var(--mono);color:var(--muted);word-break:break-all}
+#qrbox .row{display:flex;gap:8px;width:100%}
+#qrbox button{flex:1;min-height:42px;border-radius:12px;font:600 .88rem var(--body);cursor:pointer;border:1.5px solid var(--ink);background:var(--surface);color:var(--ink)}
+#qrbox button.pri{background:var(--ink);color:var(--surface)}
+/* mode nuit rouge (hors Incruste live) */
+html.night:not(:has(#lk:not([hidden]))){filter:grayscale(1) brightness(.8)}
+html.night:not(:has(#lk:not([hidden])))::after{content:"";position:fixed;inset:0;background:#ff1500;mix-blend-mode:multiply;pointer-events:none;z-index:2147483646}
+#nightbtn.on{background:#b3170d;color:#fff;border-color:#b3170d}
+</style>
+<div id="qrbox" hidden role="dialog" aria-modal="true" aria-labelledby="qrt"><div class="in"><h3 id="qrt">Partager</h3><div class="code" id="qrimg">Chargement…</div><p id="qrurl"></p><div class="row"><button type="button" id="qrcopy">Copier le lien</button><button type="button" id="qrshare" class="pri">Partager</button></div><button type="button" id="qrclose">Fermer</button></div></div>
+<script>
+(function(){
+var SITE='https://hoodmov.github.io/incruste/';
+function lsG(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsS(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function idOfShot(sh){var b=sh.querySelector('.lkbtn'),p=sh.querySelector('.pic');var s0=(b&&b.dataset.img)||(p&&(p.dataset.ref||p.getAttribute('data-full')))||'';return s0.replace(/^.*\//,'').replace(/\.jpg.*$/,'')}
+function numOf(sh){var n=sh.querySelector('.plan .n');return n?n.textContent.replace(/\D/g,''):''}
+var shots=[].slice.call(document.querySelectorAll('.shot')).filter(function(sh){return !sh.classList.contains('planadd')&&sh.querySelector('.shot-info')});
+/* ancres #plan-28 */
+shots.forEach(function(sh){var n=numOf(sh);if(n&&!document.getElementById('plan-'+n))sh.id='plan-'+n;sh.style.scrollMarginTop='76px'});
+
+/* ---------- 7. Tourné en un appui + progression du jour ---------- */
+function st(id){return window.lgiEd?window.lgiEd.st(id):''}
+shots.forEach(function(sh){if(sh.classList.contains('isref'))return;var info=sh.querySelector('.shot-info'),pl=info.querySelector('.plan');var id=idOfShot(sh);sh.dataset.sid=id;
+  var row=document.createElement('div');row.className='tg';
+  row.innerHTML='<button type="button" class="tgbtn" aria-pressed="false"><span class="ck">✓</span><span class="lb">À tourner</span></button><button type="button" class="qrbtn" aria-label="QR code de ce plan">QR</button>';
+  pl.insertAdjacentElement('afterend',row);
+  row.querySelector('.tgbtn').onclick=function(){if(!window.lgiEd)return;window.lgiEd.setSt(id,st(id)==='ok'?'':'ok')};
+  row.querySelector('.qrbtn').onclick=function(){var n=numOf(sh);openQR(SITE+'#plan-'+n,'Plan #'+n+' · '+(pl.textContent.replace(/^#\d+/,'').replace(/(Tourné|Non tourné)$/,'').trim()))}});
+var days=[].slice.call(document.querySelectorAll('section.day,.day[id^="J"]')).filter(function(d,i,a){return a.indexOf(d)===i&&/^J\d+$/.test(d.id)});
+days.forEach(function(d){var head=d.querySelector('.dayhead');if(!head)return;var box=document.createElement('div');box.className='daytools';
+  box.innerHTML='<div class="prog"><b class="pn">0 / 0</b><small>plans tournés</small><div class="bar"><i></i></div><button type="button" class="hd">Masquer les tournés</button></div><div class="lenses"></div><div class="lensplans" hidden></div>';
+  head.insertAdjacentElement('afterend',box);
+  box.querySelector('.hd').onclick=function(){var on=!document.body.classList.contains('hidedone');document.body.classList.toggle('hidedone',on);lsS('lgi.hidedone',on?'1':'');paint()}});
+if(lsG('lgi.hidedone'))document.body.classList.add('hidedone');
+function paint(){shots.forEach(function(sh){if(!sh.dataset.sid)return;var s=st(sh.dataset.sid),b=sh.querySelector('.tgbtn');var ok=s==='ok';sh.classList.toggle('done',ok);if(b){b.classList.toggle('on',ok);b.setAttribute('aria-pressed',ok?'true':'false');b.querySelector('.lb').textContent=ok?'Tourné':(s==='no'?'Non tourné':'À tourner')}});
+  days.forEach(function(d){var box=d.querySelector('.daytools');if(!box)return;var ss=[].slice.call(d.querySelectorAll('.shot[data-sid]')),n=ss.length,k=ss.filter(function(x){return x.classList.contains('done')}).length;
+    box.querySelector('.pn').textContent=k+' / '+n;box.querySelector('.bar i').style.width=(n?k/n*100:0)+'%';box.querySelector('.hd').classList.toggle('on',document.body.classList.contains('hidedone'))});
+  paintNow()}
+document.addEventListener('lgi:st',paint);
+
+/* ---------- 8. Optiques du jour ---------- */
+days.forEach(function(d){var box=d.querySelector('.daytools');if(!box)return;var map={};
+  [].forEach.call(d.querySelectorAll('.shot[data-sid]'),function(sh){var ch=sh.querySelector('.lens .chip');if(!ch)return;var name=ch.textContent.trim();var cls=(ch.className.match(/\b(gm|fd|vz)\b/)||[''])[0];(map[name]=map[name]||{cls:cls,shots:[]}).shots.push(sh)});
+  var names=Object.keys(map);if(names.length<1)return;var L=box.querySelector('.lenses'),P=box.querySelector('.lensplans');L.innerHTML='<span>Optiques</span>';
+  names.sort(function(a,b){return map[b].shots.length-map[a].shots.length}).forEach(function(nm){var b=document.createElement('button');b.type='button';b.innerHTML='<i class="'+map[nm].cls+'"></i>'+nm.replace(/</g,'&lt;')+' <small>'+map[nm].shots.length+'</small>';
+    b.onclick=function(){var on=!b.classList.contains('on');[].forEach.call(L.querySelectorAll('button'),function(x){x.classList.remove('on')});[].forEach.call(d.querySelectorAll('.lensmatch'),function(x){x.classList.remove('lensmatch')});d.classList.toggle('lensf',on);P.hidden=!on;
+      if(on){b.classList.add('on');map[nm].shots.forEach(function(sh){sh.classList.add('lensmatch')});P.innerHTML=map[nm].shots.map(function(sh){var n=numOf(sh),f=(sh.querySelector('.foc')||{}).textContent||'';return'<a href="#plan-'+n+'">#'+n+' '+f.trim()+'</a>'}).join('')}};
+    L.appendChild(b)})});
+
+/* ---------- 9. Champ et netteté (capteur plein format FX6, UHD 35,7 × 20,1 mm, cercle de confusion 0,03 mm) ---------- */
+function num(t){var m=String(t||'').replace(',', '.').match(/(\d+(?:\.\d+)?)/);return m?parseFloat(m[1]):NaN}
+function fmtM(m){return m>=10?Math.round(m)+' m':m>=1?(Math.round(m*100)/100).toString().replace('.',',')+' m':Math.round(m*100)+' cm'}
+function optcalc(sh){var info=sh.querySelector('.shot-info');if(!info)return;var foc=info.querySelector('.foc'),dd={};[].forEach.call(info.querySelectorAll('.grid > div'),function(x){var t=x.querySelector('dt'),v=x.querySelector('dd');if(t&&v)dd[t.textContent.trim()]=v.textContent});
+  var f=num(foc&&foc.textContent),N=num(dd['Diaph']),D=num(dd['Distance']);var el=info.querySelector('.optc');
+  if(!(f>0&&N>0&&D>0)){if(el)el.remove();return}
+  if(!el){el=document.createElement('p');el.className='optc';var g=info.querySelector('.grid');(g||info.querySelector('.lens')).insertAdjacentElement('afterend',el)}
+  var W=35.7,H=20.08,c=.03,d=D*1000,hov=2*Math.atan(W/(2*f))*180/Math.PI,fw=W*d/f/1000,fh=H*d/f/1000,Hf=f*f/(N*c)+f,near=d*(Hf-f)/(Hf+d-2*f),far=d<Hf-f?d*(Hf-f)/(Hf-d):Infinity;
+  var dof=isFinite(far)?fmtM((far-near)/1000):'∞';
+  var t='Champ '+Math.round(hov)+'° · cadre '+fmtM(fw)+' × '+fmtM(fh)+' · net de '+fmtM(near/1000)+' à '+(isFinite(far)?fmtM(far/1000):'∞')+' ('+dof+')';
+  if(el.textContent!==t)el.textContent=t}
+shots.forEach(optcalc);
+var oT=0;new MutationObserver(function(ms){clearTimeout(oT);oT=setTimeout(function(){shots.forEach(optcalc);paintNow()},250)}).observe(document.querySelector('.wrap')||document.body,{subtree:true,characterData:true,childList:true});
+
+/* ---------- 10. Mode nuit rouge ---------- */
+function setNight(on){document.documentElement.classList.toggle('night',on);if(on)document.documentElement.setAttribute('data-theme','dark');else if(document.documentElement.getAttribute('data-theme')==='dark'&&lsG('lgi.night.theme')!=='dark')document.documentElement.removeAttribute('data-theme');lsS('lgi.night',on?'1':'');var b=document.getElementById('nightbtn');if(b)b.classList.toggle('on',on)}
+var menu=document.getElementById('edmenu');
+function addMenu(id,label,fn){if(!menu)return null;var b=document.createElement('button');b.type='button';b.id=id;b.textContent=label;b.onclick=function(){menu.hidden=true;fn()};menu.insertBefore(b,menu.firstChild);return b}
+addMenu('nightbtn','🔴 Mode nuit (rouge)',function(){setNight(!document.documentElement.classList.contains('night'))});
+addMenu('qrsite','▦ QR code du site',function(){openQR(SITE,'Fiches caméra · La Grande Incruste 3')});
+if(lsG('lgi.night'))setNight(true);
+
+/* ---------- 11. Séquence en cours / suivante (d'après le PDT et l'heure) ---------- */
+function hm(t){var m=String(t).match(/(\d{1,2})[:h](\d{2})/);return m?(+m[1])*60+(+m[2]):null}
+function todayDay(){var now=new Date(),dd=('0'+now.getDate()).slice(-2)+'/'+('0'+(now.getMonth()+1)).slice(-2);var a=[].slice.call(document.querySelectorAll('nav.days a')).filter(function(x){var s=x.querySelector('span');return s&&s.textContent.trim()===dd})[0];return a?document.getElementById(a.getAttribute('href').slice(1)):null}
+function seqTimes(seq){var t=seq.querySelector('.pdtseq b')||seq.querySelector('.pdtseq');if(!t)return null;var m=t.textContent.match(/(\d{1,2}[:h]\d{2})\D+(\d{1,2}[:h]\d{2})/);return m?{a:hm(m[1]),b:hm(m[2]),txt:m[1].replace('h',':')+' → '+m[2].replace('h',':')}:null}
+function fmtD(min){var h=Math.floor(min/60),m=min%60;return h?h+' h '+(m<10?'0':'')+m:m+' min'}
+function paintNow(){var d=todayDay();[].forEach.call(document.querySelectorAll('.nowcard'),function(x){if(!d||!d.contains(x))x.remove()});if(!d)return;
+  var seqs=[].slice.call(d.querySelectorAll('article.seq')).map(function(s){return{el:s,t:seqTimes(s),name:(s.querySelector('h2')||{}).textContent||''}}).filter(function(x){return x.t});if(!seqs.length)return;
+  var now=new Date(),nm=now.getHours()*60+now.getMinutes();
+  var cur=seqs.filter(function(x){return nm>=x.t.a&&nm<x.t.b})[0],nxt=seqs.filter(function(x){return x.t.a>nm})[0];
+  var real=seqs.filter(function(x){var ss=[].slice.call(x.el.querySelectorAll('.shot[data-sid]'));return ss.length&&ss.some(function(s){return !s.classList.contains('done')})})[0];
+  var box=d.querySelector('.nowcard');if(!box){box=document.createElement('div');box.className='nowcard';var dt=d.querySelector('.daytools');(dt||d.querySelector('.dayhead')).insertAdjacentElement('afterend',box)}
+  function anchor(x){var sh=x.el.querySelector('.shot[id]');return sh?'#'+sh.id:'#'+d.id}
+  var h='';
+  if(cur)h+='<div class="now"><em>Prévu maintenant</em><a href="'+anchor(cur)+'"><b>'+cur.name+'</b></a><small>'+cur.t.txt+'</small></div>';
+  else if(nm<seqs[0].t.a)h+='<div><em>Début de journée</em><b>'+seqs[0].name+'</b><small>'+seqs[0].t.txt+' · dans '+fmtD(seqs[0].t.a-nm)+'</small></div>';
+  else if(!nxt)h+='<div><em>Planning</em><b>Dernière séquence passée</b><small>fin prévue '+seqs[seqs.length-1].t.txt.split('→')[1]+'</small></div>';
+  if(nxt)h+='<div><em>Ensuite</em><a href="'+anchor(nxt)+'"><b>'+nxt.name+'</b></a><small>'+nxt.t.txt+' · dans '+fmtD(nxt.t.a-nm)+'</small></div>';
+  if(real&&nm>=seqs[0].t.a){var diff=nm-real.t.a,lab;if(real.t.b<nm){lab='<span class="late">Retard ≈ '+fmtD(nm-real.t.a)+'</span>'}else if(diff<0){lab='<span class="ahead">Avance ≈ '+fmtD(-diff)+'</span>'}else lab='<span>Dans les temps</span>';
+    h+='<div><em>Selon les plans tournés</em><a href="'+anchor(real)+'"><b>'+real.name+'</b></a><small>'+real.t.txt+' · '+lab+'</small></div>'}
+  if(box.innerHTML!==h)box.innerHTML=h}
+setInterval(paintNow,30000);setTimeout(paintNow,2500);
+
+/* ---------- 12. QR codes (bibliothèque chargée à la demande, gardée hors ligne) ---------- */
+var qb=document.getElementById('qrbox'),qc=document.getElementById('qrimg'),qu=document.getElementById('qrurl'),qt=document.getElementById('qrt'),curUrl='';
+function loadQR(){return new Promise(function(ok,ko){if(typeof window.qrcode==='function')return ok();var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';s.onload=ok;s.onerror=function(){ko()};document.head.appendChild(s)})}
+function openQR(url,title){curUrl=url;qt.textContent=title;qu.textContent=url.replace(/^https?:\/\//,'');qc.textContent='Chargement…';qb.hidden=false;document.getElementById('qrshare').hidden=!navigator.share;
+  loadQR().then(function(){var q=window.qrcode(0,'M');q.addData(url);q.make();qc.innerHTML=q.createSvgTag({cellSize:6,margin:2,scalable:true})}).catch(function(){qc.textContent='QR indisponible hors connexion (première fois). Utilise Copier le lien.'})}
+document.getElementById('qrclose').onclick=function(){qb.hidden=true};
+qb.addEventListener('click',function(e){if(e.target===qb)qb.hidden=true});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!qb.hidden)qb.hidden=true});
+document.getElementById('qrcopy').onclick=function(){var b=this;(navigator.clipboard?navigator.clipboard.writeText(curUrl):Promise.reject()).then(function(){b.textContent='Lien copié ✓';setTimeout(function(){b.textContent='Copier le lien'},1600)}).catch(function(){prompt('Lien :',curUrl)})};
+document.getElementById('qrshare').onclick=function(){if(navigator.share)navigator.share({title:qt.textContent,url:curUrl}).catch(function(){})};
+window.lgiQR=openQR;
+
+paint();
+})();
+</script>

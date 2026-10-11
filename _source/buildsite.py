@@ -65,6 +65,7 @@ LIVEKEY=open('/home/claude/livekey.html').read()
 PLANS=open('/home/claude/plans.html').read()
 EDITOR=open('/home/claude/editor.html').read()
 import json as _j
+TOOLS=open('/home/claude/tools.html').read()
 POLISH=open('/home/claude/polish.html').read()
 TEXTES=open('/home/claude/textes.html').read().replace('__TXTMAP__',_j.dumps(_j.load(open('/home/claude/textes_map.json')),ensure_ascii=False))
 page=f'''<title>Fiches caméra Grande Incruste</title>
@@ -170,6 +171,7 @@ nav.days a:focus-visible,.pic:focus-visible,button:focus-visible{{outline:3px so
 {EDITOR}
 {TEXTES}
 {POLISH}
+{TOOLS}
 <script src="diffusion.js"></script>
 <script src="offline.js"></script>
 <script src="pdt.js"></script>
