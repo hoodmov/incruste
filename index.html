@@ -345,7 +345,7 @@ nav.days a:focus-visible,.pic:focus-visible,button:focus-visible{outline:3px sol
 <style>
 .planadd .planmeta{margin:10px 0 0;font-size:.74rem;color:var(--muted,#888)}
 .planadd .plandel{border:0;background:transparent;color:inherit;text-decoration:underline;cursor:pointer;font:inherit;padding:0}
-@media(max-width:480px){#edbar{flex-wrap:wrap;justify-content:center;border-radius:22px}#edbar #edrep{font-size:0;padding-left:12px;padding-right:12px}#edbar #edrep::before{content:'📋';font-size:1rem}}
+@media(max-width:600px){#edbar{flex-wrap:nowrap;gap:4px;padding:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;max-width:calc(100vw - 16px)}#edbar::-webkit-scrollbar{display:none}#edbar>*{flex:0 0 auto}#edbar button{padding:6px 8px;font-size:.76rem;white-space:nowrap}#edbar #edrep{font-size:0;padding-left:10px;padding-right:10px}#edbar #edrep::before{content:'📋';font-size:.95rem}#edbar #edtog,#edbar #plnew,#edbar #edpdt{font-size:0;padding-left:10px;padding-right:10px}#edbar #edtog::before{content:'✎';font-size:.95rem}#edbar #edtog.on::before{content:'✓'}#edbar #edcnt{font-size:.68rem}#edbar #plnew::before{content:'＋';font-size:.95rem}#edbar #edpdt::before{content:'🗓';font-size:.95rem}#edbar #edsync{font-size:.7rem}}
 #pl[hidden]{display:none!important}
 #pl{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.72);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:calc(env(safe-area-inset-top,0px) + 12px) 10px 24px}
 #pl .plbox{background:var(--surface,#222);color:var(--ink,#f2f2f2);border:1px solid var(--line,#444);border-radius:10px;width:100%;max-width:560px;padding:14px;box-sizing:border-box;font:14px var(--body,system-ui)}
