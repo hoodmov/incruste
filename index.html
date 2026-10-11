@@ -910,6 +910,22 @@ window.addEventListener('scroll',function(){var y=window.scrollY,d=y-ly;if(Math.
   if(document.activeElement&&bar.contains(document.activeElement)){ly=y;return}
   show(d<0||end||y<80);ly=y},{passive:true});
 document.addEventListener('mousemove',function(ev){if(hid&&ev.clientY>window.innerHeight-70)show(true)});})();
+
+/* agrandissement : glisser vers le haut ou le bas pour fermer */
+(function(){var lb=document.getElementById('lb'),im=document.getElementById('lbimg'),cl=document.getElementById('lbclose');if(!lb||!im||!cl)return;
+var x0=null,y0=0,dy=0,dx=0,drag=false;
+function reset(anim){im.style.transition=anim?'transform .2s ease':'';im.style.transform='';lb.style.backgroundColor='';lb.style.transition=anim?'background-color .2s ease':''}
+lb.addEventListener('touchstart',function(e){if(e.touches.length!==1)return;x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=dy=0;drag=false;reset(false)},{passive:true});
+lb.addEventListener('touchmove',function(e){if(x0===null||e.touches.length!==1)return;dx=e.touches[0].clientX-x0;dy=e.touches[0].clientY-y0;
+  if(!drag&&Math.abs(dy)>12&&Math.abs(dy)>Math.abs(dx)*1.2)drag=true;
+  if(drag){e.preventDefault();im.style.transform='translateY('+dy+'px) scale('+Math.max(.85,1-Math.abs(dy)/1200)+')';lb.style.backgroundColor='rgba(0,0,0,'+Math.max(.25,.92-Math.abs(dy)/500)+')'}},{passive:false});
+lb.addEventListener('touchend',function(){if(x0===null)return;var go=drag&&Math.abs(dy)>90;x0=null;
+  if(go){im.style.transition='transform .18s ease';im.style.transform='translateY('+(dy>0?1:-1)*window.innerHeight+'px)';setTimeout(function(){cl.click();reset(false)},170)}else reset(true);drag=false});
+/* souris : même geste en glissant verticalement */
+var md=null;im.addEventListener('mousedown',function(e){md={y:e.clientY,x:e.clientX};e.preventDefault()});
+window.addEventListener('mousemove',function(e){if(!md||lb.hidden)return;var d=e.clientY-md.y;if(Math.abs(d)>8){im.style.transform='translateY('+d+'px)';lb.style.backgroundColor='rgba(0,0,0,'+Math.max(.25,.92-Math.abs(d)/500)+')'}});
+window.addEventListener('mouseup',function(e){if(!md)return;var d=e.clientY-md.y;md=null;if(Math.abs(d)>90&&!lb.hidden){cl.click();reset(false)}else reset(true)});
+})();
 </script>
 
 <style>
