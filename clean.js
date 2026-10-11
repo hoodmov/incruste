@@ -23,7 +23,7 @@ var csha=null;
 function readIdx(){return fetch(api('clean.json')+'?ref='+BR+'&t='+Date.now(),{headers:hdr(),cache:'no-store'}).then(function(r){
   if(r.status===404){csha=null;return {}}if(!r.ok)throw new Error('GitHub '+r.status);
   return r.json().then(function(j){csha=j.sha;var d={};try{d=JSON.parse(dec(j.content)).c||{}}catch(e){}return d})})}
-function refreshIdx(){return readIdx().then(function(d){var ch=JSON.stringify(d)!==JSON.stringify(C);C=d;ls('lgi.clean.v1',JSON.stringify(C));if(ch){ui();if(window.lkRefresh)window.lkRefresh()}}).catch(function(){})}
+function refreshIdx(){return readIdx().then(function(d){var ch=JSON.stringify(d)!==JSON.stringify(C);C=d;ls('lgi.clean.v1',JSON.stringify(C));if(ch){ui();decorate();if(window.lkRefresh)window.lkRefresh()}}).catch(function(){})}
 function updIdx(fn,n){n=n||0;return readIdx().then(function(d){fn(d);var body={message:'clean plates',content:enc(JSON.stringify({v:1,c:d})),branch:BR};if(csha)body.sha=csha;
   return fetch(api('clean.json'),{method:'PUT',headers:hdr(),body:JSON.stringify(body)}).then(function(r){
     if((r.status===409||r.status===422)&&n<4)return updIdx(fn,n+1);if(!r.ok)throw new Error('GitHub '+r.status);C=d;ls('lgi.clean.v1',JSON.stringify(C));return d})})}
@@ -31,9 +31,12 @@ function putFile(path,data,n){n=n||0;return fetch(api(path)+'?ref='+BR+'&t='+Dat
   var body={message:path,content:data,branch:BR};if(j&&j.sha)body.sha=j.sha;
   return fetch(api(path),{method:'PUT',headers:hdr(),body:JSON.stringify(body)}).then(function(r){if((r.status===409||r.status===422)&&n<3)return putFile(path,data,n+1);if(!r.ok)throw new Error('GitHub '+r.status)})})}
 
-window.lkMapSrc=function(src){if(!on)return src;var id=idOf(src);if(!id)return src;if(LOC[id])return LOC[id];if(C[id]&&!C[id].del)return RAW+'clean/'+id+'.jpg?v='+C[id].t;return src};
+/* clean plates livrés avec le site (img/clean/NNN.jpg, attribut data-clean) */
+var ST={};[].forEach.call(document.querySelectorAll('.pic[data-clean]'),function(p){var id=idOf(p.getAttribute('data-full'));if(id)ST[id]=p.getAttribute('data-clean')});
+function cleanUrl(id){if(!id)return null;if(LOC[id])return LOC[id];if(C[id]){return C[id].del?(ST[id]||null):RAW+'clean/'+id+'.jpg?v='+C[id].t}return ST[id]||null}
+window.lkMapSrc=function(src){if(!on)return src;var u=cleanUrl(idOf(src));return u||src};
 function cur(){var s=window.lkSrc&&window.lkSrc();return s?{src:s,id:idOf(s)}:null}
-function has(id){return !!(id&&(LOC[id]||(C[id]&&!C[id].del)))}
+function has(id){return !!cleanUrl(id)}
 
 /* ---------- barre dans Incruste live ---------- */
 var css=document.createElement('style');css.textContent=
@@ -64,10 +67,39 @@ fin.onchange=function(){var f=fin.files&&fin.files[0],c=cur();if(!f||!c||!c.id)r
 bdel.onclick=function(){var c=cur();if(!c||!c.id)return;if(!confirm('Supprimer le clean plate de cette réf ?'))return;
   if(LOC[c.id]){URL.revokeObjectURL(LOC[c.id]);delete LOC[c.id]}
   var p=(C[c.id]&&token())?updIdx(function(d){d[c.id]={del:1,t:Date.now()}}):Promise.resolve();
-  p.then(function(){ui();window.lkRefresh&&window.lkRefresh()}).catch(function(e){alert('Suppression : '+e.message)})};
+  p.then(function(){ui();decorate();window.lkRefresh&&window.lkRefresh()}).catch(function(e){alert('Suppression : '+e.message)})};
 document.getElementById('cpmk').onclick=function(){var c=cur();if(c&&c.id)openEd(c)};
 /* mise à jour quand Incruste live s'ouvre */
 new MutationObserver(function(){if(!lk.hidden){ui();refreshIdx()}}).observe(lk,{attributes:true,attributeFilter:['hidden']});
+
+/* ---------- dans le document : flèche (ou glisser) pour passer de la réf au clean ---------- */
+var css2=document.createElement('style');css2.textContent=
+'.shot-pic{position:relative}.cpsw{position:absolute;right:6px;z-index:3;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.55);color:#fff;font:700 1.2rem/1 var(--body,system-ui);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}'+
+'.cpsw:hover{background:rgba(0,0,0,.8)}.cpsw.on{background:#3ddc84;color:#06120c;border-color:#3ddc84}'+
+'.shot-pic .pic{touch-action:pan-y}.shot-pic .pic img{-webkit-user-drag:none;user-select:none}.cpbadge{position:absolute;left:8px;top:8px;z-index:2;padding:3px 7px;border-radius:4px;background:#3ddc84;color:#06120c;font:700 .66rem var(--body,system-ui);letter-spacing:.06em;pointer-events:none}.cpbadge[hidden]{display:none}';
+document.head.appendChild(css2);
+function place(sp){var p=sp.querySelector('.pic'),b=sp.querySelector('.cpsw');if(p&&b)b.style.top=(p.offsetTop+p.offsetHeight/2)+'px'}
+function setPic(p,clean){var img=p.querySelector('img');if(!img)return;if(!p.dataset.ref)p.dataset.ref=p.getAttribute('data-full');
+  var id=idOf(p.dataset.ref),u=clean?cleanUrl(id):null;var src=u||p.dataset.ref;
+  img.src=src;p.setAttribute('data-full',src);p.dataset.showing=u?'clean':'ref';
+  var bd=p.querySelector('.cpbadge');if(bd)bd.hidden=!u;var b=p.parentNode.querySelector('.cpsw');
+  if(b){b.classList.toggle('on',!!u);b.textContent=u?'\u2039':'\u203a';b.title=u?'Revenir à la réf':'Voir le clean plate';b.setAttribute('aria-label',b.title)}}
+function decorate(){[].forEach.call(document.querySelectorAll('.shot-pic'),function(sp){var p=sp.querySelector('.pic');if(!p)return;
+  var id=idOf(p.dataset.ref||p.getAttribute('data-full')),u=cleanUrl(id),b=sp.querySelector('.cpsw');
+  if(!u){if(b){setPic(p,false);b.remove();var bd0=p.querySelector('.cpbadge');if(bd0)bd0.remove()}return}
+  if(!b){b=document.createElement('button');b.type='button';b.className='cpsw';sp.appendChild(b);
+    var bd=document.createElement('span');bd.className='cpbadge';bd.textContent='CLEAN';bd.hidden=true;p.appendChild(bd);
+    b.addEventListener('click',function(e){e.stopPropagation();setPic(p,p.dataset.showing!=='clean')});
+    /* glisser horizontalement sur l'image = basculer */
+    var x0=null,moved=false;
+    p.addEventListener('pointerdown',function(e){x0=e.clientX;moved=false});
+    p.addEventListener('pointerup',function(e){if(x0!==null&&Math.abs(e.clientX-x0)>40){moved=true;setPic(p,p.dataset.showing!=='clean')}x0=null});
+    sp.addEventListener('click',function(e){if(moved&&p.contains(e.target)){e.stopPropagation();e.preventDefault();moved=false}},true);
+    var im=p.querySelector('img');if(im){im.draggable=false;im.addEventListener('load',function(){place(sp)})}
+    p.addEventListener('pointercancel',function(){x0=null})}
+  setPic(p,p.dataset.showing==='clean');place(sp)})}
+window.addEventListener('resize',function(){[].forEach.call(document.querySelectorAll('.shot-pic'),place)});
+decorate();if(Object.keys(C).length||true)refreshIdx();
 ui();
 
 /* ---------- utilitaires image ---------- */
@@ -75,7 +107,7 @@ function loadImage(src){return new Promise(function(ok,ko){var im=new Image();im
 function toBlob(cv,q){return new Promise(function(ok){cv.toBlob(ok,'image/jpeg',q||.92)})}
 /* enregistre le résultat : local tout de suite, puis partagé si un jeton GitHub est présent */
 function finish(id,cv,st){st=st||function(){};
-  return toBlob(cv,.92).then(function(blob){if(LOC[id])URL.revokeObjectURL(LOC[id]);LOC[id]=URL.createObjectURL(blob);on=true;ls('lgi.clean.on','1');ui();window.lkRefresh&&window.lkRefresh();
+  return toBlob(cv,.92).then(function(blob){if(LOC[id])URL.revokeObjectURL(LOC[id]);LOC[id]=URL.createObjectURL(blob);on=true;ls('lgi.clean.on','1');ui();decorate();window.lkRefresh&&window.lkRefresh();
     if(!token()){st('Clean plate actif sur cet appareil. (Pour le partager avec les autres appareils, active la synchro dans le menu.)');return 'local'}
     st('Envoi sur GitHub…');var t=Date.now();
     return b64(blob).then(function(d){return putFile('clean/'+id+'.jpg',d)}).then(function(){return updIdx(function(d){d[id]={t:t}})}).then(function(){st('Clean plate enregistré et partagé ✓');return 'ok'})
