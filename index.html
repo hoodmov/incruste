@@ -1,6 +1,6 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Fiches caméra Grande Incruste</title>
 <meta property="og:title" content="La Grande Incruste 3 – Fiches caméra"><meta property="og:description" content="Optique, focale, distance, hauteur et lumière pour chaque plan, J1 à J11."><meta property="og:image" content="https://hoodmov.github.io/incruste/img/001.jpg">
-<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#111111"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Incruste"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#eceeed" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0e1211" media="(prefers-color-scheme: dark)"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Incruste"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
 /* Layout : feuille de service caméra — rail de jours collant, une fiche par ref (screen en grand, puis réglages FX6 et lumière) */
@@ -341,7 +341,7 @@ nav.days a:focus-visible,.pic:focus-visible,button:focus-visible{outline:3px sol
 <div class="light"><h4>Lumière</h4><p>Hiver : soleil bas en contre arrière gauche, face douce, intérieur sombre, extérieur surexposé.</p><p class="ratio"><span>Ratio ≈ 2:1 (1 IL) · Key : face douce · Contre : oui, soleil bas arrière gauche cadre</span></p></div><p class="read"><b>Lecture du screen :</b> Filmée depuis la vitre, volant net.</p><p class="vfx">Tournage XR</p><p class="lfx"><span class="lfxv">—</span></p></div></div></article></section>
 </div>
 <div id="vb" hidden role="dialog" aria-modal="true" aria-label="Vidéo de référence"><div class="bar"><p id="vbcap"></p><button id="vbclose" type="button">Fermer</button></div><video id="vbvid" controls playsinline preload="none"></video></div>
-<div id="lb" hidden role="dialog" aria-modal="true" aria-label="Ref en grand"><div class="bar"><button id="lbprev" type="button">◀</button><p id="lbcap"></p><button id="lbnext" type="button">▶</button><button id="lbclose" type="button">Fermer</button></div><img id="lbimg" alt=""></div>
+<div id="lb" hidden role="dialog" aria-modal="true" aria-label="Ref en grand"><div class="bar"><button id="lbprev" type="button" aria-label="Image précédente">◀</button><p id="lbcap"></p><button id="lbnext" type="button" aria-label="Image suivante">▶</button><button id="lbclose" type="button">Fermer</button></div><img id="lbimg" alt=""></div>
 <style>
 .planadd .planmeta{margin:10px 0 0;font-size:.74rem;color:var(--muted,#888)}
 .planadd .plandel{border:0;background:transparent;color:inherit;text-decoration:underline;cursor:pointer;font:inherit;padding:0}
@@ -1071,6 +1071,13 @@ nav.days a.today::after{content:"Auj.";position:absolute;top:-7px;right:-4px;fon
 
 /* Boutons vidéo + texte : même alignement quand ils passent à la ligne */
 .vidbtn{margin-right:8px}.vidbtn+.txtbtn{margin-left:0}
+
+/* Tactile : pas de délai de double-tap, pas de rebond qui fait défiler la page sous un overlay */
+button,a,.pic,summary,[role="button"]{touch-action:manipulation}
+#lb,#vb,#tx,#lv,#lk,#rp,#pl,#cp,.txbody{overscroll-behavior:contain}
+/* Passage ref <-> clean : fondu court (le flou masque l'échange d'images) */
+.pic img{transition:opacity .16s ease,filter .16s ease,transform .25s}
+.pic img.swp{opacity:.35;filter:blur(3px)}
 
 /* Pression : retour immédiat sur tout ce qui se clique */
 button,nav.days a,.pic,.txtbtn,.lkbtn,summary{transition:transform .16s var(--ease-out),background-color .18s ease,border-color .18s ease,color .18s ease,opacity .18s ease}

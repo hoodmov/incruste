@@ -21,6 +21,13 @@ nav.days a.today::after{content:"Auj.";position:absolute;top:-7px;right:-4px;fon
 /* Boutons vidéo + texte : même alignement quand ils passent à la ligne */
 .vidbtn{margin-right:8px}.vidbtn+.txtbtn{margin-left:0}
 
+/* Tactile : pas de délai de double-tap, pas de rebond qui fait défiler la page sous un overlay */
+button,a,.pic,summary,[role="button"]{touch-action:manipulation}
+#lb,#vb,#tx,#lv,#lk,#rp,#pl,#cp,.txbody{overscroll-behavior:contain}
+/* Passage ref <-> clean : fondu court (le flou masque l'échange d'images) */
+.pic img{transition:opacity .16s ease,filter .16s ease,transform .25s}
+.pic img.swp{opacity:.35;filter:blur(3px)}
+
 /* Pression : retour immédiat sur tout ce qui se clique */
 button,nav.days a,.pic,.txtbtn,.lkbtn,summary{transition:transform .16s var(--ease-out),background-color .18s ease,border-color .18s ease,color .18s ease,opacity .18s ease}
 button:not(:disabled):active,nav.days a:active,.txtbtn:active,.lkbtn:active{transform:scale(.97)}

@@ -69,7 +69,7 @@ POLISH=open('/home/claude/polish.html').read()
 TEXTES=open('/home/claude/textes.html').read().replace('__TXTMAP__',_j.dumps(_j.load(open('/home/claude/textes_map.json')),ensure_ascii=False))
 page=f'''<title>Fiches caméra Grande Incruste</title>
 <meta property="og:title" content="La Grande Incruste 3 – Fiches caméra"><meta property="og:description" content="Optique, focale, distance, hauteur et lumière pour chaque plan, J1 à J11."><meta property="og:image" content="img/001.jpg">
-<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#111111"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Incruste"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#eceeed" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0e1211" media="(prefers-color-scheme: dark)"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Incruste"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
 /* Layout : feuille de service caméra — rail de jours collant, une fiche par ref (screen en grand, puis réglages FX6 et lumière) */
@@ -164,7 +164,7 @@ nav.days a:focus-visible,.pic:focus-visible,button:focus-visible{{outline:3px so
 {''.join(body)}
 </div>
 <div id="vb" hidden role="dialog" aria-modal="true" aria-label="Vidéo de référence"><div class="bar"><p id="vbcap"></p><button id="vbclose" type="button">Fermer</button></div><video id="vbvid" controls playsinline preload="none"></video></div>
-<div id="lb" hidden role="dialog" aria-modal="true" aria-label="Ref en grand"><div class="bar"><button id="lbprev" type="button">◀</button><p id="lbcap"></p><button id="lbnext" type="button">▶</button><button id="lbclose" type="button">Fermer</button></div><img id="lbimg" alt=""></div>
+<div id="lb" hidden role="dialog" aria-modal="true" aria-label="Ref en grand"><div class="bar"><button id="lbprev" type="button" aria-label="Image précédente">◀</button><p id="lbcap"></p><button id="lbnext" type="button" aria-label="Image suivante">▶</button><button id="lbclose" type="button">Fermer</button></div><img id="lbimg" alt=""></div>
 {PLANS}
 {LIVEKEY}
 {EDITOR}

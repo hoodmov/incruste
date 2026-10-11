@@ -82,7 +82,8 @@ document.head.appendChild(css2);
 function place(sp){var p=sp.querySelector('.pic'),b=sp.querySelector('.cpsw');if(p&&b)b.style.top=(p.offsetTop+p.offsetHeight/2)+'px'}
 function setPic(p,clean){var img=p.querySelector('img');if(!img)return;if(!p.dataset.ref)p.dataset.ref=p.getAttribute('data-full');
   var id=idOf(p.dataset.ref),u=clean?cleanUrl(id):null;var src=u||p.dataset.ref;
-  img.src=src;p.setAttribute('data-full',src);p.dataset.showing=u?'clean':'ref';
+  p.setAttribute('data-full',src);p.dataset.showing=u?'clean':'ref';
+  if(img.getAttribute('src')!==src){img.classList.add('swp');var pre=new Image();pre.onload=pre.onerror=function(){img.src=src;requestAnimationFrame(function(){img.classList.remove('swp')})};pre.src=src}
   var bd=p.querySelector('.cpbadge');if(bd)bd.hidden=!u;var b=p.parentNode.querySelector('.cpsw');
   if(b){b.classList.toggle('on',!!u);b.textContent=u?'\u2039':'\u203a';b.title=u?'Revenir à la réf':'Voir le clean plate';b.setAttribute('aria-label',b.title)}}
 function decorate(){[].forEach.call(document.querySelectorAll('.shot-pic'),function(sp){var p=sp.querySelector('.pic');if(!p)return;
