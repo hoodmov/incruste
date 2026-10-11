@@ -583,7 +583,8 @@ M.shapes.concat(M.cur?[M.cur]:[]).forEach(function(s){if(s.pts.length<2&&s.t!=='
 if(M.inv){c.setLineDash([]);c.fillStyle='#00e5ff';c.font='600 12px system-ui';c.fillText('masque inversé',8,16)}}
 function setMsg(t){if(t){msg.textContent=t;msg.hidden=false}else msg.hidden=true}
 function loadBg(src,cb){lastSrc=src;var im=new Image();im.crossOrigin='anonymous';im.onload=function(){bgImg=im;var w=im.naturalWidth,h=im.naturalHeight,m=1280;if(w>m){h=Math.round(h*m/w);w=m}cv.width=w;cv.height=h;M.dirty=true;
-gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texBg);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,im);cb&&cb()};im.onerror=function(){setMsg("Image de réf introuvable.")};im.src=src}
+gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texBg);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,im);cb&&cb()};im.onerror=function(){setMsg("Image de réf introuvable.")};im.src=(window.lkMapSrc&&window.lkMapSrc(src))||src}
+window.lkRefresh=function(){if(!lk.hidden&&bgMode==='img'&&lastSrc)loadBg(lastSrc)};window.lkSrc=function(){return lk.hidden?null:lastSrc};
 function stopStream(){if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}if(vid){vid.srcObject=null}}
 function startCam(id){stopStream();if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setMsg("La caméra n'est pas accessible dans ce cadre. Ouvre le lien du site directement dans Safari ou Chrome (pas dans une appli) et autorise la caméra.");return}
 var v={width:{ideal:1920},height:{ideal:1080}};if(id)v.deviceId={exact:id};else v.facingMode='environment';
@@ -972,6 +973,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!tx.hidden)
 <script src="diffusion.js"></script>
 <script src="offline.js"></script>
 <script src="pdt.js"></script>
+<script src="clean.js"></script>
 <script>
 (function(){
 var pics=[].slice.call(document.querySelectorAll('.pic')),lb=document.getElementById('lb'),im=document.getElementById('lbimg'),cap=document.getElementById('lbcap'),i=0,last=null;
