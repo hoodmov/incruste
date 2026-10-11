@@ -69,14 +69,14 @@ POLISH=open('/home/claude/polish.html').read()
 TEXTES=open('/home/claude/textes.html').read().replace('__TXTMAP__',_j.dumps(_j.load(open('/home/claude/textes_map.json')),ensure_ascii=False))
 page=f'''<title>Fiches caméra Grande Incruste</title>
 <meta property="og:title" content="La Grande Incruste 3 – Fiches caméra"><meta property="og:description" content="Optique, focale, distance, hauteur et lumière pour chaque plan, J1 à J11."><meta property="og:image" content="img/001.jpg">
-<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#eceeed" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0e1211" media="(prefers-color-scheme: dark)"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Incruste"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#ecebe6" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#101010" media="(prefers-color-scheme: dark)"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Incruste"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
 /* Layout : feuille de service caméra — rail de jours collant, une fiche par ref (screen en grand, puis réglages FX6 et lumière) */
-:root{{--bg:#eceeed;--surface:#ffffff;--ink:#141817;--muted:#5b6563;--line:#d2d8d6;--key:#0f8a52;--gm:#c75f12;--fd:#b8232b;--vz:#2f62c4;--chipfg:#ffffff;
---display:"Barlow Condensed","Arial Narrow",sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}}
-@media (prefers-color-scheme:dark){{:root:not([data-theme="light"]){{--bg:#0e1211;--surface:#171c1b;--ink:#e7ebe9;--muted:#9aa5a2;--line:#2a3331;--key:#3cc583;--gm:#f08a3c;--fd:#e8595f;--vz:#7099f0;--chipfg:#0e1211;color-scheme:dark}}}}
-:root[data-theme="dark"]{{--bg:#0e1211;--surface:#171c1b;--ink:#e7ebe9;--muted:#9aa5a2;--line:#2a3331;--key:#3cc583;--gm:#f08a3c;--fd:#e8595f;--vz:#7099f0;--chipfg:#0e1211;color-scheme:dark}}
+:root{{--bg:#ecebe6;--surface:#ffffff;--ink:#141414;--muted:#66655f;--line:#e2e1db;--key:#0f8a52;--gm:#c75f12;--fd:#b8232b;--vz:#2f62c4;--chipfg:#ffffff;
+--display:"Big Shoulders Display","Barlow Condensed","Arial Narrow",sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}}
+@media (prefers-color-scheme:dark){{:root:not([data-theme="light"]){{--bg:#101010;--surface:#1a1a19;--ink:#efeee9;--muted:#9d9c96;--line:#2e2e2b;--key:#3cc583;--gm:#f08a3c;--fd:#e8595f;--vz:#7099f0;--chipfg:#0e1211;color-scheme:dark}}}}
+:root[data-theme="dark"]{{--bg:#101010;--surface:#1a1a19;--ink:#efeee9;--muted:#9d9c96;--line:#2e2e2b;--key:#3cc583;--gm:#f08a3c;--fd:#e8595f;--vz:#7099f0;--chipfg:#0e1211;color-scheme:dark}}
 *{{box-sizing:border-box}}
 body{{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);margin:0}}
 .wrap{{max-width:1760px;margin:0 auto;padding-inline:clamp(16px,2.5vw,48px);padding-block:20px 60px}}

@@ -57,6 +57,57 @@ a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,t
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;scroll-behavior:auto!important}}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+/* ===== Direction D (mix Feuille de service + Clap) : habillage seul, le balisage ne change pas ===== */
+:root{--soft:color-mix(in srgb,var(--ink) 5%,var(--surface));--r-card:18px;--r-ctl:12px}
+h1,h2,h3,.dt,.jn,.foc{font-family:var(--display)}
+.seq h2{font-weight:900;letter-spacing:.01em}
+.dayhead{border-bottom-width:3px}
+.jn{border-radius:8px;font-weight:900}
+.dt{font-weight:800}
+/* carte */
+.shot{padding:0;gap:0;border:0;border-radius:var(--r-card);overflow:hidden;background:var(--surface);box-shadow:0 1px 0 color-mix(in srgb,var(--ink) 5%,transparent),0 14px 34px -18px color-mix(in srgb,var(--ink) 35%,transparent);margin-top:16px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .shot{box-shadow:0 0 0 1px var(--line)}}
+:root[data-theme="dark"] .shot{box-shadow:0 0 0 1px var(--line)}
+.shot-pic{background:#000;display:flex;flex-direction:column;position:relative}
+.shot-pic .pic{border-radius:0;flex:1;display:flex;align-items:center}
+.shot-pic .pic img{max-height:70vh}
+.shot-pic .lkbtn{margin:0;border-radius:0;border:0;border-top:1px solid #222;background:#111;color:#fff;font:600 .9rem var(--body);padding:12px;width:100%;display:flex;justify-content:center;align-items:center;gap:6px}
+.shot-info{padding:16px 18px 18px;gap:12px}
+.shot.isref{background:var(--surface);box-shadow:0 0 0 2px color-mix(in srgb,var(--muted) 45%,transparent) inset;border:0}
+/* plan + focale en pastille */
+.plan .n{font:600 .74rem var(--mono);color:var(--fd)}
+.lens{background:var(--ink);color:var(--surface);border-radius:14px;padding:10px 14px;justify-content:space-between;flex-wrap:nowrap}
+.lens .foc{order:-1;font-weight:900;font-size:clamp(2.2rem,4vw,2.8rem);line-height:.9;white-space:nowrap}
+.lens .chip{border-radius:6px;font:600 .7rem var(--mono);letter-spacing:.04em;white-space:nowrap}
+.lens .chip.ref{background:color-mix(in srgb,var(--surface) 20%,transparent);color:var(--surface)}
+/* réglages en pastilles */
+.grid{gap:8px;background:transparent;border:0;border-radius:0;overflow:visible}
+.grid div{background:var(--soft);border-radius:var(--r-ctl);padding:8px 12px}
+.grid dt{font:500 .64rem var(--mono);letter-spacing:.08em}
+.grid dd{font:600 1.12rem var(--body);font-variant-numeric:tabular-nums}
+/* lignes de régie : Lumière / Face match / Lecture / VFX / Note lumière */
+.light,.read,.vfx,.lfx{display:grid;grid-template-columns:96px minmax(0,1fr) auto;column-gap:10px;align-items:baseline;margin:0;padding:8px 0 0;border:0;border-top:1px solid var(--line)}
+.light{padding-top:0;row-gap:0}
+.light h4,.light .ratio::before,.vfx::before,.lfx::before,.read b{font:500 .64rem/1.9 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.light h4{grid-column:1;padding-top:8px}
+.light>p:not(.ratio){grid-column:2;margin:0;padding-top:8px;font-size:.92rem;line-height:1.45}
+.light>.edrst{grid-column:3}
+.light .ratio{grid-column:1/-1;display:grid;grid-template-columns:96px minmax(0,1fr) auto;column-gap:10px;align-items:baseline;margin:8px 0 0;padding:8px 0 0;border-top:1px solid var(--line);border-radius:0;background:none;font:500 .78rem/1.55 var(--mono)}
+.light .ratio::before{content:"Face match";font-weight:500}
+.read{font-size:.88rem}
+.read b{font-weight:500}
+.vfx::before{content:"Note VFX"}
+.vfx{font:500 .82rem var(--body);color:var(--ink)}
+.lfx::before{content:"Note lumière"}
+.lfx{font:500 .82rem var(--body);color:var(--ink)}
+.lfx.empty{opacity:.5}
+/* boutons de séquence */
+.vidbtn,.txtbtn{border-radius:var(--r-ctl);border:1.5px solid var(--ink);color:var(--ink);background:var(--surface)}
+.vidbtn .pl,.txtbtn .pl{background:var(--ink);color:var(--surface)}
+@media (hover:hover) and (pointer:fine){.vidbtn:hover,.txtbtn:hover{background:var(--soft);border-color:var(--ink)}.shot-pic .lkbtn:hover{background:#1c1c1c}}
+/* téléphone : images pleine largeur (demandé), carte à bords droits */
+@media (max-width:760px){.shot-pic .pic img{max-height:none}}
+@media (max-width:600px){.shot{border-radius:0;margin-inline:-12px;box-shadow:none;border-block:1px solid var(--line)}.shot-info{padding:14px 12px 4px}.shot-pic .lkbtn{margin:0}.light,.read,.vfx,.lfx,.light .ratio{grid-template-columns:84px minmax(0,1fr) auto}}
 </style>
 <script>
 (function(){

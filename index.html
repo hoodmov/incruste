@@ -1,13 +1,13 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Fiches caméra Grande Incruste</title>
 <meta property="og:title" content="La Grande Incruste 3 – Fiches caméra"><meta property="og:description" content="Optique, focale, distance, hauteur et lumière pour chaque plan, J1 à J11."><meta property="og:image" content="https://hoodmov.github.io/incruste/img/001.jpg">
-<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#eceeed" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#0e1211" media="(prefers-color-scheme: dark)"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Incruste"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#ecebe6" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#101010" media="(prefers-color-scheme: dark)"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Incruste"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
 /* Layout : feuille de service caméra — rail de jours collant, une fiche par ref (screen en grand, puis réglages FX6 et lumière) */
-:root{--bg:#eceeed;--surface:#ffffff;--ink:#141817;--muted:#5b6563;--line:#d2d8d6;--key:#0f8a52;--gm:#c75f12;--fd:#b8232b;--vz:#2f62c4;--chipfg:#ffffff;
---display:"Barlow Condensed","Arial Narrow",sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1211;--surface:#171c1b;--ink:#e7ebe9;--muted:#9aa5a2;--line:#2a3331;--key:#3cc583;--gm:#f08a3c;--fd:#e8595f;--vz:#7099f0;--chipfg:#0e1211;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0e1211;--surface:#171c1b;--ink:#e7ebe9;--muted:#9aa5a2;--line:#2a3331;--key:#3cc583;--gm:#f08a3c;--fd:#e8595f;--vz:#7099f0;--chipfg:#0e1211;color-scheme:dark}
+:root{--bg:#ecebe6;--surface:#ffffff;--ink:#141414;--muted:#66655f;--line:#e2e1db;--key:#0f8a52;--gm:#c75f12;--fd:#b8232b;--vz:#2f62c4;--chipfg:#ffffff;
+--display:"Big Shoulders Display","Barlow Condensed","Arial Narrow",sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101010;--surface:#1a1a19;--ink:#efeee9;--muted:#9d9c96;--line:#2e2e2b;--key:#3cc583;--gm:#f08a3c;--fd:#e8595f;--vz:#7099f0;--chipfg:#0e1211;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101010;--surface:#1a1a19;--ink:#efeee9;--muted:#9d9c96;--line:#2e2e2b;--key:#3cc583;--gm:#f08a3c;--fd:#e8595f;--vz:#7099f0;--chipfg:#0e1211;color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);margin:0}
 .wrap{max-width:1760px;margin:0 auto;padding-inline:clamp(16px,2.5vw,48px);padding-block:20px 60px}
@@ -1108,6 +1108,57 @@ a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,t
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;scroll-behavior:auto!important}}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+/* ===== Direction D (mix Feuille de service + Clap) : habillage seul, le balisage ne change pas ===== */
+:root{--soft:color-mix(in srgb,var(--ink) 5%,var(--surface));--r-card:18px;--r-ctl:12px}
+h1,h2,h3,.dt,.jn,.foc{font-family:var(--display)}
+.seq h2{font-weight:900;letter-spacing:.01em}
+.dayhead{border-bottom-width:3px}
+.jn{border-radius:8px;font-weight:900}
+.dt{font-weight:800}
+/* carte */
+.shot{padding:0;gap:0;border:0;border-radius:var(--r-card);overflow:hidden;background:var(--surface);box-shadow:0 1px 0 color-mix(in srgb,var(--ink) 5%,transparent),0 14px 34px -18px color-mix(in srgb,var(--ink) 35%,transparent);margin-top:16px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .shot{box-shadow:0 0 0 1px var(--line)}}
+:root[data-theme="dark"] .shot{box-shadow:0 0 0 1px var(--line)}
+.shot-pic{background:#000;display:flex;flex-direction:column;position:relative}
+.shot-pic .pic{border-radius:0;flex:1;display:flex;align-items:center}
+.shot-pic .pic img{max-height:70vh}
+.shot-pic .lkbtn{margin:0;border-radius:0;border:0;border-top:1px solid #222;background:#111;color:#fff;font:600 .9rem var(--body);padding:12px;width:100%;display:flex;justify-content:center;align-items:center;gap:6px}
+.shot-info{padding:16px 18px 18px;gap:12px}
+.shot.isref{background:var(--surface);box-shadow:0 0 0 2px color-mix(in srgb,var(--muted) 45%,transparent) inset;border:0}
+/* plan + focale en pastille */
+.plan .n{font:600 .74rem var(--mono);color:var(--fd)}
+.lens{background:var(--ink);color:var(--surface);border-radius:14px;padding:10px 14px;justify-content:space-between;flex-wrap:nowrap}
+.lens .foc{order:-1;font-weight:900;font-size:clamp(2.2rem,4vw,2.8rem);line-height:.9;white-space:nowrap}
+.lens .chip{border-radius:6px;font:600 .7rem var(--mono);letter-spacing:.04em;white-space:nowrap}
+.lens .chip.ref{background:color-mix(in srgb,var(--surface) 20%,transparent);color:var(--surface)}
+/* réglages en pastilles */
+.grid{gap:8px;background:transparent;border:0;border-radius:0;overflow:visible}
+.grid div{background:var(--soft);border-radius:var(--r-ctl);padding:8px 12px}
+.grid dt{font:500 .64rem var(--mono);letter-spacing:.08em}
+.grid dd{font:600 1.12rem var(--body);font-variant-numeric:tabular-nums}
+/* lignes de régie : Lumière / Face match / Lecture / VFX / Note lumière */
+.light,.read,.vfx,.lfx{display:grid;grid-template-columns:96px minmax(0,1fr) auto;column-gap:10px;align-items:baseline;margin:0;padding:8px 0 0;border:0;border-top:1px solid var(--line)}
+.light{padding-top:0;row-gap:0}
+.light h4,.light .ratio::before,.vfx::before,.lfx::before,.read b{font:500 .64rem/1.9 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.light h4{grid-column:1;padding-top:8px}
+.light>p:not(.ratio){grid-column:2;margin:0;padding-top:8px;font-size:.92rem;line-height:1.45}
+.light>.edrst{grid-column:3}
+.light .ratio{grid-column:1/-1;display:grid;grid-template-columns:96px minmax(0,1fr) auto;column-gap:10px;align-items:baseline;margin:8px 0 0;padding:8px 0 0;border-top:1px solid var(--line);border-radius:0;background:none;font:500 .78rem/1.55 var(--mono)}
+.light .ratio::before{content:"Face match";font-weight:500}
+.read{font-size:.88rem}
+.read b{font-weight:500}
+.vfx::before{content:"Note VFX"}
+.vfx{font:500 .82rem var(--body);color:var(--ink)}
+.lfx::before{content:"Note lumière"}
+.lfx{font:500 .82rem var(--body);color:var(--ink)}
+.lfx.empty{opacity:.5}
+/* boutons de séquence */
+.vidbtn,.txtbtn{border-radius:var(--r-ctl);border:1.5px solid var(--ink);color:var(--ink);background:var(--surface)}
+.vidbtn .pl,.txtbtn .pl{background:var(--ink);color:var(--surface)}
+@media (hover:hover) and (pointer:fine){.vidbtn:hover,.txtbtn:hover{background:var(--soft);border-color:var(--ink)}.shot-pic .lkbtn:hover{background:#1c1c1c}}
+/* téléphone : images pleine largeur (demandé), carte à bords droits */
+@media (max-width:760px){.shot-pic .pic img{max-height:none}}
+@media (max-width:600px){.shot{border-radius:0;margin-inline:-12px;box-shadow:none;border-block:1px solid var(--line)}.shot-info{padding:14px 12px 4px}.shot-pic .lkbtn{margin:0}.light,.read,.vfx,.lfx,.light .ratio{grid-template-columns:84px minmax(0,1fr) auto}}
 </style>
 <script>
 (function(){
