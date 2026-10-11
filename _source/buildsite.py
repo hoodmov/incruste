@@ -1,4 +1,11 @@
 import os
+from PIL import Image as _Im
+def _wh(src):
+    try:
+        w,h=_Im.open('/home/claude/incruste/'+src.split('?')[0]).size
+        return f' width="{w}" height="{h}"'
+    except Exception:
+        return ''
 import html, collections, re
 exec(open('/home/claude/data.py').read()); D=build()
 exec(open('/home/claude/ratios_data.py').read())
@@ -40,7 +47,7 @@ for d in D:
         if s['name'] in VIDEOS: body.append(f'<button class="vidbtn" type="button" data-src="vid/{VIDEOS[s["name"]]}.mp4" data-cap="Vidéo de référence · {E(s["name"])}"><span class="pl">▶</span> Voir la vidéo de référence</button>')
         for qi,x in enumerate(s['shots']):
             cap=(f'RÉFÉRENCE (non tournée) · {s["name"]} · {x["plan"]}' if x['ref'] else f'#{x["n"]} · {s["name"]} · {x["plan"]}')
-            pic=f'<button class="pic" type="button" data-full="{x["img"]}"{(" data-clean=\""+x["img"].replace("img/","img/clean/")+"?v="+__import__("hashlib").md5(open("/home/claude/incruste/"+x["img"].replace("img/","img/clean/"),"rb").read()).hexdigest()[:8]+"\"") if os.path.exists("/home/claude/incruste/"+x["img"].replace("img/","img/clean/")) else ""} data-cap="{E(cap)}" aria-label="Agrandir l&#39;image"><img src="{x["img"]}" alt="{E(cap)}" loading="lazy"><span class="zoom">Agrandir</span></button><button class="lkbtn" type="button" data-img="{x["img"]}" data-cap="{E(cap)}"{(" data-vid=\"vid/"+VIDEOS[s["name"]]+".mp4\"") if s["name"] in VIDEOS else ""}>◉ Incruste live</button>'
+            pic=f'<button class="pic" type="button" data-full="{x["img"]}"{(" data-clean=\""+x["img"].replace("img/","img/clean/")+"?v="+__import__("hashlib").md5(open("/home/claude/incruste/"+x["img"].replace("img/","img/clean/"),"rb").read()).hexdigest()[:8]+"\"") if os.path.exists("/home/claude/incruste/"+x["img"].replace("img/","img/clean/")) else ""} data-cap="{E(cap)}" aria-label="Agrandir l&#39;image"><img src="{x["img"]}" alt="{E(cap)}" loading="lazy"{_wh(x["img"])}><span class="zoom">Agrandir</span></button><button class="lkbtn" type="button" data-img="{x["img"]}" data-cap="{E(cap)}"{(" data-vid=\"vid/"+VIDEOS[s["name"]]+".mp4\"") if s["name"] in VIDEOS else ""}>◉ Incruste live</button>'
             if x['s']:
                 specs=f'''<div class="lens">{chip(x["s"])}<span class="foc">{E(x["f"])}</span></div>
 <dl class="grid"><div><dt>Diaph</dt><dd>{E(x["d"])}</dd></div><div><dt>Distance</dt><dd>{E(mm(x["dist"]))}</dd></div><div><dt>Hauteur caméra</dt><dd>{E(mm(x["h"]))}</dd></div><div><dt>Inclinaison</dt><dd>{E(x["tilt"])}</dd></div></dl>'''
@@ -58,6 +65,7 @@ LIVEKEY=open('/home/claude/livekey.html').read()
 PLANS=open('/home/claude/plans.html').read()
 EDITOR=open('/home/claude/editor.html').read()
 import json as _j
+POLISH=open('/home/claude/polish.html').read()
 TEXTES=open('/home/claude/textes.html').read().replace('__TXTMAP__',_j.dumps(_j.load(open('/home/claude/textes_map.json')),ensure_ascii=False))
 page=f'''<title>Fiches caméra Grande Incruste</title>
 <meta property="og:title" content="La Grande Incruste 3 – Fiches caméra"><meta property="og:description" content="Optique, focale, distance, hauteur et lumière pour chaque plan, J1 à J11."><meta property="og:image" content="img/001.jpg">
@@ -161,6 +169,7 @@ nav.days a:focus-visible,.pic:focus-visible,button:focus-visible{{outline:3px so
 {LIVEKEY}
 {EDITOR}
 {TEXTES}
+{POLISH}
 <script src="diffusion.js"></script>
 <script src="offline.js"></script>
 <script src="pdt.js"></script>
