@@ -891,6 +891,24 @@ document.getElementById('edrep').onclick=openReport;
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!rp.hidden)closeReport()});
 window.__lged={E:function(){return E},shots:shots,render:renderAll};
 })();
+
+/* barre du bas : jamais par-dessus le contenu */
+(function(){var bar=document.getElementById('edbar');if(!bar)return;
+var IDS=['lb','vb','tx','lk','lksnap','rp','pl','cp','lv','edpop'];
+function open(){for(var i=0;i<IDS.length;i++){var el=document.getElementById(IDS[i]);if(el&&!el.hidden&&getComputedStyle(el).display!=='none')return true}return false}
+function pad(){var h=bar.offsetHeight||0;document.body.style.paddingBottom=(h+28)+'px'}
+function upd(){var o=open();bar.style.visibility=o?'hidden':'';bar.style.pointerEvents=o?'none':''}
+var mo=new MutationObserver(function(){upd();pad()});
+mo.observe(document.body,{subtree:true,attributes:true,attributeFilter:['hidden','style','class'],childList:true});
+window.addEventListener('resize',pad);upd();pad();setTimeout(pad,500);
+/* défilement : se cache en descendant, revient en remontant ou en bas de page */
+bar.style.transition='transform .25s ease, opacity .25s ease';var ly=window.scrollY,hid=false;
+function show(s){if(s===!hid)return;hid=!s;bar.style.transform=s?'translateX(-50%)':'translateX(-50%) translateY(140%)';bar.style.opacity=s?'':'0'}
+window.addEventListener('scroll',function(){var y=window.scrollY,d=y-ly;if(Math.abs(d)<8)return;
+  var end=(window.innerHeight+y)>=document.documentElement.scrollHeight-40;
+  if(document.activeElement&&bar.contains(document.activeElement)){ly=y;return}
+  show(d<0||end||y<80);ly=y},{passive:true});
+document.addEventListener('mousemove',function(ev){if(hid&&ev.clientY>window.innerHeight-70)show(true)});})();
 </script>
 
 <style>
