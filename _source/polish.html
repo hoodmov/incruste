@@ -73,7 +73,7 @@ h1,h2,h3,.dt,.jn,.foc{font-family:var(--display)}
 .shot-pic .pic img{max-height:70vh}
 .shot-pic .lkbtn{margin:0;border-radius:0;border:0;border-top:1px solid #222;background:#111;color:#fff;font:600 .9rem var(--body);padding:12px;width:100%;display:flex;justify-content:center;align-items:center;gap:6px}
 .shot-info{padding:16px 18px 18px;gap:12px}
-.shot.isref{background:var(--surface);box-shadow:0 0 0 2px color-mix(in srgb,var(--muted) 45%,transparent) inset;border:0}
+.shot.isref{background:transparent;box-shadow:none;border:2px dashed color-mix(in srgb,var(--muted) 75%,transparent)}
 /* plan + focale en pastille */
 .plan .n{font:600 .74rem var(--mono);color:var(--fd)}
 .lens{background:var(--ink);color:var(--surface);border-radius:14px;padding:10px 14px;justify-content:space-between;flex-wrap:nowrap}
@@ -107,7 +107,7 @@ h1,h2,h3,.dt,.jn,.foc{font-family:var(--display)}
 @media (hover:hover) and (pointer:fine){.vidbtn:hover,.txtbtn:hover{background:var(--soft);border-color:var(--ink)}.shot-pic .lkbtn:hover{background:#1c1c1c}}
 /* téléphone : images pleine largeur (demandé), carte à bords droits */
 @media (max-width:760px){.shot-pic .pic img{max-height:none}}
-@media (max-width:600px){.shot{border-radius:0;margin-inline:-12px;box-shadow:none;border-block:1px solid var(--line)}.shot-info{padding:14px 12px 4px}.shot-pic .lkbtn{margin:0}.light,.read,.vfx,.lfx,.light .ratio{grid-template-columns:84px minmax(0,1fr) auto}}
+@media (max-width:600px){.shot{border-radius:0;margin-inline:-12px;box-shadow:none;border-block:1px solid var(--line)}.shot.isref{border-inline:0;border-block:2px dashed color-mix(in srgb,var(--muted) 75%,transparent)}.shot-info{padding:14px 12px 4px}.shot-pic .lkbtn{margin:0}.light,.read,.vfx,.lfx,.light .ratio{grid-template-columns:84px minmax(0,1fr) auto}}
 /* ===== Système commun : mêmes polices, graisses, rayons et couleurs sur toutes les fenêtres ===== */
 :root{--r-pop:14px;--lbl:500 .7rem/1.6 var(--mono)}
 /* libellés de champs partout : mono, petites capitales espacées, gris */
