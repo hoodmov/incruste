@@ -115,7 +115,7 @@ nav.days a:focus-visible,.pic:focus-visible,button:focus-visible{{outline:3px so
 .src{{color:var(--muted);font-size:.86rem;margin:.25rem 0 0;max-width:80ch}}
 .shot{{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(340px,1fr);gap:16px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px}}
 @media (max-width:760px){{.shot{{grid-template-columns:1fr}}}}
-@media (max-width:600px){{.wrap{{padding-inline:12px}}.shot{{gap:0;padding:0 0 14px;margin-inline:-12px;border-left:0;border-right:0;border-radius:0}}.shot.isref{{border-left:0;border-right:0;border-width:2px 0}}.shot-pic .pic{{border-radius:0}}.shot-pic .pic img{{max-height:none}}.shot-pic .lkbtn{{margin:10px 12px 0}}.shot-info{{padding:12px 12px 0}}.cpsw{{right:10px}}}}
+@media (max-width:600px){{.wrap{{padding-inline:12px}}.shot{{gap:0;padding:0 0 14px;margin-inline:-12px;border-left:0;border-right:0;border-radius:0}}.shot.isref{{border-left:0;border-right:0;border-width:2px 0}}.shot-pic .pic{{border-radius:0}}.shot-pic .pic img{{max-height:none}}.shot-pic .lkbtn{{margin:10px 12px 0}}.shot-info{{padding:12px 12px 0}}}}
 .shot-info{{min-width:0;display:flex;flex-direction:column;gap:10px}}
 .pic{{display:block;position:relative;width:100%;padding:0;border:0;background:#000;border-radius:4px;overflow:hidden;cursor:zoom-in}}
 .pic img{{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain}}
