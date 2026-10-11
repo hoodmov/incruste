@@ -977,7 +977,7 @@ var DATA=null,loading=null;
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function load(){if(DATA)return Promise.resolve(DATA);if(!loading)loading=fetch('textes.json').then(function(r){if(!r.ok)throw new Error('http '+r.status);return r.json()}).then(function(j){DATA=j;mergeCache();return j});return loading}
-var LIVE='';
+var LIVE='https://script.google.com/macros/s/AKfycbwkExp1W7wbVbB2elc93kOTQvCIEqlYw2YuggIynz20yWyPOZLc5wgZoBb5p_LTMfh0/exec';
 (function(){try{var m=location.search.match(/[?&]txlive=([^&]+)/);if(m){lsSet('lgi.txlive',decodeURIComponent(m[1]))}}catch(e){}})();
 function liveUrl(){var u=LIVE||lsGet('lgi.txlive')||'';return /^https:\/\/script\.google(usercontent)?\.com\//.test(u)?u:''}
 function mergeCache(){Object.keys(DATA.docs).forEach(function(id){var c=lsGet('lgi.tx.'+id);if(!c)return;try{c=JSON.parse(c);var d=DATA.docs[id];if(c.x){d.x=c.x;d.t=c.t||d.t;d.at=c.at}}catch(e){}})}
