@@ -69,7 +69,7 @@ nav.days a:focus-visible,.pic:focus-visible,button:focus-visible{outline:3px sol
 .vfx{margin:0;font:500 .78rem var(--mono);color:var(--muted);border-top:1px solid var(--line);padding-top:6px}
 .vfx::before{content:"Note VFX · ";color:var(--ink)}
 .light .ratio{margin:8px 0 0;padding:6px 8px;border-radius:4px;background:rgba(224,160,32,.10);font:600 .8rem var(--body);color:var(--ink)}
-.light .ratio::before{content:"Raccord visage · ";color:#e0a020;font-weight:700}
+.light .ratio::before{content:"Face match · ";color:#e0a020;font-weight:700}
 .lfx{margin:6px 0 0;font:500 .78rem var(--mono);color:var(--muted)}
 .lfx::before{content:"Note lumière · ";color:#e0a020;font-weight:700}
 #vb[hidden]{display:none!important}
@@ -861,7 +861,7 @@ document.addEventListener('visibilitychange',function(){if(!document.hidden&&!do
 setInterval(function(){if(!document.hidden&&token()&&!busy&&!dirty&&!(document.activeElement&&(document.activeElement.classList.contains('ed')||document.activeElement.tagName==='TEXTAREA')))sync()},30000);
 sync();
 /* compte-rendu */
-var COLS=[['lens','Optique'],['foc','Focale'],['Diaph','Diaph'],['Distance','Distance'],['Hauteur caméra','Hauteur cam.'],['Inclinaison','Inclinaison'],['Lumière','Lumière'],['Ratio visage','Raccord visage'],['Note lumière','Note lumière']];
+var COLS=[['lens','Optique'],['foc','Focale'],['Diaph','Diaph'],['Distance','Distance'],['Hauteur caméra','Hauteur cam.'],['Inclinaison','Inclinaison'],['Lumière','Lumière'],['Ratio visage','Face match'],['Note lumière','Note lumière']];
 var ST={'':'À tourner',ok:'Tourné',no:'Non tourné'};
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function rows(only){var out=[];shots.forEach(function(r){var e=E[r.id]||{},mod=FIELDS.some(function(f){return val(r,f)!==r.orig[f]})||!!e.note||!!e.st;if(only&&!mod)return;out.push({r:r,e:e})});return out}
