@@ -48,6 +48,21 @@
 #lksnap img{max-width:100%;max-height:78vh;object-fit:contain;border-radius:8px}
 #lksnap p{color:#fff;margin:0;font-size:.85rem}
 @media (prefers-reduced-motion:no-preference){#lk{transition:opacity .2s cubic-bezier(.23,1,.32,1);transition-behavior:allow-discrete}@starting-style{#lk:not([hidden]){opacity:0}}}
+/* Transition d'ouverture / fermeture (navigateurs compatibles, sinon simple fondu) */
+html.lkvt #lk{transition:none!important}
+html.lkvt #lk .ct{view-transition-name:lk-panel}
+html.lkvt #lk .tb{view-transition-name:lk-bar}
+::view-transition-group(lk-hero){animation-duration:.44s;animation-timing-function:cubic-bezier(.32,.72,0,1)}
+::view-transition-old(lk-hero),::view-transition-new(lk-hero){animation-duration:.44s;animation-timing-function:cubic-bezier(.32,.72,0,1)}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.3s;animation-timing-function:ease}
+::view-transition-new(lk-panel){animation:lk-up .44s cubic-bezier(.32,.72,0,1) both}
+::view-transition-old(lk-panel){animation:lk-down .26s cubic-bezier(.32,.72,0,1) both}
+::view-transition-new(lk-bar){animation:lk-drop .44s cubic-bezier(.32,.72,0,1) both}
+::view-transition-old(lk-bar){animation:lk-lift .22s ease both}
+@keyframes lk-up{from{transform:translateY(100%)}}
+@keyframes lk-down{to{transform:translateY(100%)}}
+@keyframes lk-drop{from{transform:translateY(-100%);opacity:0}}
+@keyframes lk-lift{to{transform:translateY(-100%);opacity:0}}
 </style>
 <div id="lk" hidden role="dialog" aria-modal="true" aria-label="Incruste live">
 <div class="tb"><p id="lkcap"></p><select id="lkcam" aria-label="Caméra"></select><button id="lkfs" type="button">⛶ Plein écran</button><button id="lkclose" type="button">Fermer</button></div>
@@ -161,12 +176,28 @@ bgv.addEventListener('loadedmetadata',function(){if(bgMode!=='vid')return;var w=
 if(bgv.getAttribute('src')!==vidSrc)bgv.src=vidSrc;else if(bgv.videoWidth){cv.width=Math.min(1280,bgv.videoWidth);cv.height=Math.round(cv.width*bgv.videoHeight/bgv.videoWidth);M.dirty=true}
 var pr=bgv.play();if(pr&&pr.catch)pr.catch(function(){});document.getElementById('lkbgp').textContent='⏸ Pause'}
 else{bgMode='img';if(bgv)bgv.pause();if(lastSrc)loadBg(lastSrc)}bgUi()}
-function open(src,c,btn,vsrc){if(!initGL()){setMsg("WebGL indisponible sur cet appareil.");lk.hidden=false;return}last=btn;cap.textContent=c;lk.hidden=false;document.body.style.overflow='hidden';setMsg('');
+function openRaw(src,c,btn,vsrc){if(!initGL()){setMsg("WebGL indisponible sur cet appareil.");lk.hidden=false;return}last=btn;cap.textContent=c;lk.hidden=false;document.body.style.overflow='hidden';setMsg('');
 vidSrc=vsrc||(btn&&btn.dataset&&btn.dataset.vid)||null;bgMode='img';lastSrc=src||null;if(bgv){bgv.pause();bgv.removeAttribute('src');bgv.load()}
 if(src){loadBg(src,function(){startCam(sel.value||null)});bgUi()}else{startCam(sel.value||null);setBgMode('vid')}
 if(!raf)raf=requestAnimationFrame(frame)}
-function close(){if(lk.classList.contains('fs'))setFs(false);lk.hidden=true;if(bgv){bgv.pause()}document.body.style.overflow='';stopStream();if(raf){cancelAnimationFrame(raf);raf=0}if(last)last.focus()}
+function closeRaw(){if(lk.classList.contains('fs'))setFs(false);lk.hidden=true;if(bgv){bgv.pause()}document.body.style.overflow='';stopStream();if(raf){cancelAnimationFrame(raf);raf=0}if(last)last.focus()}
 [].forEach.call(document.querySelectorAll('.lkbtn'),function(b){b.addEventListener('click',function(){open(b.dataset.img,b.dataset.cap,b)})});
+/* Transition page -> Incruste live : l'image du plan s'agrandit jusqu'au moniteur, le panneau monte du bas (et l'inverse à la fermeture) */
+var vtImg=null;
+function heroOf(btn){var sp=btn&&btn.closest&&btn.closest('.shot-pic');var im=sp&&sp.querySelector('.pic img');if(!im)return null;var r=im.getBoundingClientRect();return(r.bottom>0&&r.top<innerHeight)?im:null}
+function canVT(){return !!document.startViewTransition&&!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)}
+function vt(fn,toLive,img){var de=document.documentElement;
+  if(!canVT()){fn();return}
+  de.classList.add('lkvt');if(img)img.style.viewTransitionName='lk-hero';if(!toLive&&img){wrap.style.viewTransitionName='';cv.style.viewTransitionName='lk-hero'}
+  var t;try{t=document.startViewTransition(function(){
+    if(img)img.style.viewTransitionName='';cv.style.viewTransitionName='';
+    fn();
+    if(img){if(toLive)cv.style.viewTransitionName='lk-hero';else img.style.viewTransitionName='lk-hero'}
+    return toLive?new Promise(function(r){setTimeout(r,120)}):null})}
+  catch(e){de.classList.remove('lkvt');if(img)img.style.viewTransitionName='';fn();return}
+  t.finished.finally(function(){de.classList.remove('lkvt');if(img)img.style.viewTransitionName='';cv.style.viewTransitionName=''})}
+function open(src,c,btn,vsrc){var im=heroOf(btn);vtImg=im;vt(function(){openRaw(src,c,btn,vsrc)},true,im)}
+function close(){if(lk.hidden){closeRaw();return}var im=vtImg&&vtImg.isConnected?vtImg:null;vtImg=null;vt(closeRaw,false,im)}
 document.getElementById('lkclose').onclick=close;
 document.addEventListener('keydown',function(e){if(lk.hidden)return;if(e.key==='Escape'){if(lk.classList.contains('fs'))setFs(false);else close()}else if((e.key==='f'||e.key==='F')&&!/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||'')))setFs(!lk.classList.contains('fs'))});
 sel.onchange=function(){startCam(sel.value)};
