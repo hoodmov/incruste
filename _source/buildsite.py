@@ -55,7 +55,7 @@ for d in D:
                 specs=''
             tag='<span class="refbadge">Référence · non tournée</span>' if x['ref'] else f'<span class="n">#{x["n"]}</span>'
             body.append(f'''<div class="shot{' isref' if x['ref'] else ''}"><div class="shot-pic">{pic}</div><div class="shot-info"><p class="plan">{tag}{E(x["plan"])}</p>{specs}
-<div class="light"><h4>Lumière</h4><p>{E(x["lum"])}</p>{('<p class="ratio"><span>'+E(ratio_txt(x["img"][4:7]))+'</span></p>') if ratio_txt(x["img"][4:7]) else ''}</div><p class="read"><b>Lecture du screen :</b> {E(x["lec"])}</p><p class="vfx">{E(x["vfx"])}</p><p class="lfx"><span class="lfxv">{E(x.get("lfx") or "—")}</span></p></div></div>''' + ('</div>' if qi==0 else ''))
+<div class="light"><h4>Lumière</h4><p>{E(x["lum"])}</p>{('<p class="ratio"><span>'+E(ratio_txt(x["img"][4:7]))+'</span></p>') if ratio_txt(x["img"][4:7]) else ''}</div><p class="vfx">{E(x["vfx"])}</p><p class="lfx"><span class="lfxv">{E(x.get("lfx") or "—")}</span></p></div></div>''' + ('</div>' if qi==0 else ''))
         if s.get('cards'):
             body.append('<div class="cards">'+''.join(f'<div class="card">'+(f'<img src="img/{c[3].split("/")[-1]}" style="width:100%;border-radius:6px;display:block;margin-bottom:6px">' if len(c)>3 else '')+f'<span class="refbadge">À tourner{"" if len(c)>3 else " · pas d\'image"}</span><h3>{E(c[0])}</h3><p>{E(c[1])}</p><p class="acc"><b>Accessoires :</b> {E(c[2])}</p></div>' for c in s['cards'])+'</div>')
         body.append('</article>')

@@ -42,7 +42,7 @@ function shotHtml(r){var u=imgUrl(r),cap='＋ '+r.seq+' · '+r.title,cls=/FD/.te
   return '<div class="shot planadd"><div class="shot-pic"><button class="pic" type="button" data-full="'+esc(u)+'" data-cap="'+esc(cap)+'" aria-label="Agrandir l&#39;image"><img src="'+esc(u)+'" alt="'+esc(cap)+'" loading="lazy"><span class="zoom">Agrandir</span></button><button class="lkbtn" type="button" data-img="'+esc(u)+'" data-cap="'+esc(cap)+'">◉ Incruste live</button></div>'+
   '<div class="shot-info"><p class="plan"><span class="n">＋</span>'+esc(r.title)+'</p><div class="lens"><span class="chip '+cls+'">'+esc(r.lens||'—')+'</span><span class="foc">'+esc(r.foc||'—')+'</span></div>'+
   '<dl class="grid">'+dd('Diaph',r.ap)+dd('Distance',r.dist)+dd('Hauteur caméra',r.h)+dd('Inclinaison',r.inc)+'</dl>'+
-  '<div class="light"><h4>Lumière</h4><p>'+esc(r.lum||'—')+'</p></div>'+(r.read?'<p class="read"><b>Lecture du screen :</b> '+esc(r.read)+'</p>':'')+
+  '<div class="light"><h4>Lumière</h4><p>'+esc(r.lum||'—')+'</p></div>'+
   '<p class="planmeta">＋ Plan ajouté'+(r.by?' par '+esc(r.by):'')+' · <button type="button" class="plandel" data-id="'+esc(r.id)+'">🗑 Supprimer</button></p></div></div>'}
 function renderAll(P){Object.keys(P).sort(function(a,b){return P[a].t-P[b].t}).forEach(function(id){var r=P[id];if(!r||r.del)return;var day=document.getElementById(r.day);if(!day)return;
   var art=null;[].forEach.call(day.querySelectorAll('article.seq'),function(a){var h=a.querySelector('h2');if(h&&h.textContent.trim()===r.seq)art=a});
@@ -90,7 +90,7 @@ ready(function(){
   '<div class="plrow"><label>Optique<input type="text" id="pllens" list="pllenses"></label><label>Focale<input type="text" id="plfoc" placeholder="50 mm"></label><label>Diaph<input type="text" id="plap" placeholder="f/4"></label></div>'+
   '<div class="plrow"><label>Distance<input type="text" id="pldist" placeholder="0,9 m"></label><label>Hauteur caméra<input type="text" id="plh2" placeholder="1,50 m"></label><label>Inclinaison<input type="text" id="plinc" placeholder="0° (face)"></label></div>'+
   '<div class="plrow"><label style="flex-basis:100%">Lumière<textarea id="pllum"></textarea></label></div>'+
-  '<div class="plrow"><label style="flex-basis:100%">Lecture du screen (optionnel)<textarea id="plread"></textarea></label></div>'+
+  '<div class="plrow" hidden><textarea id="plread"></textarea></div>'+
   '<button type="button" id="plok" disabled>Ajouter ce plan</button></div><datalist id="pllenses"></datalist>';
   document.body.appendChild(m);
   function $(i){return document.getElementById(i)}
