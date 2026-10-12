@@ -5,7 +5,7 @@
 'use strict';
 var GH={repo:'hoodmov/incruste',path:'data/live.json',branch:'data'};
 var ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
-var MAXW=960,MAXBR=1200000,MAXFPS=15;
+var MAXW=960,MAXBR=2500000,MAXFPS=30;
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function token(){return lsGet('lgi.gh')||''}
@@ -43,8 +43,12 @@ var lk=document.getElementById('lk'),cv=document.getElementById('lkc');
 var H={on:false,stream:null,peers:{},seen:{},poll:null,hb:null,btn:null};
 function hcount(){return Object.keys(H.peers).filter(function(k){var s=H.peers[k].connectionState;return s==='connected'||s==='connecting'}).length}
 function hpaint(){if(!H.btn)return;var n=hcount();H.btn.textContent=H.on?('📡 En direct'+(n?' · '+n+' 👁':'')):'📡 Diffuser';H.btn.classList.toggle('on',H.on)}
+/* faible latence : H.264 en priorité (décodage matériel iPhone/Mac), tampon de lecture minimal */
+function lowLat(tr){try{if(!tr||!tr.setCodecPreferences||!window.RTCRtpReceiver||!RTCRtpReceiver.getCapabilities)return;var c=RTCRtpReceiver.getCapabilities('video');if(!c||!c.codecs)return;
+  var h=c.codecs.filter(function(x){return /h264/i.test(x.mimeType)}),o=c.codecs.filter(function(x){return !/h264/i.test(x.mimeType)});if(h.length)tr.setCodecPreferences(h.concat(o))}catch(e){}
+  try{if(tr&&tr.receiver){tr.receiver.jitterBufferTarget=0;tr.receiver.playoutDelayHint=0}}catch(e){}}
 function tune(pc){try{pc.getSenders().forEach(function(s){if(!s.track||s.track.kind!=='video')return;var p=s.getParameters();if(!p.encodings||!p.encodings.length)p.encodings=[{}];
-  p.encodings[0].maxBitrate=MAXBR;p.encodings[0].maxFramerate=MAXFPS;var w=cv.width||1280;p.encodings[0].scaleResolutionDownBy=Math.max(1,w/MAXW);s.setParameters(p).catch(function(){})})}catch(e){}}
+  p.encodings[0].maxBitrate=MAXBR;p.encodings[0].maxFramerate=MAXFPS;p.encodings[0].priority='high';p.encodings[0].networkPriority='high';try{p.degradationPreference='maintain-framerate'}catch(_){}try{s.track.contentHint='motion'}catch(_){}var w=cv.width||1280;p.encodings[0].scaleResolutionDownBy=Math.max(1,w/MAXW);s.setParameters(p).catch(function(){})})}catch(e){}}
 function accept(k,s){var id=k+'|'+s.t;if(H.seen[id])return;H.seen[id]=1;if(H.peers[k]){try{H.peers[k].close()}catch(e){}delete H.peers[k]}
   var pc=new RTCPeerConnection(ICE);H.peers[k]=pc;
   H.stream.getTracks().forEach(function(t){pc.addTrack(t,H.stream)});
@@ -91,8 +95,8 @@ if(bar&&supported){
     if(!keep)wupd(function(d){if(d.sig[DID]){delete d.sig[DID];return d}return null}).catch(function(){})}
   function fail(t){msg(t);vre.hidden=false}
   function vconnect(){vstop(true);vre.hidden=true;msg('Connexion à '+(V.host?V.host.n:'l’ordinateur')+'…');
-    var pc=new RTCPeerConnection(ICE);V.pc=pc;var t=Date.now();V.t=t;pc.addTransceiver('video',{direction:'recvonly'});
-    pc.ontrack=function(e){vv.srcObject=e.streams[0]||new MediaStream([e.track]);var p=vv.play();if(p&&p.catch)p.catch(function(){})};
+    var pc=new RTCPeerConnection(ICE);V.pc=pc;var t=Date.now();V.t=t;var tr=pc.addTransceiver('video',{direction:'recvonly'});lowLat(tr);
+    pc.ontrack=function(e){try{e.receiver.jitterBufferTarget=0}catch(_){}try{e.receiver.playoutDelayHint=0}catch(_){}vv.srcObject=e.streams[0]||new MediaStream([e.track]);var p=vv.play();if(p&&p.catch)p.catch(function(){})};
     pc.onconnectionstatechange=function(){if(V.pc!==pc)return;var s=pc.connectionState;
       if(s==='connected'){clearTimeout(V.timer);msg('');wupd(function(d){if(d.sig[DID]){delete d.sig[DID];return d}return null}).catch(function(){})}
       else if(s==='failed'){fail("Connexion impossible (réseaux différents ou pare-feu). Mets-toi sur le même Wi-Fi que l’ordinateur.")}
