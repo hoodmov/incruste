@@ -841,6 +841,10 @@ function planSave(){if(!planKey)return;try{localStorage.setItem(planKey,JSON.str
 function planSaveSoon(){clearTimeout(saveT);saveT=setTimeout(planSave,400)}
 function planOpen(src,c,btn,vsrc){planKey=keyOf(src,c,btn);gh.src=src?String(src):'';refWfSrc=null;var got=null;try{got=planKey&&JSON.parse(localStorage.getItem(planKey)||'null')}catch(e){}
   var memEl=document.getElementById('lkmem');memEl.hidden=true;
+  /* chaque plan repart de zéro : masques, réglages de masque, contours, cadrage, miroir, réf et repères (le détourage et les outils d'expo restent) */
+  M.shapes=[];M.cur=null;M.inv=false;M.fe=0;M.off=0;M.out=true;M.tool=null;M.dirty=true;S.mir=false;S.sc=1;S.x=0;S.y=0;S.rot=0;
+  X.gm='off';X.go=.5;X.g3=X.gc=X.gs=false;X.gr=0;X.sp=.5;
+  ['lkmr','lkme','lkml','lkmi','lkmir'].forEach(function(i){setOn(i,false)});document.getElementById('lkmf').value=0;document.getElementById('lkmo2').value=0;moUi();syncUi();
   if(got&&got.v===1){var a=got.S||{},b=got.M||{},x=got.X||{};['sim','sm','sp','sc','x','y','rot','mir'].forEach(function(k){if(k in a)S[k]=a[k]});if(a.key)S.key=a.key;
     M.shapes=b.shapes||[];M.inv=!!b.inv;M.fe=b.fe||0;M.off=b.off||0;M.out=b.out!==false;moUi();M.dirty=true;Object.keys(x).forEach(function(k){X[k]=x[k]});
     setOn('lkmir',S.mir);setOn('lkmi',M.inv);document.getElementById('lkmf').value=M.fe;document.getElementById('lkmo2').value=M.off;syncUi();memEl.hidden=false;setTimeout(function(){memEl.hidden=true},3500)}
