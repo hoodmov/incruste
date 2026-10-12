@@ -675,8 +675,16 @@ if(!M.out&&!M.cur)return;c.lineWidth=2;c.setLineDash([6,4]);c.strokeStyle='#00e5
 (M.out?M.shapes:[]).concat(M.cur?[M.cur]:[]).forEach(function(s){if(s.pts.length<2&&s.t!=='l')return;pth(c,s,w,h);c.fill();c.stroke()});
 if(M.inv){c.setLineDash([]);c.fillStyle='#00e5ff';c.font='600 12px system-ui';c.fillText('masque inversé',8,16)}}
 function setMsg(t){if(t){msg.textContent=t;msg.hidden=false}else msg.hidden=true}
-function loadBg(src,cb){lastSrc=src;var im=new Image();im.crossOrigin='anonymous';im.onload=function(){bgImg=im;var w=im.naturalWidth,h=im.naturalHeight,m=1280;if(w>m){h=Math.round(h*m/w);w=m}cv.width=w;cv.height=h;M.dirty=true;
-gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texBg);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,im);cb&&cb()};im.onerror=function(){setMsg("Image de réf introuvable.")};im.src=(window.lkMapSrc&&window.lkMapSrc(src))||src}
+/* Le cadre de travail est TOUJOURS celui de la réf : si le clean a une autre taille ou un autre format, il est remis aux dimensions de la réf.
+   Masques, cadrage et repères restent donc exactement au même endroit quand on passe de la réf au clean. */
+var refDim={},bgFit=document.createElement('canvas');
+function refSize(src,cb){if(refDim[src])return cb(refDim[src]);var r=new Image();r.crossOrigin='anonymous';r.onload=function(){refDim[src]=[r.naturalWidth,r.naturalHeight];cb(refDim[src])};r.onerror=function(){cb(null)};r.src=src}
+function loadBg(src,cb){lastSrc=src;var msrc=(window.lkMapSrc&&window.lkMapSrc(src))||src;
+  refSize(src,function(rd){if(lastSrc!==src)return;var im=new Image();im.crossOrigin='anonymous';im.onload=function(){if(lastSrc!==src)return;bgImg=im;
+    var W=rd?rd[0]:im.naturalWidth,H=rd?rd[1]:im.naturalHeight,m=1280;if(W>m){H=Math.round(H*m/W);W=m}if(cv.width!==W)cv.width=W;if(cv.height!==H)cv.height=H;M.dirty=true;
+    var srcEl=im;if(msrc!==src||im.naturalWidth!==W||im.naturalHeight!==H){bgFit.width=W;bgFit.height=H;var x=bgFit.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(im,0,0,W,H);srcEl=bgFit}
+    gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texBg);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,srcEl);cb&&cb()};
+    im.onerror=function(){setMsg("Image de réf introuvable.")};im.src=msrc})}
 window.lkRefresh=function(){if(!lk.hidden&&bgMode==='img'&&lastSrc)loadBg(lastSrc)};window.lkSrc=function(){return lk.hidden?null:lastSrc};
 (function(){var wr=document.getElementById('lkwrap');function fit(){var W=wr.clientWidth,H=wr.clientHeight;if(!W||!H||!cv.width||!cv.height)return;var s=Math.min(W/cv.width,H/cv.height);cv.style.width=Math.floor(cv.width*s)+'px';cv.style.height=Math.floor(cv.height*s)+'px'}window.lkFit=fit;if(window.ResizeObserver)new ResizeObserver(fit).observe(wr);window.addEventListener('resize',fit);document.addEventListener('fullscreenchange',function(){setTimeout(fit,50)});new MutationObserver(fit).observe(cv,{attributes:true,attributeFilter:['width','height']})})();
 function stopStream(){if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}if(vid){vid.srcObject=null}}
