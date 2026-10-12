@@ -1501,6 +1501,8 @@ html.night:not(:has(#lk:not([hidden])))::after{content:"";position:fixed;inset:0
 @keyframes hitflash{0%,100%{box-shadow:0 0 0 0 transparent}20%,60%{box-shadow:0 0 0 4px var(--key)}}
 .shot.hit{animation:hitflash 1.6s ease}
 @media (max-width:600px){#edbar #edsrch{font-size:0!important}#edbar #edsrch::before{content:'🔍';font-size:.95rem}#srch{padding-top:calc(env(safe-area-inset-top,0px) + 12px)}}
+@media (max-width:600px){#edbar #edfs{font-size:0!important}#edbar #edfs::before{content:'⛶';font-size:1.05rem}}
+#edfs.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
 </style>
 <div id="qrbox" hidden role="dialog" aria-modal="true" aria-labelledby="qrt"><div class="in"><h3 id="qrt">Partager</h3><div class="code" id="qrimg">Chargement…</div><p id="qrurl"></p><div class="row"><button type="button" id="qrcopy">Copier le lien</button><button type="button" id="qrshare" class="pri">Partager</button></div><button type="button" id="qrclose">Fermer</button></div></div>
 <div id="srch" hidden role="dialog" aria-modal="true" aria-label="Rechercher un plan"><div class="in"><input id="srchq" type="search" placeholder="Star Wars, Kylo, Titanic, 100 mm…" autocomplete="off" spellcheck="false" enterkeyhint="go" aria-label="Rechercher un plan"><ul id="srchr" role="listbox"></ul><div class="hint">Entrée : aller au premier résultat · ↑ ↓ pour choisir · Échap pour fermer</div></div></div>
@@ -1628,6 +1630,20 @@ sb.addEventListener('click',function(e){if(e.target===sb)closeS()});
 document.addEventListener('keydown',function(e){if((e.metaKey||e.ctrlKey)&&(e.key==='k'||e.key==='K')){e.preventDefault();sb.hidden?openS():closeS()}});
 (function(){var bar=document.getElementById('edbar');if(!bar)return;var b=document.createElement('button');b.type='button';b.id='edsrch';b.textContent='🔍 Rechercher';b.setAttribute('aria-label','Rechercher un plan');b.onclick=openS;bar.insertBefore(b,bar.firstChild)})();
 window.lgiSearch=openS;
+
+/* ---------- Plein écran pour tout le site ---------- */
+(function(){var bar=document.getElementById('edbar');if(!bar)return;var de=document.documentElement;
+  var can=!!(document.fullscreenEnabled||document.webkitFullscreenEnabled);
+  var standalone=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone;
+  if(standalone)return; /* déjà en plein écran (ajouté à l'écran d'accueil) */
+  var b=document.createElement('button');b.type='button';b.id='edfs';
+  function isFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement)}
+  function paint(){var on=isFs();b.classList.toggle('on',on);b.textContent=on?'⛶ Quitter':'⛶ Plein écran';b.setAttribute('aria-label',on?'Quitter le plein écran':'Plein écran')}
+  b.onclick=function(){if(can){if(isFs()){var x=document.exitFullscreen||document.webkitExitFullscreen;try{var r=x.call(document);if(r&&r.catch)r.catch(function(){})}catch(e){}}
+      else{var q=de.requestFullscreen||de.webkitRequestFullscreen;try{var r2=q.call(de,{navigationUI:'hide'});if(r2&&r2.catch)r2.catch(function(){})}catch(e){}}}
+    else alert("Sur iPhone, le plein écran passe par l'écran d'accueil : touche Partager (carré avec flèche) puis « Sur l'écran d'accueil ». Ouvre ensuite le site depuis cette icône : il s'affiche sans barres, comme une appli.")};
+  ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){document.addEventListener(ev,paint)});paint();
+  var sr=document.getElementById('edsrch');bar.insertBefore(b,sr?sr.nextSibling:bar.firstChild)})();
 
 paint();
 })();
