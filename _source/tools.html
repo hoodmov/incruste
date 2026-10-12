@@ -111,8 +111,8 @@ function optcalc(sh){var info=sh.querySelector('.shot-info');if(!info)return;var
   var dof=isFinite(far)?fmtM((far-near)/1000):'∞';
   var t='Champ '+Math.round(hov)+'° · cadre '+fmtM(fw)+' × '+fmtM(fh)+' · net de '+fmtM(near/1000)+' à '+(isFinite(far)?fmtM(far/1000):'∞')+' ('+dof+')';
   if(el.textContent!==t)el.textContent=t}
-shots.forEach(optcalc);
-var oT=0;new MutationObserver(function(ms){clearTimeout(oT);oT=setTimeout(function(){shots.forEach(optcalc);paintNow()},250)}).observe(document.querySelector('.wrap')||document.body,{subtree:true,characterData:true,childList:true});
+/* Champ / net retiré à la demande */
+var oT=0;new MutationObserver(function(ms){clearTimeout(oT);oT=setTimeout(function(){paintNow()},250)}).observe(document.querySelector('.wrap')||document.body,{subtree:true,characterData:true,childList:true});
 
 /* ---------- 10. Mode nuit rouge ---------- */
 function setNight(on){document.documentElement.classList.toggle('night',on);if(on)document.documentElement.setAttribute('data-theme','dark');else if(document.documentElement.getAttribute('data-theme')==='dark'&&lsG('lgi.night.theme')!=='dark')document.documentElement.removeAttribute('data-theme');lsS('lgi.night',on?'1':'');var b=document.getElementById('nightbtn');if(b)b.classList.toggle('on',on)}
