@@ -179,7 +179,7 @@ function norm(t){return String(t||'').toLowerCase().normalize('NFD').replace(/[�
 var IDX=[];
 function buildIdx(){IDX=[].slice.call(document.querySelectorAll('.shot')).filter(function(sh){return sh.querySelector('.shot-info .plan')}).map(function(sh){
   var seq=sh.closest('.seq'),day=sh.closest('.day'),h2=seq&&seq.querySelector('h2'),pl=sh.querySelector('.plan'),foc=sh.querySelector('.foc'),ch=sh.querySelector('.lens .chip');
-  var pc=pl.cloneNode(true);[].forEach.call(pc.querySelectorAll('.chip,.stbadge,.n'),function(x){x.remove()});var title=pc.textContent.replace(/^#\d+/,'').replace(/(À tourner|Tourné|Non tourné)\s*$/,'').trim(),seqn=h2?h2.textContent.trim():'',dn=day?day.id:'';
+  var pc=pl.cloneNode(true);[].forEach.call(pc.querySelectorAll('.chip,.stbadge,.n,.refbadge'),function(x){x.remove()});var title=pc.textContent.replace(/^#\d+/,'').replace(/(À tourner|Tourné|Non tourné)\s*$/,'').trim(),seqn=h2?h2.textContent.trim():'',dn=day?day.id:'';
   var dd=(document.querySelector('nav.days a[href="#'+dn+'"] span')||{}).textContent||'';
   return{sh:sh,n:numOf(sh),title:title,seq:seqn,day:dn,dd:dd,foc:foc?foc.textContent.trim():'',lens:ch?ch.textContent.trim():'',
     k1:norm(seqn+' '+title),k2:norm(dn+' '+(foc?foc.textContent:'')+' '+(ch?ch.textContent:'')),k3:norm(sh.querySelector('.shot-info').textContent)}})}
