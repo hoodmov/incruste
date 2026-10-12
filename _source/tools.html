@@ -118,9 +118,8 @@ var oT=0;new MutationObserver(function(ms){clearTimeout(oT);oT=setTimeout(functi
 function setNight(on){document.documentElement.classList.toggle('night',on);if(on)document.documentElement.setAttribute('data-theme','dark');else if(document.documentElement.getAttribute('data-theme')==='dark'&&lsG('lgi.night.theme')!=='dark')document.documentElement.removeAttribute('data-theme');lsS('lgi.night',on?'1':'');var b=document.getElementById('nightbtn');if(b)b.classList.toggle('on',on)}
 var menu=document.getElementById('edmenu');
 function addMenu(id,label,fn){if(!menu)return null;var b=document.createElement('button');b.type='button';b.id=id;b.textContent=label;b.onclick=function(){menu.hidden=true;fn()};menu.insertBefore(b,menu.firstChild);return b}
-addMenu('nightbtn','🔴 Mode nuit (rouge)',function(){setNight(!document.documentElement.classList.contains('night'))});
 addMenu('qrsite','▦ QR code du site',function(){openQR(SITE,'Fiches caméra · La Grande Incruste 3')});
-if(lsG('lgi.night'))setNight(true);
+/* mode nuit retiré : on nettoie un éventuel état enregistré */ if(lsG('lgi.night'))setNight(false);
 
 /* ---------- 11. Séquence en cours / suivante (d'après le PDT et l'heure) ---------- */
 function hm(t){var m=String(t).match(/(\d{1,2})[:h](\d{2})/);return m?(+m[1])*60+(+m[2]):null}
