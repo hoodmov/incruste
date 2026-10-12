@@ -132,7 +132,7 @@ html.lkvt #lk .tb{view-transition-name:lk-bar}
 <section class="grp"><h5>Masque</h5>
 <label><span>Contour progressif</span><input id="lkmf" type="range" min="0" max="100" step="1" value="0"></label>
 <label><span>Bord (int. / ext.)</span><input id="lkmo2" type="range" min="-50" max="50" step="1" value="0"></label>
-<div class="row m"><button id="lkmr" type="button">▭ Rectangle</button><button id="lkme" type="button">◯ Ellipse</button><button id="lkml" type="button">✎ Lasso</button><button id="lkmu" type="button">Annuler</button><button id="lkmc" type="button">Effacer</button><button id="lkmi" type="button">Inverser</button><button id="lkmo" type="button" class="on">Contours</button></div>
+<div class="row m"><button id="lkmr" type="button">▭ Rectangle</button><button id="lkme" type="button">◯ Ellipse</button><button id="lkml" type="button">✎ Lasso</button><button id="lkmu" type="button">Annuler</button><button id="lkmc" type="button">Effacer</button><button id="lkmi" type="button">Inverser</button><button id="lkmo" type="button" class="on">Masquer les contours</button></div>
 </section>
 </div>
 </div>
@@ -199,8 +199,8 @@ var dx=c[0]-tm[0],dy=c[1]-tm[1],l=Math.hypot(dx,dy)||1,rh=[tm[0]+dx/l*34,tm[1]+d
 function drawOv(){var r=cv.getBoundingClientRect(),wr=wrap.getBoundingClientRect(),w=Math.round(r.width),h=Math.round(r.height);
 if(ov.width!==w||ov.height!==h){ov.width=w;ov.height=h}ov.style.left=(r.left-wr.left)+'px';ov.style.top=(r.top-wr.top)+'px';ov.style.width=w+'px';ov.style.height=h+'px';
 var c=ov.getContext('2d');c.clearRect(0,0,w,h);xtra(c,w,h,r,wr);if(F.show&&!M.tool&&!S.pick&&vid&&vid.videoWidth){var H=handles(w,h);c.setLineDash([]);c.lineWidth=2;c.strokeStyle='#ffd400';c.beginPath();c.moveTo(H.tl[0],H.tl[1]);c.lineTo(H.tr[0],H.tr[1]);c.lineTo(H.br[0],H.br[1]);c.lineTo(H.bl[0],H.bl[1]);c.closePath();c.stroke();c.beginPath();c.moveTo(H.tm[0],H.tm[1]);c.lineTo(H.rh[0],H.rh[1]);c.stroke();c.fillStyle='#ffd400';c.beginPath();c.arc(H.rh[0],H.rh[1],9,0,6.2832);c.fill();c.fillRect(H.sh[0]-9,H.sh[1]-9,18,18);c.beginPath();c.arc(H.c[0],H.c[1],4,0,6.2832);c.fill()}
-if(!M.out&&!M.tool)return;c.lineWidth=2;c.setLineDash([6,4]);c.strokeStyle='#00e5ff';c.fillStyle='rgba(0,229,255,.12)';
-M.shapes.concat(M.cur?[M.cur]:[]).forEach(function(s){if(s.pts.length<2&&s.t!=='l')return;pth(c,s,w,h);c.fill();c.stroke()});
+if(!M.out&&!M.cur)return;c.lineWidth=2;c.setLineDash([6,4]);c.strokeStyle='#00e5ff';c.fillStyle='rgba(0,229,255,.12)';
+(M.out?M.shapes:[]).concat(M.cur?[M.cur]:[]).forEach(function(s){if(s.pts.length<2&&s.t!=='l')return;pth(c,s,w,h);c.fill();c.stroke()});
 if(M.inv){c.setLineDash([]);c.fillStyle='#00e5ff';c.font='600 12px system-ui';c.fillText('masque inversé',8,16)}}
 function setMsg(t){if(t){msg.textContent=t;msg.hidden=false}else msg.hidden=true}
 function loadBg(src,cb){lastSrc=src;var im=new Image();im.crossOrigin='anonymous';im.onload=function(){bgImg=im;var w=im.naturalWidth,h=im.naturalHeight,m=1280;if(w>m){h=Math.round(h*m/w);w=m}cv.width=w;cv.height=h;M.dirty=true;
@@ -270,7 +270,7 @@ cv.addEventListener('pointerup',endShape);cv.addEventListener('pointercancel',en
 document.getElementById('lkmu').onclick=function(){M.shapes.pop();mdirty()};
 document.getElementById('lkmc').onclick=function(){M.shapes=[];M.cur=null;mdirty()};
 var mi=document.getElementById('lkmi');mi.onclick=function(){M.inv=!M.inv;mi.classList.toggle('on',M.inv);mdirty()};
-var mo=document.getElementById('lkmo');mo.onclick=function(){M.out=!M.out;mo.classList.toggle('on',M.out)};
+var mo=document.getElementById('lkmo');function moUi(){mo.classList.toggle('on',!M.out);mo.textContent=M.out?'Masquer les contours':'Afficher les contours'}mo.onclick=function(){M.out=!M.out;moUi()};moUi();
 document.getElementById('lkmf').addEventListener('input',function(e){M.fe=parseInt(e.target.value,10)||0;mdirty()});
 document.getElementById('lkmo2').addEventListener('input',function(e){M.off=parseInt(e.target.value,10)||0;mdirty()});
 
@@ -364,13 +364,13 @@ setInterval(drawWf,200);
 /* mémoire des réglages par plan (sur cet appareil) */
 var planKey=null,saveT=0;
 function keyOf(src,c,btn){var s0=(btn&&btn.dataset&&btn.dataset.img)||(src&&String(src).indexOf('blob:')!==0?src:'')||c||'';return s0?'lgi.lk.'+String(s0).replace(/^.*\//,'').replace(/[?#].*$/,''):null}
-function snap(){return{v:1,S:{sim:S.sim,sm:S.sm,sp:S.sp,sc:S.sc,x:S.x,y:S.y,rot:S.rot,mir:S.mir,key:S.key},M:{shapes:M.shapes,inv:M.inv,fe:M.fe,off:M.off},X:{gm:X.gm,go:X.go,g3:X.g3,gc:X.gc,gs:X.gs,gr:X.gr,sp:X.sp}}}
+function snap(){return{v:1,S:{sim:S.sim,sm:S.sm,sp:S.sp,sc:S.sc,x:S.x,y:S.y,rot:S.rot,mir:S.mir,key:S.key},M:{shapes:M.shapes,inv:M.inv,fe:M.fe,off:M.off,out:M.out},X:{gm:X.gm,go:X.go,g3:X.g3,gc:X.gc,gs:X.gs,gr:X.gr,sp:X.sp}}}
 function planSave(){if(!planKey)return;try{localStorage.setItem(planKey,JSON.stringify(snap()))}catch(e){}}
 function planSaveSoon(){clearTimeout(saveT);saveT=setTimeout(planSave,400)}
 function planOpen(src,c,btn,vsrc){planKey=keyOf(src,c,btn);gh.src=src?String(src):'';refWfSrc=null;var got=null;try{got=planKey&&JSON.parse(localStorage.getItem(planKey)||'null')}catch(e){}
   var memEl=document.getElementById('lkmem');memEl.hidden=true;
   if(got&&got.v===1){var a=got.S||{},b=got.M||{},x=got.X||{};['sim','sm','sp','sc','x','y','rot','mir'].forEach(function(k){if(k in a)S[k]=a[k]});if(a.key)S.key=a.key;
-    M.shapes=b.shapes||[];M.inv=!!b.inv;M.fe=b.fe||0;M.off=b.off||0;M.dirty=true;Object.keys(x).forEach(function(k){X[k]=x[k]});
+    M.shapes=b.shapes||[];M.inv=!!b.inv;M.fe=b.fe||0;M.off=b.off||0;M.out=b.out!==false;moUi();M.dirty=true;Object.keys(x).forEach(function(k){X[k]=x[k]});
     setOn('lkmir',S.mir);setOn('lkmi',M.inv);document.getElementById('lkmf').value=M.fe;document.getElementById('lkmo2').value=M.off;syncUi();memEl.hidden=false;setTimeout(function(){memEl.hidden=true},3500)}
   xui()}
 lk.addEventListener('input',function(e){if(e.target&&e.target.id!=='lkbgt')planSaveSoon()});
