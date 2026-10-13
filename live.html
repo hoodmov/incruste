@@ -65,6 +65,9 @@ ol{padding-left:20px;color:#9d9c96;margin-top:20px}ol li{margin:4px 0}
 @media (max-width:700px){#lk .ct{grid-template-columns:1fr;max-height:42vh}#lk .grp+.grp{border-left:0;border-top:1px solid var(--lk-line)}#lk .tb p{font-size:1rem}#lk .tb button,#lk .tb select{padding:8px 10px}}
 #lksnap{position:fixed;inset:0;z-index:50;background:rgb(0 0 0 / .92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:12px;font-family:var(--lk-f)}
 #lksnap[hidden]{display:none}
+#lkcrt{position:fixed;left:50%;top:62px;transform:translateX(-50%);z-index:55;margin:0;background:var(--lk-acc);color:var(--lk-accink);font:600 .85rem var(--lk-f);padding:9px 16px;border-radius:999px;box-shadow:0 6px 24px rgb(0 0 0 / .4);pointer-events:none;max-width:90vw;text-align:center}
+#lkcrt[hidden]{display:none}
+#lk.lkflash #lkc{animation:lkfl .35s ease-out}@keyframes lkfl{0%{filter:brightness(2.2)}100%{filter:none}}
 #lksnap img{max-width:100%;max-height:78vh;object-fit:contain;border-radius:8px}
 #lksnap p{color:#fff;margin:0;font-size:.85rem}
 @media (prefers-reduced-motion:no-preference){#lk{transition:opacity .2s cubic-bezier(.23,1,.32,1);transition-behavior:allow-discrete}@starting-style{#lk:not([hidden]){opacity:0}}}
@@ -120,7 +123,7 @@ html.lkvt #lk .tb{view-transition-name:lk-bar}
 <section class="grp" id="lkgfond"><h5>Fond</h5>
 <div class="row" id="lkbgrow" hidden><button id="lkbgi" type="button" class="on">Fond : image</button><button id="lkbgv" type="button">Fond : vidéo</button><button id="lkbgp" type="button">⏸ Pause</button><button id="lkbgr" type="button">⏮ Début</button></div>
 <div class="row" id="lkbgrow2" hidden><input id="lkbgt" type="range" min="0" max="10000" step="1" value="0" aria-label="Position dans la vidéo" style="flex:1 1 100%;min-width:0"><span id="lkbgl" class="tc">00:00:00:00</span><button id="lkb1m" type="button">−1 s</button><button id="lkbfm" type="button">◀ −1 image</button><button id="lkbfp" type="button">+1 image ▶</button><button id="lkb1p" type="button">+1 s</button></div>
-<div class="row"><button id="lksnapbtn" type="button">Capture</button><button id="lkrec" type="button">● Enregistrer</button><button id="lkreset" type="button">↺ Réinitialiser tout</button></div>
+<div class="row"><button id="lksnapbtn" type="button">Capture</button><button id="lkcr" type="button" title="Ajoute l’image affichée au compte-rendu post-prod">📸 Au compte-rendu</button><button id="lkrec" type="button">● Enregistrer</button><button id="lkreset" type="button">↺ Réinitialiser tout</button></div>
 <p class="mem" id="lkmem" hidden>Réglages de ce plan restaurés</p>
 </section>
 <section class="grp"><h5>Détourage</h5>
@@ -155,7 +158,7 @@ html.lkvt #lk .tb{view-transition-name:lk-bar}
 </section>
 </div>
 </div>
-<div id="lksnap" hidden><img id="lksnapimg" alt="Capture"><video id="lksnapvid" controls playsinline hidden></video><p id="lksnaptx">Appui long sur l'image pour l'enregistrer.</p><div class="row"><a id="lksnapdl" download>Télécharger</a><button id="lksnapclose" type="button">Fermer</button></div></div>
+<p id="lkcrt" role="status" hidden></p><div id="lksnap" hidden><img id="lksnapimg" alt="Capture"><video id="lksnapvid" controls playsinline hidden></video><p id="lksnaptx">Appui long sur l'image pour l'enregistrer.</p><div class="row"><a id="lksnapdl" download>Télécharger</a><button id="lksnapclose" type="button">Fermer</button></div></div>
 <script>
 (function(){
 var lk=document.getElementById('lk'),cv=document.getElementById('lkc'),msg=document.getElementById('lkmsg'),cap=document.getElementById('lkcap'),sel=document.getElementById('lkcam');
@@ -319,6 +322,18 @@ var iv=inv(ux,uy),vx=iv[0],vy=iv[1];if(S.mir)vx=1-vx;if(vx<0||vx>1||vy<0||vy>1)r
 px.drawImage(vid,Math.floor(vx*vid.videoWidth),Math.floor((1-vy)*vid.videoHeight),1,1,0,0,1,1);var d=px.getImageData(0,0,1,1).data;S.key=cbcr(d[0]/255,d[1]/255,d[2]/255);S.pick=false;pb.classList.remove('on')});
 var sn=document.getElementById('lksnap'),si=document.getElementById('lksnapimg');
 document.getElementById('lksnapbtn').onclick=function(){cv.toBlob(function(b){if(!b)return;si.src=URL.createObjectURL(b);sn.hidden=false},'image/jpeg',.92)};
+window.lgiCaps=window.lgiCaps||(function(){var DB=null;
+function db(){return DB||(DB=new Promise(function(res,rej){var r=indexedDB.open('lgi-caps',1);r.onupgradeneeded=function(){r.result.createObjectStore('c',{keyPath:'k'})};r.onsuccess=function(){res(r.result)};r.onerror=function(){DB=null;rej(r.error)}}))}
+function tx(m,f){return db().then(function(d){return new Promise(function(res,rej){var t=d.transaction('c',m),o=f(t.objectStore('c'));t.oncomplete=function(){res(o&&o.result)};t.onerror=t.onabort=function(){rej(t.error)}})})}
+function ev(){try{dispatchEvent(new Event('lgi:caps'))}catch(e){}}
+return{add:function(x){x.k=x.id+'|'+x.t;return tx('readwrite',function(s){return s.put(x)}).then(function(){ev();return x})},
+all:function(){return tx('readonly',function(s){return s.getAll()}).then(function(a){return(a||[]).sort(function(p,q){return p.t-q.t})})},
+del:function(k){return tx('readwrite',function(s){return s.delete(k)}).then(ev)}}})();
+function crt(t){var e=document.getElementById('lkcrt');e.textContent=t;e.hidden=false;clearTimeout(crt.t);crt.t=setTimeout(function(){e.hidden=true},2400)}
+document.getElementById('lkcr').onclick=function(){var id=String(planKey||'').replace(/^lgi\.lk\./,'').replace(/\.jpe?g$/i,'')||'?',c=cap.textContent||'';
+  lk.classList.remove('lkflash');void lk.offsetWidth;lk.classList.add('lkflash');crt('Capture…');
+  cv.toBlob(function(b){if(!b){crt('Capture impossible');return}
+    window.lgiCaps.add({id:id,cap:c,t:Date.now(),w:cv.width,h:cv.height,b:b}).then(function(){return window.lgiCaps.all()}).then(function(a){var n=a.filter(function(x){return x.id===id}).length;crt('✓ Ajoutée au compte-rendu · '+n+' capture'+(n>1?'s':'')+' sur ce plan')}).catch(function(){crt('⚠ Impossible d’enregistrer la capture')})},'image/jpeg',.88)};
 document.getElementById('lksnapclose').onclick=function(){sn.hidden=true;if(si.src)URL.revokeObjectURL(si.src)};
 
 function mdirty(){M.dirty=true}
