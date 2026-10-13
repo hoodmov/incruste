@@ -576,7 +576,7 @@ html.lkvt #lk .tb{view-transition-name:lk-bar}
 <section class="grp" id="lkgfond"><h5>Fond</h5>
 <div class="row" id="lkbgrow" hidden><button id="lkbgi" type="button" class="on">Fond : image</button><button id="lkbgv" type="button">Fond : vidéo</button><button id="lkbgp" type="button">⏸ Pause</button><button id="lkbgr" type="button">⏮ Début</button></div>
 <div class="row" id="lkbgrow2" hidden><input id="lkbgt" type="range" min="0" max="10000" step="1" value="0" aria-label="Position dans la vidéo" style="flex:1 1 100%;min-width:0"><span id="lkbgl" class="tc">00:00:00:00</span><button id="lkb1m" type="button">−1 s</button><button id="lkbfm" type="button">◀ −1 image</button><button id="lkbfp" type="button">+1 image ▶</button><button id="lkb1p" type="button">+1 s</button></div>
-<div class="row"><button id="lksnapbtn" type="button">Capture</button><button id="lkcr" type="button" title="Ajoute l’image au compte-rendu post-prod et la copie dans ton dossier de captures">📸 Au compte-rendu</button><button id="lkcrdir" type="button" title="Choisir le dossier où copier les captures (ex. un dossier sur le Bureau)" aria-label="Choisir le dossier des captures">📁</button><button id="lkrec" type="button">● Enregistrer</button><button id="lkreset" type="button">↺ Réinitialiser tout</button></div>
+<div class="row"><button id="lkcr" type="button" title="Capture : copiée dans ton dossier de captures, et remplace la capture de ce plan dans le compte-rendu">📸 Capture</button><button id="lkcrdir" type="button" title="Choisir le dossier où copier les captures (ex. un dossier sur le Bureau)" aria-label="Choisir le dossier des captures">📁</button><button id="lkrec" type="button">● Enregistrer</button><button id="lkreset" type="button">↺ Réinitialiser tout</button></div>
 <p class="mem" id="lkmem" hidden>Réglages de ce plan restaurés</p>
 </section>
 <section class="grp"><h5>Détourage</h5>
@@ -790,7 +790,7 @@ cv.addEventListener('pointerdown',function(e){if(M.tool||!S.pick||!vid||!vid.vid
 var iv=inv(ux,uy),vx=iv[0],vy=iv[1];if(S.mir)vx=1-vx;if(vx<0||vx>1||vy<0||vy>1)return;
 px.drawImage(vid,Math.floor(vx*vid.videoWidth),Math.floor((1-vy)*vid.videoHeight),1,1,0,0,1,1);var d=px.getImageData(0,0,1,1).data;S.key=cbcr(d[0]/255,d[1]/255,d[2]/255);S.pick=false;pb.classList.remove('on')});
 var sn=document.getElementById('lksnap'),si=document.getElementById('lksnapimg');
-document.getElementById('lksnapbtn').onclick=function(){cv.toBlob(function(b){if(!b)return;si.src=URL.createObjectURL(b);sn.hidden=false},'image/jpeg',.92)};
+(document.getElementById('lksnapbtn')||{}).onclick=function(){cv.toBlob(function(b){if(!b)return;si.src=URL.createObjectURL(b);sn.hidden=false},'image/jpeg',.92)};
 window.lgiCaps=window.lgiCaps||(function(){var DB=null;
 function db(){return DB||(DB=new Promise(function(res,rej){var r=indexedDB.open('lgi-caps',1);r.onupgradeneeded=function(){r.result.createObjectStore('c',{keyPath:'k'})};r.onsuccess=function(){res(r.result)};r.onerror=function(){DB=null;rej(r.error)}}))}
 function tx(m,f){return db().then(function(d){return new Promise(function(res,rej){var t=d.transaction('c',m),o=f(t.objectStore('c'));t.oncomplete=function(){res(o&&o.result)};t.onerror=t.onabort=function(){rej(t.error)}})})}
@@ -816,10 +816,10 @@ document.getElementById('lkcr').onclick=function(){var id=String(planKey||'').re
   lk.classList.remove('lkflash');void lk.offsetWidth;lk.classList.add('lkflash');crt('Capture…');
   var dirP=FSD.ready();
   cv.toBlob(function(b){if(!b){crt('Capture impossible');return}
-    var crP=window.lgiCaps.add({id:id,cap:c,t:Date.now(),w:cv.width,h:cv.height,b:b}).then(function(){return window.lgiCaps.all()}).then(function(a){return a.filter(function(x){return x.id===id}).length}).catch(function(){return -1});
+    var crP=window.lgiCaps.all().then(function(a){return Promise.all(a.filter(function(x){return x.id===id}).map(function(x){return window.lgiCaps.del(x.k)}))}).then(function(){return window.lgiCaps.add({id:id,cap:c,t:Date.now(),w:cv.width,h:cv.height,b:b})}).then(function(){return 1}).catch(function(){return -1});
     var fP=dirP.then(function(h){return saveFile(h,name,b)}).catch(function(){return null});
     Promise.all([crP,fP]).then(function(r){var n=r[0],f=r[1];
-      crt((n>=0?'✓ Compte-rendu ('+n+' sur ce plan)':'⚠ Compte-rendu non enregistré')+(f?' · copiée dans « '+f+' »':' · copie sur l’ordinateur annulée'))})},'image/jpeg',.92)};
+      crt((n>=0?'✓ Capture enregistrée · compte-rendu mis à jour':'⚠ Compte-rendu non mis à jour')+(f?' · copiée dans « '+f+' »':' · pas de copie sur l’ordinateur'))})},'image/jpeg',.92)};
 document.getElementById('lkcrdir').onclick=function(){if(!FSD.api){crt('Ce navigateur enregistre dans Téléchargements (utilise Chrome pour choisir un dossier)');return}FSD.pick().then(function(h){crt(h?'Les captures iront dans « '+h.name+' »':'Dossier inchangé')})};
 document.getElementById('lksnapclose').onclick=function(){sn.hidden=true;if(si.src)URL.revokeObjectURL(si.src)};
 
@@ -959,7 +959,7 @@ rb.onclick=function(){if(rec){recStop(false);return}var ty=recType();if(ty===nul
 /* fenêtre capture / extrait avec téléchargement */
 var sv=document.getElementById('lksnapvid'),sdl=document.getElementById('lksnapdl'),stx=document.getElementById('lksnaptx');
 function showSnap(imgUrl,vidUrl,name){si.hidden=!imgUrl;sv.hidden=!vidUrl;if(imgUrl)si.src=imgUrl;if(vidUrl){sv.src=vidUrl}sdl.href=imgUrl||vidUrl;sdl.download=name;stx.textContent=vidUrl?'Extrait de 10 s max. Touche Télécharger (ou partage) pour le garder.':'Appui long sur l’image, ou Télécharger, pour l’enregistrer.';sn.hidden=false}
-document.getElementById('lksnapbtn').onclick=function(){cv.toBlob(function(b){if(!b)return;showSnap(URL.createObjectURL(b),null,'capture_'+(planKey||'plan').replace('lgi.lk.','').replace(/\.\w+$/,'')+'.jpg')},'image/jpeg',.92)};
+(document.getElementById('lksnapbtn')||{}).onclick=function(){cv.toBlob(function(b){if(!b)return;showSnap(URL.createObjectURL(b),null,'capture_'+(planKey||'plan').replace('lgi.lk.','').replace(/\.\w+$/,'')+'.jpg')},'image/jpeg',.92)};
 document.getElementById('lksnapclose').onclick=function(){sn.hidden=true;try{sv.pause()}catch(e){}[si.src,sv.src].forEach(function(u){if(u&&u.indexOf('blob:')===0)URL.revokeObjectURL(u)});si.removeAttribute('src');sv.removeAttribute('src')};
 var _bgUi=bgUi;bgUi=function(){_bgUi();xui()};
 xui();
@@ -1170,7 +1170,7 @@ return{add:function(x){x.k=x.id+'|'+x.t;return tx('readwrite',function(s){return
 all:function(){return tx('readonly',function(s){return s.getAll()}).then(function(a){return(a||[]).sort(function(p,q){return p.t-q.t})})},
 del:function(k){return tx('readwrite',function(s){return s.delete(k)}).then(ev)}}})();
 var CAPS={},CURL={};
-function loadCaps(){if(!window.lgiCaps)return Promise.resolve();return window.lgiCaps.all().then(function(a){Object.keys(CURL).forEach(function(k){URL.revokeObjectURL(CURL[k])});CAPS={};CURL={};a.forEach(function(x){(CAPS[x.id]=CAPS[x.id]||[]).push(x);CURL[x.k]=URL.createObjectURL(x.b)})}).catch(function(){})}
+function loadCaps(){if(!window.lgiCaps)return Promise.resolve();return window.lgiCaps.all().then(function(a){Object.keys(CURL).forEach(function(k){URL.revokeObjectURL(CURL[k])});CAPS={};CURL={};var L={};a.forEach(function(x){if(L[x.id])window.lgiCaps.del(L[x.id].k);L[x.id]=x});Object.keys(L).forEach(function(i){var x=L[i];CAPS[i]=[x];CURL[x.k]=URL.createObjectURL(x.b)})}).catch(function(){})}
 function b64(b){return new Promise(function(res){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=function(){res('')};r.readAsDataURL(b)})}
 
 var COLS=[['lens','Optique'],['foc','Focale'],['Diaph','Diaph'],['Distance','Distance'],['Hauteur caméra','Hauteur cam.'],['Inclinaison','Inclinaison'],['Lumière','Lumière'],['Ratio visage','Face match'],['Note lumière','Note lumière']];

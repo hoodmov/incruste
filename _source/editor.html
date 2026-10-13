@@ -189,7 +189,7 @@ return{add:function(x){x.k=x.id+'|'+x.t;return tx('readwrite',function(s){return
 all:function(){return tx('readonly',function(s){return s.getAll()}).then(function(a){return(a||[]).sort(function(p,q){return p.t-q.t})})},
 del:function(k){return tx('readwrite',function(s){return s.delete(k)}).then(ev)}}})();
 var CAPS={},CURL={};
-function loadCaps(){if(!window.lgiCaps)return Promise.resolve();return window.lgiCaps.all().then(function(a){Object.keys(CURL).forEach(function(k){URL.revokeObjectURL(CURL[k])});CAPS={};CURL={};a.forEach(function(x){(CAPS[x.id]=CAPS[x.id]||[]).push(x);CURL[x.k]=URL.createObjectURL(x.b)})}).catch(function(){})}
+function loadCaps(){if(!window.lgiCaps)return Promise.resolve();return window.lgiCaps.all().then(function(a){Object.keys(CURL).forEach(function(k){URL.revokeObjectURL(CURL[k])});CAPS={};CURL={};var L={};a.forEach(function(x){if(L[x.id])window.lgiCaps.del(L[x.id].k);L[x.id]=x});Object.keys(L).forEach(function(i){var x=L[i];CAPS[i]=[x];CURL[x.k]=URL.createObjectURL(x.b)})}).catch(function(){})}
 function b64(b){return new Promise(function(res){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=function(){res('')};r.readAsDataURL(b)})}
 
 var COLS=[['lens','Optique'],['foc','Focale'],['Diaph','Diaph'],['Distance','Distance'],['Hauteur caméra','Hauteur cam.'],['Inclinaison','Inclinaison'],['Lumière','Lumière'],['Ratio visage','Face match'],['Note lumière','Note lumière']];
