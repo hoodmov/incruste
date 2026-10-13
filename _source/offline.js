@@ -8,7 +8,7 @@ var b1=document.createElement('button'),b2=document.createElement('button');b1.t
 menu.insertBefore(b2,menu.firstChild);menu.insertBefore(b1,menu.firstChild);
 function cnt(n){return caches.open(n).then(function(c){return c.keys()}).then(function(k){return k.length}).catch(function(){return 0})}
 function vids(){var s={};[].forEach.call(document.querySelectorAll('[data-vid]'),function(b){s[new URL(b.dataset.vid,location.href).href]=1});return Object.keys(s)}
-function paint(){Promise.all([cnt('lgi-img-v3'),cnt('lgi-vid-v1')]).then(function(r){var nv=vids().length;
+function paint(){Promise.all([cnt('lgi-img-v4'),cnt('lgi-vid-v1')]).then(function(r){var nv=vids().length;
   b1.textContent='📲 Hors ligne : '+(r[0]?'images prêtes ('+r[0]+')':ok?'préparation en cours…':'indisponible ici');
   b2.textContent='⬇ Vidéos hors ligne : '+r[1]+'/'+nv+(r[1]<nv?' — télécharger (~220 Mo)':' ✓')})}
 document.getElementById('edmore').addEventListener('click',paint);paint();

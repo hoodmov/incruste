@@ -18,7 +18,7 @@ a(12,GM16,"24 mm","f/8","8","1,60","0°","Soleil dur haut, ombres courtes et net
 a(13,GM70,"100 mm","f/4","4,2","1,55","légère contre-plongée 3°","Lumière de conférence plate et frontale, haute (≈ 5600 K), fond LED bleu WEF.","Plan taille au pupitre, fond flou mais lisible.")
 a(14,None,None,None,None,None,None,"—","Réf. de look (chemise hawaïenne, Ray-Ban), pas de valeur de plan.")
 a(15,None,None,None,None,None,None,"Brume chaude, soleil diffus.","Plan large de référence : couple assis de dos sur la dune, Camille placé en petit à droite. Échelle et position de Camille dans le désert.")
-a(16,GM70,"85 mm","f/2.8","4,8","1,60","0°","Lumière diffuse et chaude (brume de sable), contre doux venant de l'arrière gauche, faible contraste, look ≈ 4000 K orangé.","Désert complètement fondu derrière : longue focale.")
+a(16,GM70,"85 mm","f/2.8","4,8","1,60","0°","Lumière diffuse et chaude (brume de sable), contre doux venant de l'arrière droite, faible contraste, look ≈ 4000 K orangé.","Désert complètement fondu derrière : longue focale.")
 a(17,GM70,"100 mm","f/2","1,4","1,50","plongée 5°","Contre-jour doux et chaud depuis la droite, visage dans l'ombre, très faible contraste, halo de brume.","Profil serré, fond totalement dissous.")
 a(18,FD,"50 mm","f/2.8","1,2","1,50","contre-plongée 10° (point de vue Pippin)","Jour couvert, diffus, de ¾ face gauche haute, froid désaturé (≈ 6500 K).","Visage proche, mur derrière encore lisible.")
 a(19,FD,"50 mm","f/2.8","1,3","1,70","plongée 15° (point de vue Gandalf)","Jour couvert diffus de la gauche, froid, mur de pierre derrière ; amorce perruque blanche floue à gauche.","Champ/contrechamp avec Gandalf : même focale.")

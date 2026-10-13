@@ -1,5 +1,5 @@
 /* Mode hors ligne – La Grande Incruste 3 */
-const CORE='__CORE__',IMG='lgi-img-v3',VID='lgi-vid-v1',RUN='lgi-run-v1';
+const CORE='__CORE__',IMG='lgi-img-v4',VID='lgi-vid-v1',RUN='lgi-run-v1';
 const FILES=['./','index.html','live.html','textes.json','diffusion.js','pdt.js','pdt.json','clean.js','offline.js','manifest.json','icon-192.png','icon-512.png'];
 const IMGS=__IMGS__;
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil((async()=>{

@@ -9,7 +9,7 @@ RT={
 '009':('2:1','¾, gauche cadre','non'),
 '070':('1,5:1','haute et frontale (projecteurs multiples)','léger, projecteurs hauts du stade derrière'),
 '013':('1,2:1','frontale haute (conférence)','non'),
-'016':('1,2:1','frontale diffuse (brume)','oui, doux, arrière gauche cadre'),
+'016':('1,2:1','frontale diffuse (brume)','oui, doux, arrière droite cadre'),
 '017':('1,5:1 (visage à l\'ombre)','pas de key : visage éclairé par le rebond','oui, contre-jour chaud droite cadre, ≈ +2 IL sur le visage'),
 '019':('1,5:1','¾ latérale, gauche cadre (jour couvert)','non'),
 '020':('2:1','¾, gauche cadre (low key)','léger, appliques derrière (practicals)'),
