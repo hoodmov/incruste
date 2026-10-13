@@ -78,7 +78,7 @@ A[164]=dict(s=GM16,f="24 mm",d="f/5.6",dist="5,0",h="1,60",tilt="plongée 5°",l
 
 DAYOF={"Pink – So What":"J8","Zidane – coup de pied":"J1","Le 5ème Beatles – Hello Goodbye":"J8","Les Choristes":"J3"}
 ORDER={
-"J1":["Fruit Love Island","Lipsync voiture","Pape mobile","L'Exorciste","Fort Boyard","Zidane – coup de pied","Macron / Atol","Dune","Le Seigneur des anneaux"],
+"J1":["Fruit Love Island","Lipsync voiture","Zidane – coup de pied","L'Exorciste","Fort Boyard","Pape mobile","Macron / Atol","Dune","Le Seigneur des anneaux"],
 "J2":["Titanic","Titanic short","L'Odyssée","Gold – Plus près des étoiles","Gold – Laissez-nous chanter","Mariah Carey – It's Time","Trump","Céline Dion JO","Hollande sous la pluie"],
 "J3":["Michael Jackson – Thriller","Le Comte de Monte-Cristo","Tapie","Star Wars – Kylo","Star Wars – Vador","Les Choristes"],
 "J4":["Stranger Things","Gourou","Tiny Desk","Tous les sports (extérieurs)","INA – Piercings","Un dimanche à la campagne"],
@@ -107,7 +107,7 @@ OVR={
 1:dict(s=GM['70-200'],f='100 mm',dist='1,8',h='1,70',tilt='0° (hauteur des yeux)'),
 2:dict(f='20 mm',dist='1,50',h='1,10 (yeux de Camille assis)',tilt='0°',lec_add=" Focale : équivalent caméra frontale d'iPhone (≈ 20-24 mm, Apple ne publie pas la valeur) ; téléphone posé sur le tableau de bord, ≈ 1,50 m des sièges arrière."),
 4:dict(f='200 mm',dist='8,4'),
-70:dict(f='200 mm',dist='9,0'),
+70:dict(f='115 mm',dist='9,0',lec_add=" Plan large (V14) : corps entier assis ; à 9 m, 115 mm donne le cadre du pied à la tête en 16:9 (le 200 mm ne cadrait que du visage aux genoux)."),
 16:dict(s=GM['24-70'],f='50 mm',dist='2,8'),
 20:dict(s=GM['70-200'],f='85 mm',dist='7,4'),
 22:dict(f='35 mm',dist='3,8'),

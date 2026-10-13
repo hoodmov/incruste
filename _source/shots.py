@@ -36,7 +36,7 @@ PLAN=[
 ("J6","INA – Internet",[(R(11,2),"Micro-trottoir années 90","Rue de repérage")]),
 ("J6","Qui veut épouser mon fils",[(N+'J6_qvemf_1_pretendante.jpg',"Prétendante (Camille)","Naturel, appartement"),(N+'J6_qvemf_2_canape.jpg',"Fils et mère sur le canapé","Naturel")]),
 ("J7","Intro Hotu",[(R(1,0),"Conducteur, profil","Fond vert / XR pour le taxi"),(R(1,1),"Passager arrière, ¾","Fond vert / XR")]),
-("J8","Zidane – coup de pied",[(N+"J8_zidane_v14.jpg","Arbitre assis, drapeau","Fond vert américain, tenue d'arbitre ; bonus Camille au sol")]),
+("J8","Zidane – coup de pied",[(N+"J8_zidane_v14.jpg","Arbitre assis, drapeau – plan large","Fond vert américain, tenue d'arbitre ; bonus Camille au sol")]),
 ("J8","Couronnement roi Charles – short",[(R(31,2),"Plan serré (plateau doré)","1 plan serré avec 2 amorces rouge et blanc"),(R(31,3),"Master en pied","1 master en pied")]),
 ("J8","Les Choristes",[(R(8,2),"Plan 1 – classe","Fond vert, Camille avec pull"),(R(8,3),"Plan 2 – de dos, épaules","XR"),(R(8,1),"Plan 3 – de dos, épaules","XR, amorce épaule costume"),(R(8,4),"Plan 4 – de dos, épaules","XR, attention sortie de champ"),(R(8,5),"Plan 5 – épaules","XR, attention changement de lumière"),(R(8,7),"Contrechamp Mathieu","—"),(R(8,6),"Deux-shot","—")]),
 ("J8","Miley Cyrus – Wrecking Ball",[(R(24,3),"Boulet (réf.)","—"),(R(24,4),"Chantier, ouvriers","XR 1"),(R(24,5),"Mur béton (plaque)","XR 2")]),

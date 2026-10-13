@@ -425,6 +425,7 @@ function drawWf(){if(!X.wf||lk.hidden)return;var c=wfc.getContext('2d'),W=wfc.wi
 setInterval(drawWf,200);
 /* mémoire des réglages par plan (sur cet appareil) */
 var planKey=null,saveT=0;
+try{if(!localStorage.getItem('lgi.lk.mig070')){localStorage.removeItem('lgi.lk.070.jpg');localStorage.setItem('lgi.lk.mig070','1')}}catch(e){} /* Zidane passé en plan large : anciens réglages du plan serré oubliés */
 function keyOf(src,c,btn){var s0=(btn&&btn.dataset&&btn.dataset.img)||(src&&String(src).indexOf('blob:')!==0?src:'')||c||'';return s0?'lgi.lk.'+String(s0).replace(/^.*\//,'').replace(/[?#].*$/,''):null}
 function snap(){return{v:1,S:{sim:S.sim,sm:S.sm,sp:S.sp,sc:S.sc,x:S.x,y:S.y,rot:S.rot,mir:S.mir,key:S.key},M:{shapes:M.shapes,inv:M.inv,fe:M.fe,off:M.off,out:M.out},X:{gm:X.gm,go:X.go,g3:X.g3,gc:X.gc,gs:X.gs,gr:X.gr,sp:X.sp}}}
 function planSave(){if(!planKey)return;try{localStorage.setItem(planKey,JSON.stringify(snap()))}catch(e){}}
