@@ -104,7 +104,7 @@ html.lkvt #lk .tb{view-transition-name:lk-bar}
 <section class="grp" id="lkgfond"><h5>Fond</h5>
 <div class="row" id="lkbgrow" hidden><button id="lkbgi" type="button" class="on">Fond : image</button><button id="lkbgv" type="button">Fond : vidéo</button><button id="lkbgp" type="button">⏸ Pause</button><button id="lkbgr" type="button">⏮ Début</button></div>
 <div class="row" id="lkbgrow2" hidden><input id="lkbgt" type="range" min="0" max="10000" step="1" value="0" aria-label="Position dans la vidéo" style="flex:1 1 100%;min-width:0"><span id="lkbgl" class="tc">00:00:00:00</span><button id="lkb1m" type="button">−1 s</button><button id="lkbfm" type="button">◀ −1 image</button><button id="lkbfp" type="button">+1 image ▶</button><button id="lkb1p" type="button">+1 s</button></div>
-<div class="row"><button id="lksnapbtn" type="button">Capture</button><button id="lkcr" type="button" title="Ajoute l’image affichée au compte-rendu post-prod">📸 Au compte-rendu</button><button id="lkrec" type="button">● Enregistrer</button><button id="lkreset" type="button">↺ Réinitialiser tout</button></div>
+<div class="row"><button id="lksnapbtn" type="button">Capture</button><button id="lkcr" type="button" title="Ajoute l’image au compte-rendu post-prod et la copie dans ton dossier de captures">📸 Au compte-rendu</button><button id="lkcrdir" type="button" title="Choisir le dossier où copier les captures (ex. un dossier sur le Bureau)" aria-label="Choisir le dossier des captures">📁</button><button id="lkrec" type="button">● Enregistrer</button><button id="lkreset" type="button">↺ Réinitialiser tout</button></div>
 <p class="mem" id="lkmem" hidden>Réglages de ce plan restaurés</p>
 </section>
 <section class="grp"><h5>Détourage</h5>
@@ -327,10 +327,28 @@ return{add:function(x){x.k=x.id+'|'+x.t;return tx('readwrite',function(s){return
 all:function(){return tx('readonly',function(s){return s.getAll()}).then(function(a){return(a||[]).sort(function(p,q){return p.t-q.t})})},
 del:function(k){return tx('readwrite',function(s){return s.delete(k)}).then(ev)}}})();
 function crt(t){var e=document.getElementById('lkcrt');e.textContent=t;e.hidden=false;clearTimeout(crt.t);crt.t=setTimeout(function(){e.hidden=true},2400)}
-document.getElementById('lkcr').onclick=function(){var id=String(planKey||'').replace(/^lgi\.lk\./,'').replace(/\.jpe?g$/i,'')||'?',c=cap.textContent||'';
+/* Copie de chaque capture dans un dossier de l'ordinateur (choisi une fois, mémorisé) ; sinon téléchargement classique */
+var FSD=(function(){var P=null;function db(){return P||(P=new Promise(function(res,rej){var r=indexedDB.open('lgi-fs',1);r.onupgradeneeded=function(){r.result.createObjectStore('h')};r.onsuccess=function(){res(r.result)};r.onerror=function(){P=null;rej(r.error)}}))}
+  function get(){return db().then(function(d){return new Promise(function(res){var q=d.transaction('h').objectStore('h').get('dir');q.onsuccess=function(){res(q.result||null)};q.onerror=function(){res(null)}})}).catch(function(){return null})}
+  function put(h){return db().then(function(d){return new Promise(function(res){var t=d.transaction('h','readwrite');t.objectStore('h').put(h,'dir');t.oncomplete=res;t.onerror=res})}).catch(function(){})}
+  function pick(){if(!window.showDirectoryPicker)return Promise.resolve(null);try{sessionStorage.removeItem('lgi.fsskip')}catch(e){}return window.showDirectoryPicker({id:'lgi-captures',mode:'readwrite',startIn:'desktop'}).then(function(h){return put(h).then(function(){return h})}).catch(function(){return null})}
+  function ready(){if(!window.showDirectoryPicker)return Promise.resolve(null);return get().then(function(h){if(!h){try{if(sessionStorage.getItem('lgi.fsskip'))return null}catch(e){}return pick().then(function(x){if(!x)try{sessionStorage.setItem('lgi.fsskip','1')}catch(e){}return x})}
+    return h.queryPermission({mode:'readwrite'}).then(function(p){return p==='granted'?h:h.requestPermission({mode:'readwrite'}).then(function(p2){return p2==='granted'?h:null})}).catch(function(){return null})})}
+  return{ready:ready,pick:pick,api:!!window.showDirectoryPicker}})();
+function capName(c){var d=new Date(),z=function(n){return(n<10?'0':'')+n},day=last&&last.closest&&last.closest('.day');
+  var base=((day&&day.id?day.id+' ':'')+String(c||'capture')).replace(/[·•]/g,'-').replace(/[\/\\:*?"<>|]+/g,'').replace(/\s+/g,' ').replace(/\s*-\s*/g,' - ').trim().slice(0,90);
+  return base+' '+d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())+' '+z(d.getHours())+'h'+z(d.getMinutes())+'m'+z(d.getSeconds())+'s.jpg'}
+function saveFile(h,name,b){if(h)return h.getFileHandle(name,{create:true}).then(function(fh){return fh.createWritable()}).then(function(w){return w.write(b).then(function(){return w.close()})}).then(function(){return h.name});
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1500);return Promise.resolve('Téléchargements')}
+document.getElementById('lkcr').onclick=function(){var id=String(planKey||'').replace(/^lgi\.lk\./,'').replace(/\.jpe?g$/i,'')||'?',c=cap.textContent||'',name=capName(c);
   lk.classList.remove('lkflash');void lk.offsetWidth;lk.classList.add('lkflash');crt('Capture…');
+  var dirP=FSD.ready();
   cv.toBlob(function(b){if(!b){crt('Capture impossible');return}
-    window.lgiCaps.add({id:id,cap:c,t:Date.now(),w:cv.width,h:cv.height,b:b}).then(function(){return window.lgiCaps.all()}).then(function(a){var n=a.filter(function(x){return x.id===id}).length;crt('✓ Ajoutée au compte-rendu · '+n+' capture'+(n>1?'s':'')+' sur ce plan')}).catch(function(){crt('⚠ Impossible d’enregistrer la capture')})},'image/jpeg',.88)};
+    var crP=window.lgiCaps.add({id:id,cap:c,t:Date.now(),w:cv.width,h:cv.height,b:b}).then(function(){return window.lgiCaps.all()}).then(function(a){return a.filter(function(x){return x.id===id}).length}).catch(function(){return -1});
+    var fP=dirP.then(function(h){return saveFile(h,name,b)}).catch(function(){return null});
+    Promise.all([crP,fP]).then(function(r){var n=r[0],f=r[1];
+      crt((n>=0?'✓ Compte-rendu ('+n+' sur ce plan)':'⚠ Compte-rendu non enregistré')+(f?' · copiée dans « '+f+' »':' · copie sur l’ordinateur annulée'))})},'image/jpeg',.92)};
+document.getElementById('lkcrdir').onclick=function(){if(!FSD.api){crt('Ce navigateur enregistre dans Téléchargements (utilise Chrome pour choisir un dossier)');return}FSD.pick().then(function(h){crt(h?'Les captures iront dans « '+h.name+' »':'Dossier inchangé')})};
 document.getElementById('lksnapclose').onclick=function(){sn.hidden=true;if(si.src)URL.revokeObjectURL(si.src)};
 
 function mdirty(){M.dirty=true}
