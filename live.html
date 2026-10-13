@@ -242,15 +242,26 @@ var CW={nf:false,rvfc:false,last:0,mutedAt:0,lastRestart:0,want:null,vt:-1,vtAt:
 function camHook(s){var t=s.getVideoTracks()[0];if(!t)return;
   t.onended=function(){CW.mutedAt=CW.mutedAt||Date.now()-5000};t.onmute=function(){CW.mutedAt=Date.now()};t.onunmute=function(){CW.mutedAt=0};
   CW.last=performance.now();setTimeout(function(){if(!vid)return;CW.rvfc=!!vid.requestVideoFrameCallback;if(CW.rvfc){var me=vid;var cb=function(){if(vid!==me)return;CW.nf=true;CW.last=performance.now();me.requestVideoFrameCallback(cb)};me.requestVideoFrameCallback(cb)}},0)}
-function camRestart(why){var now=Date.now();if(now-CW.lastRestart<5000)return;CW.lastRestart=now;CW.mutedAt=0;setMsg('Signal caméra perdu ('+why+'), reconnexion…');startCam(CW.want||savedCam()||null)}
+/* On ménage la carte de capture : on ne la rouvre (stop + getUserMedia) qu'en dernier recours, avec un délai croissant.
+   - signal absent (piste « muette ») : on attend, la Cam Link reprend seule quand la source revient ;
+   - image figée : d'abord une relance douce du lecteur, réouverture seulement après 15 s ;
+   - piste terminée (carte débranchée) : réouverture. */
+CW.fails=0;CW.okSince=0;CW.soft=0;CW.msg=false;
+function cwMsg(t){if(t){CW.msg=true;setMsg(t)}else if(CW.msg){CW.msg=false;setMsg('')}}
+function camRestart(why){var now=Date.now(),gap=[8000,15000,30000,60000][Math.min(CW.fails,3)];if(now-CW.lastRestart<gap)return;CW.lastRestart=now;CW.fails++;CW.mutedAt=0;CW.soft=0;cwMsg('Signal caméra perdu ('+why+'), reconnexion…');startCam(CW.want||savedCam()||null,true)}
 setInterval(function(){if(lk.hidden||document.hidden||!stream)return;var t=stream.getVideoTracks()[0],now=performance.now();
   if(!t||t.readyState==='ended')return camRestart('coupé');
-  if(CW.mutedAt&&Date.now()-CW.mutedAt>3000)return camRestart('muet');
-  if(vid&&vid.readyState>=2){if(CW.rvfc){if(now-CW.last>4000)camRestart('figé')}else{if(vid.currentTime!==CW.vt){CW.vt=vid.currentTime;CW.vtAt=now}else if(now-CW.vtAt>4000)camRestart('figé')}}
+  if(t.muted||CW.mutedAt){cwMsg('Pas de signal sur la carte de capture : vérifie la source (HDMI/SDI). La caméra reprend toute seule dès que le signal revient.');CW.last=now;CW.vtAt=now;return}
+  var idle=0;if(vid&&vid.readyState>=2){if(CW.rvfc)idle=now-CW.last;else{if(vid.currentTime!==CW.vt){CW.vt=vid.currentTime;CW.vtAt=now}idle=now-CW.vtAt}}
+  if(idle<1500){if(!CW.okSince)CW.okSince=now;if(now-CW.okSince>30000)CW.fails=0;CW.soft=0;cwMsg('');}else CW.okSince=0;
+  if(idle>3000&&!CW.soft){CW.soft=1;try{vid.srcObject=null;vid.srcObject=stream;var p0=vid.play();if(p0&&p0.catch)p0.catch(function(){})}catch(e){}}
+  if(idle>6000)cwMsg('Image caméra figée, on attend qu’elle reprenne…');
+  if(idle>15000)camRestart('figé');
   if(vid&&vid.paused&&vid.srcObject){var pr=vid.play();if(pr&&pr.catch)pr.catch(function(){})}},1000);
-if(navigator.mediaDevices&&navigator.mediaDevices.addEventListener)navigator.mediaDevices.addEventListener('devicechange',function(){if(lk.hidden)return;var want=CW.want||savedCam();if(!want){listCams().then(function(c){var p=pickCam(c),cur=stream&&stream.getVideoTracks()[0],cid=cur&&cur.getSettings().deviceId;if(p&&p!==cid){CW.lastRestart=0;CW.want=p;camRestart('carte de capture détectée')}}).catch(function(){});return}
+if(navigator.mediaDevices&&navigator.mediaDevices.addEventListener)navigator.mediaDevices.addEventListener('devicechange',function(){if(lk.hidden)return;var want=CW.want||savedCam();if(!want){listCams().then(function(c){var p=pickCam(c),cur=stream&&stream.getVideoTracks()[0],cid=cur&&cur.getSettings().deviceId;if(p&&p!==cid){CW.lastRestart=0;CW.fails=0;CW.want=p;camRestart('carte de capture détectée')}}).catch(function(){});return}
   navigator.mediaDevices.enumerateDevices().then(function(ds){var cur=stream&&stream.getVideoTracks()[0],cid=cur&&cur.getSettings&&cur.getSettings().deviceId;
-    var has=ds.some(function(d){return d.kind==='videoinput'&&d.deviceId===want});if(want&&has&&(cid!==want||!cur||cur.readyState==='ended')){CW.lastRestart=0;camRestart('rebranché')}}).catch(function(){})});
+    var has=ds.some(function(d){return d.kind==='videoinput'&&d.deviceId===want});if(want&&has&&(cid!==want||!cur||cur.readyState==='ended')){CW.lastRestart=0;CW.fails=0;camRestart('rebranché')}}).catch(function(){})});
+addEventListener('pagehide',function(){stopStream()});
 /* écran maintenu allumé pendant Incruste live */
 function wakeOn(){try{if(navigator.wakeLock&&!CW.wl&&!lk.hidden)navigator.wakeLock.request('screen').then(function(l){CW.wl=l;l.addEventListener('release',function(){CW.wl=null})}).catch(function(){})}catch(e){}}
 function wakeOff(){try{if(CW.wl){CW.wl.release();CW.wl=null}}catch(e){}}
@@ -268,14 +279,17 @@ function camRank(l){l=String(l||'');if(/cam ?link/i.test(l))return 5;if(/elgato/
 function listCams(){return navigator.mediaDevices.enumerateDevices().then(function(ds){return ds.filter(function(d){return d.kind==='videoinput'})})}
 function pickCam(cams){var sv=savedCam();if(sv&&cams.some(function(d){return d.deviceId===sv}))return sv;var best=null,br=0;cams.forEach(function(d){var r=camRank(d.label);if(r>br){br=r;best=d.deviceId}});return br>=3?best:null}
 function fillSel(cams,cur){sel.innerHTML='';cams.forEach(function(d,i){var o=document.createElement('option');o.value=d.deviceId;o.textContent=d.label||('Caméra '+(i+1));if(d.deviceId===cur)o.selected=true;sel.appendChild(o)})}
-function startCam(id){var my=++camSeq;stopStream();if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setMsg("La caméra n'est pas accessible dans ce cadre. Ouvre le lien du site directement dans Safari ou Chrome (pas dans une appli) et autorise la caméra.");return}
+function liveTrack(){var t=stream&&stream.getVideoTracks()[0];return t&&t.readyState==='live'?t:null}
+function startCam(id,force){clearTimeout(CW.keep);var lt=liveTrack();
+  if(!force&&lt){var cur=lt.getSettings&&lt.getSettings().deviceId,w=id||CW.want||savedCam();if(!w||cur===w){if(vid){if(vid.srcObject!==stream)vid.srcObject=stream;var p1=vid.play();if(p1&&p1.catch)p1.catch(function(){})}CW.last=performance.now();CW.vtAt=CW.last;return}}
+  var my=++camSeq;stopStream();if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setMsg("La caméra n'est pas accessible dans ce cadre. Ouvre le lien du site directement dans Safari ou Chrome (pas dans une appli) et autorise la caméra.");return}
   var md=navigator.mediaDevices;
   function want(){if(id)return Promise.resolve(id);return listCams().then(function(c){var lab=c.some(function(d){return d.label});if(lab)return pickCam(c);
       return md.getUserMedia({video:true,audio:false}).then(function(t){t.getTracks().forEach(function(x){x.stop()});return listCams().then(pickCam)})})}
-  function open1(dev,rich){var v=rich?{width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30}}:{};if(dev)v.deviceId={exact:dev};else if(rich)v.facingMode='environment';return md.getUserMedia({video:v,audio:false})}
+  function open1(dev,rich){var v=rich?{width:{ideal:1920},height:{ideal:1080},resizeMode:'none'}:{};if(dev)v.deviceId={exact:dev};else if(rich)v.facingMode='environment';return md.getUserMedia({video:v,audio:false})}
   want().then(function(dev){if(my!==camSeq)return null;CW.want=dev||null;
     return open1(dev,true).catch(function(){return open1(dev,false)}).catch(function(e){if(dev){setMsg('Carte de capture introuvable, caméra par défaut en attendant…');return open1(null,false)}throw e})})
-  .then(function(s){if(!s)return;if(my!==camSeq){s.getTracks().forEach(function(t){t.stop()});return}stream=s;camHook(s);if(!vid){vid=document.createElement('video');vid.muted=true;vid.playsInline=true;vid.setAttribute('playsinline','')}
+  .then(function(s){if(!s)return;if(my!==camSeq){s.getTracks().forEach(function(t){t.stop()});return}stream=s;camHook(s);if(!vid){vid=document.createElement('video');vid.muted=true;vid.playsInline=true;vid.setAttribute('playsinline','');vid.setAttribute('aria-hidden','true');vid.style.cssText='position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none;z-index:-1';document.body.appendChild(vid)}
     vid.srcObject=s;vid.play().catch(function(){});var cur=s.getVideoTracks()[0]&&s.getVideoTracks()[0].getSettings().deviceId;if(!CW.want||cur===CW.want)setMsg('');return listCams().then(function(c){fillSel(c,cur)})})
   .catch(function(e){if(my!==camSeq)return;setMsg(e&&e.name==='NotAllowedError'?"Caméra refusée. Autorise la caméra pour ce site (réglages du navigateur) ou ouvre le lien directement dans Safari/Chrome.":"Caméra introuvable ("+(e&&e.name||'erreur')+"). Branche la source vidéo puis réessaie.")})}
 function tc(t){var f=Math.floor((t%1)*fps+1e-6),s=Math.floor(t),m=Math.floor(s/60),h=Math.floor(m/60);function z(n){return (n<10?'0':'')+n}return z(h)+':'+z(m%60)+':'+z(s%60)+':'+z(f)}
@@ -290,7 +304,7 @@ function openRaw(src,c,btn,vsrc){if(!initGL()){setMsg("WebGL indisponible sur ce
 vidSrc=vsrc||(btn&&btn.dataset&&btn.dataset.vid)||null;bgMode='img';lastSrc=src||null;if(bgv){bgv.pause();bgv.removeAttribute('src');bgv.load()}
 if(src){loadBg(src,function(){startCam(null)});bgUi()}else{startCam(null);setBgMode('vid')}
 if(!raf)raf=requestAnimationFrame(frame);planOpen(src,c,btn,vsrc)}
-function closeRaw(){planSave();recStop(true);if(lk.classList.contains('fs'))setFs(false);lk.hidden=true;if(bgv){bgv.pause()}document.body.style.overflow='';stopStream();if(raf){cancelAnimationFrame(raf);raf=0}if(last)last.focus()}
+function closeRaw(){planSave();recStop(true);if(lk.classList.contains('fs'))setFs(false);lk.hidden=true;if(bgv){bgv.pause()}document.body.style.overflow='';clearTimeout(CW.keep);CW.keep=setTimeout(function(){if(lk.hidden)stopStream()},90000);if(raf){cancelAnimationFrame(raf);raf=0}if(last)last.focus()}
 [].forEach.call(document.querySelectorAll('.lkbtn'),function(b){b.addEventListener('click',function(){open(b.dataset.img,b.dataset.cap,b)})});
 /* Transition page -> Incruste live : l'image du plan s'agrandit jusqu'au moniteur, le panneau monte du bas (et l'inverse à la fermeture) */
 var vtImg=null;
