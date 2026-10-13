@@ -346,6 +346,23 @@ return{add:function(x){x.k=x.id+'|'+x.t;return tx('readwrite',function(s){return
 all:function(){return tx('readonly',function(s){return s.getAll()}).then(function(a){return(a||[]).sort(function(p,q){return p.t-q.t})})},
 del:function(k){return tx('readwrite',function(s){return s.delete(k)}).then(ev)}}})();
 function crt(t){var e=document.getElementById('lkcrt');e.textContent=t;e.hidden=false;clearTimeout(crt.t);crt.t=setTimeout(function(){e.hidden=true},2400)}
+/* captures partagées : branche data (caps.json + caps/<id>.jpg) — une par plan, la plus récente */
+window.lgiCapsGH=window.lgiCapsGH||(function(){var REPO='hoodmov/incruste',BR='data',RAW='https://raw.githubusercontent.com/'+REPO+'/'+BR+'/';
+  function tok(){try{return localStorage.getItem('lgi.gh')||''}catch(e){return''}}
+  function hdr(){var h={Accept:'application/vnd.github+json'};if(tok())h.Authorization='Bearer '+tok();return h}
+  function api(p){return 'https://api.github.com/repos/'+REPO+'/contents/'+p}
+  function enc(s){var u=new TextEncoder().encode(s),r='';for(var i=0;i<u.length;i++)r+=String.fromCharCode(u[i]);return btoa(r)}
+  function dec(b){var bin=atob(b.replace(/\s/g,'')),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new TextDecoder().decode(u)}
+  function b64(blob){return new Promise(function(ok){var r=new FileReader();r.onload=function(){ok(String(r.result).split(',')[1])};r.readAsDataURL(blob)})}
+  function list(){return fetch(RAW+'caps.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():{c:{}}}).then(function(j){return j.c||{}}).catch(function(){return{}})}
+  function idx(){return fetch(api('caps.json')+'?ref='+BR+'&t='+Date.now(),{headers:hdr(),cache:'no-store'}).then(function(r){if(r.status===404)return{sha:null,c:{}};if(!r.ok)throw new Error('GitHub '+r.status);return r.json().then(function(j){var c={};try{c=JSON.parse(dec(j.content)).c||{}}catch(e){}return{sha:j.sha,c:c}})})}
+  function upd(fn,n){n=n||0;return idx().then(function(I){fn(I.c);var body={message:'captures',content:enc(JSON.stringify({v:1,c:I.c})),branch:BR};if(I.sha)body.sha=I.sha;
+    return fetch(api('caps.json'),{method:'PUT',headers:hdr(),body:JSON.stringify(body)}).then(function(r){if((r.status===409||r.status===422)&&n<4)return upd(fn,n+1);if(!r.ok)throw new Error('GitHub '+r.status)})})}
+  function putFile(path,data,n){n=n||0;return fetch(api(path)+'?ref='+BR+'&t='+Date.now(),{headers:hdr(),cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){var body={message:path,content:data,branch:BR};if(j&&j.sha)body.sha=j.sha;
+    return fetch(api(path),{method:'PUT',headers:hdr(),body:JSON.stringify(body)}).then(function(r){if((r.status===409||r.status===422)&&n<3)return putFile(path,data,n+1);if(!r.ok)throw new Error('GitHub '+r.status)})})}
+  return{RAW:RAW,can:function(){return !!tok()},list:list,url:function(id,t){return RAW+'caps/'+encodeURIComponent(id)+'.jpg?v='+t},
+    put:function(id,cap,t,blob){if(!tok())return Promise.resolve(false);return b64(blob).then(function(d){return putFile('caps/'+id+'.jpg',d)}).then(function(){return upd(function(c){c[id]={t:t,cap:cap}})}).then(function(){return true})},
+    del:function(id){if(!tok())return Promise.reject(new Error('token'));return upd(function(c){if(c[id])c[id].del=Date.now()})}}})();
 /* Copie de chaque capture dans un dossier de l'ordinateur (choisi une fois, mémorisé) ; sinon téléchargement classique */
 var FSD=(function(){var P=null;function db(){return P||(P=new Promise(function(res,rej){var r=indexedDB.open('lgi-fs',1);r.onupgradeneeded=function(){r.result.createObjectStore('h')};r.onsuccess=function(){res(r.result)};r.onerror=function(){P=null;rej(r.error)}}))}
   function get(){return db().then(function(d){return new Promise(function(res){var q=d.transaction('h').objectStore('h').get('dir');q.onsuccess=function(){res(q.result||null)};q.onerror=function(){res(null)}})}).catch(function(){return null})}
@@ -363,7 +380,7 @@ document.getElementById('lkcr').onclick=function(){var id=String(planKey||'').re
   lk.classList.remove('lkflash');void lk.offsetWidth;lk.classList.add('lkflash');crt('Capture…');
   var dirP=FSD.ready();
   cv.toBlob(function(b){if(!b){crt('Capture impossible');return}
-    var crP=window.lgiCaps.all().then(function(a){return Promise.all(a.filter(function(x){return x.id===id}).map(function(x){return window.lgiCaps.del(x.k)}))}).then(function(){return window.lgiCaps.add({id:id,cap:c,t:Date.now(),w:cv.width,h:cv.height,b:b})}).then(function(){return 1}).catch(function(){return -1});
+    var tNow=Date.now();setTimeout(function(){window.lgiCapsGH.put(id,c,tNow,b).catch(function(){})},400);var crP=window.lgiCaps.all().then(function(a){return Promise.all(a.filter(function(x){return x.id===id}).map(function(x){return window.lgiCaps.del(x.k)}))}).then(function(){return window.lgiCaps.add({id:id,cap:c,t:tNow,w:cv.width,h:cv.height,b:b})}).then(function(){return 1}).catch(function(){return -1});
     var fP=dirP.then(function(h){return saveFile(h,name,b)}).catch(function(){return null});
     Promise.all([crP,fP]).then(function(r){var n=r[0],f=r[1];
       crt((n>=0?'✓ Capture enregistrée · compte-rendu mis à jour':'⚠ Compte-rendu non mis à jour')+(f?' · copiée dans « '+f+' »':' · pas de copie sur l’ordinateur'))})},'image/jpeg',.92)};

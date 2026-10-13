@@ -28,6 +28,7 @@ self.addEventListener('fetch',e=>{const req=e.request;if(req.method!=='GET')retu
     if(u.pathname.includes('/img/')){e.respondWith(cacheFirst(req,IMG));return}
     if(u.pathname.includes('/vid/')){e.respondWith((async()=>{const c=await caches.open(VID);const h=await c.match(u.href);return h?ranged(req,h):fetch(req)})());return}
     e.respondWith(networkFirst(req));return}
+  if(u.hostname==='raw.githubusercontent.com'&&/\.json$/.test(u.pathname))return;
   if(u.hostname==='raw.githubusercontent.com'){e.respondWith((async()=>{const c=await caches.open(RUN);const h=await c.match(u.href);if(h)return h;
     const r=await fetch(u.href,{mode:'cors'});if(r.ok)c.put(u.href,r.clone());return r})());return}
   if(u.hostname==='cdn.jsdelivr.net'&&u.pathname.includes('onnxruntime-web')){e.respondWith(cacheFirst(req,RUN));return}
