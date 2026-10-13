@@ -163,7 +163,7 @@ function beat(n){if(!token()||pbusy)return Promise.resolve();pbusy=true;
   return pget().then(function(P){var d=P.d,now=Date.now();Object.keys(d).forEach(function(k){if(now-d[k].t>86400000)delete d[k]});d[DID]={n:myName(),t:now};calc(d);
     var body={message:'présence',content:enc(JSON.stringify({v:1,devices:d})),branch:GH.branch};if(P.sha)body.sha=P.sha;
     return fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+GH.pres,{method:'PUT',headers:hdr(),body:JSON.stringify(body)}).then(function(r){pbusy=false;if((r.status===409||r.status===422)&&(n||0)<2)return beat((n||0)+1)})}).catch(function(){}).then(function(){pbusy=false})}
-setInterval(function(){if(!document.hidden)beat()},60000);
+setInterval(function(){if(!document.hidden&&!(window.lgiLiveOn&&window.lgiLiveOn()))beat()},60000);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)beat()});
 var pop=document.getElementById('edpop');
 function ago(t){var m=Math.round((Date.now()-t)/60000);return m<1?'à l’instant':m<60?'il y a '+m+' min':m<1440?'il y a '+Math.round(m/60)+' h':'il y a '+Math.round(m/1440)+' j'}
@@ -177,8 +177,8 @@ document.getElementById('edgh').onclick=function(){menu.hidden=true;
   var t=prompt("Colle ici ton jeton GitHub (fine-grained, uniquement sur le dépôt hoodmov/incruste, permission « Contents : Read and write »). Il reste stocké seulement sur cet appareil. Laisse vide pour déconnecter.",token());
   if(t===null)return;t=t.trim();if(t)lsSet(TK,t);else try{localStorage.removeItem(TK)}catch(e){}
   sync().then(beat)};
-document.addEventListener('visibilitychange',function(){if(!document.hidden&&!document.activeElement.classList.contains('ed'))sync()});
-setInterval(function(){if(!document.hidden&&token()&&!busy&&!dirty&&!(document.activeElement&&(document.activeElement.classList.contains('ed')||document.activeElement.tagName==='TEXTAREA')))sync()},30000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden&&!(window.lgiLiveOn&&window.lgiLiveOn())&&!document.activeElement.classList.contains('ed'))sync()});
+setInterval(function(){if(!document.hidden&&!(window.lgiLiveOn&&window.lgiLiveOn())&&token()&&!busy&&!dirty&&!(document.activeElement&&(document.activeElement.classList.contains('ed')||document.activeElement.tagName==='TEXTAREA')))sync()},30000);
 sync();
 /* compte-rendu */
 window.lgiCaps=window.lgiCaps||(function(){var DB=null;

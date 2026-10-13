@@ -117,7 +117,7 @@ html.lkvt #lk .tb{view-transition-name:lk-bar}
 @media (max-width:700px){#lk .grp+.grp{border-left:0}}
 </style>
 <div id="lk" hidden role="dialog" aria-modal="true" aria-label="Incruste live">
-<div class="tb"><p id="lkcap"></p><select id="lkcam" aria-label="Caméra"></select><button id="lkfs" type="button">⛶ Plein écran</button><button id="lkclose" type="button">Fermer</button></div>
+<div class="tb"><p id="lkcap"></p><select id="lkcam" aria-label="Caméra"></select><button id="lkcamr" type="button" title="Relancer la caméra (seulement si l’image est bloquée)" aria-label="Relancer la caméra">↻</button><button id="lkfs" type="button">⛶ Plein écran</button><button id="lkclose" type="button">Fermer</button></div>
 <button id="lkfsx" type="button">✕ Quitter le plein écran</button><div id="lkwrap"><canvas id="lkc"></canvas><img id="lkgh" alt="" hidden><canvas id="lkov"></canvas><div id="lkspl" hidden><i></i></div><canvas id="lkwf" width="320" height="140" hidden></canvas><div id="lkmsg" hidden></div></div>
 <div class="ct">
 <section class="grp" id="lkgfond"><h5>Fond</h5>
@@ -262,6 +262,7 @@ if(navigator.mediaDevices&&navigator.mediaDevices.addEventListener)navigator.med
   navigator.mediaDevices.enumerateDevices().then(function(ds){var cur=stream&&stream.getVideoTracks()[0],cid=cur&&cur.getSettings&&cur.getSettings().deviceId;
     var has=ds.some(function(d){return d.kind==='videoinput'&&d.deviceId===want});if(want&&has&&(cid!==want||!cur||cur.readyState==='ended')){CW.lastRestart=0;CW.fails=0;camRestart('rebranché')}}).catch(function(){})});
 addEventListener('pagehide',function(){stopStream()});
+window.lgiLiveOn=function(){return !lk.hidden};
 /* écran maintenu allumé pendant Incruste live */
 function wakeOn(){try{if(navigator.wakeLock&&!CW.wl&&!lk.hidden)navigator.wakeLock.request('screen').then(function(l){CW.wl=l;l.addEventListener('release',function(){CW.wl=null})}).catch(function(){})}catch(e){}}
 function wakeOff(){try{if(CW.wl){CW.wl.release();CW.wl=null}}catch(e){}}
@@ -304,7 +305,7 @@ function openRaw(src,c,btn,vsrc){if(!initGL()){setMsg("WebGL indisponible sur ce
 vidSrc=vsrc||(btn&&btn.dataset&&btn.dataset.vid)||null;bgMode='img';lastSrc=src||null;if(bgv){bgv.pause();bgv.removeAttribute('src');bgv.load()}
 if(src){loadBg(src,function(){startCam(null)});bgUi()}else{startCam(null);setBgMode('vid')}
 if(!raf)raf=requestAnimationFrame(frame);planOpen(src,c,btn,vsrc)}
-function closeRaw(){planSave();recStop(true);if(lk.classList.contains('fs'))setFs(false);lk.hidden=true;if(bgv){bgv.pause()}document.body.style.overflow='';clearTimeout(CW.keep);CW.keep=setTimeout(function(){if(lk.hidden)stopStream()},90000);if(raf){cancelAnimationFrame(raf);raf=0}if(last)last.focus()}
+function closeRaw(){planSave();recStop(true);if(lk.classList.contains('fs'))setFs(false);lk.hidden=true;if(bgv){bgv.pause()}document.body.style.overflow='';clearTimeout(CW.keep);/* caméra gardée ouverte tant que la page est ouverte : chaque fermeture/réouverture fatigue la carte de capture */if(raf){cancelAnimationFrame(raf);raf=0}if(last)last.focus()}
 [].forEach.call(document.querySelectorAll('.lkbtn'),function(b){b.addEventListener('click',function(){open(b.dataset.img,b.dataset.cap,b)})});
 /* Transition page -> Incruste live : l'image du plan s'agrandit jusqu'au moniteur, le panneau monte du bas (et l'inverse à la fermeture) */
 var vtImg=null;
@@ -324,6 +325,7 @@ function open(src,c,btn,vsrc){var im=heroOf(btn);vtImg=im;vt(function(){openRaw(
 function close(){if(lk.hidden){closeRaw();return}var im=vtImg&&vtImg.isConnected?vtImg:null;vtImg=null;vt(closeRaw,false,im)}
 document.getElementById('lkclose').onclick=close;
 document.addEventListener('keydown',function(e){if(lk.hidden)return;if(e.key==='Escape'){if(lk.classList.contains('fs'))setFs(false);else close()}else if((e.key==='f'||e.key==='F')&&!/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||'')))setFs(!lk.classList.contains('fs'))});
+document.getElementById('lkcamr').onclick=function(){CW.lastRestart=0;CW.fails=0;cwMsg('Relance de la caméra…');startCam(CW.want||savedCam()||null,true)};
 sel.onchange=function(){try{localStorage.setItem('lgi.lk.cam2',sel.value);localStorage.removeItem('lgi.lk.cam')}catch(e){}CW.want=sel.value;startCam(sel.value)};
 document.getElementById('lkrot').addEventListener('input',function(e){S.rot=parseFloat(e.target.value)*Math.PI/180});
 [['lksim','sim'],['lksm','sm'],['lksp','sp'],['lksc','sc'],['lkx','x'],['lky','y']].forEach(function(p){var el=document.getElementById(p[0]);el.addEventListener('input',function(){S[p[1]]=parseFloat(el.value)})});

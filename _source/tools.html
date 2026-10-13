@@ -162,7 +162,7 @@ function paintNow(){var d=todayDay();[].forEach.call(document.querySelectorAll('
   if(real&&nm>=seqs[0].t.a){var diff=nm-real.t.a,lab;if(real.t.b<nm){lab='<span class="late">Retard ≈ '+fmtD(nm-real.t.a)+'</span>'}else if(diff<0){lab='<span class="ahead">Avance ≈ '+fmtD(-diff)+'</span>'}else lab='<span>Dans les temps</span>';
     h+='<div><em>Selon les plans tournés</em><a href="'+anchor(real)+'"><b>'+real.name+'</b></a><small>'+real.t.txt+' · '+lab+'</small></div>'}
   if(box.innerHTML!==h)box.innerHTML=h}
-setInterval(paintNow,30000);setTimeout(paintNow,2500);
+setInterval(function(){if(!(window.lgiLiveOn&&window.lgiLiveOn()))paintNow()},30000);setTimeout(paintNow,2500);
 
 /* ---------- 12. QR codes (bibliothèque chargée à la demande, gardée hors ligne) ---------- */
 var qb=document.getElementById('qrbox'),qc=document.getElementById('qrimg'),qu=document.getElementById('qrurl'),qt=document.getElementById('qrt'),curUrl='';

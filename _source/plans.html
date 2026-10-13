@@ -70,7 +70,7 @@ function check(){if(document.hidden&&!first)return;rd(true).then(function(P){if(
   var a=JSON.stringify(P),b=JSON.stringify(cur);if(a===b){first=false;return}
   lsSet(CK,JSON.stringify(P));var auto=first&&!sessionStorage.getItem('lgi.plr');first=false;
   if(auto){try{sessionStorage.setItem('lgi.plr','1')}catch(e){}location.reload()}else banner()}).catch(function(){first=false})}
-setTimeout(check,1500);setInterval(check,45000);
+setTimeout(check,1500);setInterval(function(){if(!(window.lgiLiveOn&&window.lgiLiveOn()))check()},45000);
 document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('.plandel');if(!b)return;var id=b.getAttribute('data-id');
   if(!token()){alert("Active la synchro (jeton GitHub) pour supprimer un plan.");return}
   if(!confirm('Supprimer ce plan ajouté sur TOUS les appareils ?'))return;
