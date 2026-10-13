@@ -1028,17 +1028,21 @@ body.editing .edextra{display:flex}
 #rp .rpbar{position:sticky;top:0;z-index:2;background:var(--surface);border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 16px}
 #rp .rpbar button{font:600 .85rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 12px;cursor:pointer}
 #rp .rpbar label{font:500 .85rem var(--body);display:flex;gap:6px;align-items:center}
-#rp .rpbody{padding:16px;max-width:1100px;margin:0 auto}
+#rp .rpbody{padding:16px;max-width:1440px;margin:0 auto}
 #rp h1{font:700 1.9rem var(--display);margin:0 0 4px}
 #rp h2{font:700 1.4rem var(--display);margin:22px 0 6px;border-bottom:2px solid var(--key)}
 #rp h3{font:600 .95rem var(--body);margin:12px 0 4px;color:var(--muted)}
+#rp td.cap{width:220px;min-width:180px;position:relative}
+#rp td.cap img{width:100%;max-width:220px;aspect-ratio:16/9;object-fit:contain;background:#000;border-radius:6px;display:block}
+#rp td.cap small{display:block;color:var(--muted);font-size:.72rem;margin-top:3px;padding-right:28px}
+#rp td.cap .rpdel{position:absolute;right:6px;bottom:6px}
 #rp .rpcaps{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:12px 0 22px}
 #rp .rpcaps figure{margin:0;position:relative}
 #rp .rpcaps img{width:100%;aspect-ratio:16/9;object-fit:contain;background:#000;border-radius:8px;display:block}
 #rp .rpcaps figcaption{font:500 .8rem var(--body);margin-top:5px;padding-right:30px}
 #rp .rpcaps small{display:block;color:var(--muted)}
 #rp .rpdel{position:absolute;right:0;bottom:2px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.8rem}
-@media print{#rp .rpdel{display:none}#rp .rpcaps{break-inside:avoid}#rp .rpcaps figure{break-inside:avoid}}
+@media print{#rp .rpdel{display:none}#rp td.cap{width:160px}#rp tr{break-inside:avoid}#rp .rpcaps{break-inside:avoid}#rp .rpcaps figure{break-inside:avoid}}
 #rp .meta{color:var(--muted);font-size:.9rem;margin:0 0 8px}
 #rp table{border-collapse:collapse;width:100%;font-size:.85rem;background:var(--surface)}
 #rp th,#rp td{border:1px solid var(--line);padding:5px 7px;text-align:left;vertical-align:top}
@@ -1213,19 +1217,19 @@ var COLS=[['lens','Optique'],['foc','Focale'],['Diaph','Diaph'],['Distance','Dis
 var ST={'':'À tourner',ok:'Tourné',no:'Non tourné'};
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function rows(only){var out=[];shots.forEach(function(r){var e=E[r.id]||{},mod=FIELDS.some(function(f){return val(r,f)!==r.orig[f]})||!!e.note||!!e.st||!!CAPS[r.id];if(only&&!mod)return;out.push({r:r,e:e})});return out}
+function capCell(r,U){var c=(CAPS[r.id]||[])[0];if(!c)return'<td class="cap"></td>';var dt=new Date(c.t);return'<td class="cap"><a href="'+(U[c.k]||'')+'" target="_blank" rel="noopener"><img src="'+(U[c.k]||'')+'" alt="Capture '+esc(r.n+' '+r.plan)+'" loading="lazy"></a><small>'+dt.toLocaleDateString('fr-FR')+' '+dt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</small><button class="rpdel" type="button" data-k="'+esc(c.k)+'" aria-label="Supprimer cette capture">✕</button></td>'}
 function buildReport(only,U){U=U||CURL;var ncap=0;Object.keys(CAPS).forEach(function(k){ncap+=CAPS[k].length});
   var list=rows(only),days={},order=[];list.forEach(function(x){var d=x.r.day;if(!days[d]){days[d]={};order.push(d)}(days[d][x.r.seq]=days[d][x.r.seq]||[]).push(x)});
   var nmod=0;shots.forEach(function(r){if(FIELDS.some(function(f){return val(r,f)!==r.orig[f]}))nmod++});
   var h='<h1>Compte-rendu caméra – La Grande Incruste 3</h1><p class="meta">Édité le '+new Date().toLocaleDateString('fr-FR')+' · '+list.length+' plan(s) listé(s) · '+nmod+' plan(s) dont les réglages diffèrent du prévu'+(ncap?' · '+ncap+' capture(s) incruste live':'')+'. Valeurs réelles ; en orange, les réglages modifiés (prévu entre parenthèses).</p>';
-  order.forEach(function(d){h+='<h2>'+esc(d)+'</h2>';Object.keys(days[d]).forEach(function(s){h+='<h3>'+esc(s)+'</h3><div class="tw"><table><thead><tr><th>#</th><th>Plan</th><th>Statut</th>'+COLS.map(function(c){return'<th>'+c[1]+'</th>'}).join('')+'<th>Note</th></tr></thead><tbody>';
-    days[d][s].forEach(function(x){var r=x.r;h+='<tr><td>'+esc(r.n)+'</td><td>'+esc(r.plan)+'</td><td>'+ST[x.e.st||'']+'</td>'+COLS.map(function(c){var v=val(r,c[0]),m=v!==r.orig[c[0]];return'<td'+(m?' class="m"':'')+'>'+esc(v)+(m?'<small>prévu : '+esc(r.orig[c[0]])+'</small>':'')+'</td>'}).join('')+'<td>'+esc(x.e.note||'')+'</td></tr>'});
+  order.forEach(function(d){h+='<h2>'+esc(d)+'</h2>';Object.keys(days[d]).forEach(function(s){h+='<h3>'+esc(s)+'</h3><div class="tw"><table><thead><tr><th>#</th><th>Plan</th><th>Statut</th>'+COLS.map(function(c){return'<th>'+c[1]+'</th>'}).join('')+'<th>Note</th><th>Capture</th></tr></thead><tbody>';
+    days[d][s].forEach(function(x){var r=x.r;h+='<tr><td>'+esc(r.n)+'</td><td>'+esc(r.plan)+'</td><td>'+ST[x.e.st||'']+'</td>'+COLS.map(function(c){var v=val(r,c[0]),m=v!==r.orig[c[0]];return'<td'+(m?' class="m"':'')+'>'+esc(v)+(m?'<small>prévu : '+esc(r.orig[c[0]])+'</small>':'')+'</td>'}).join('')+'<td>'+esc(x.e.note||'')+'</td>'+capCell(x.r,U)+'</tr>'});
     h+='</tbody></table></div>';
-    var cs=[];days[d][s].forEach(function(x){(CAPS[x.r.id]||[]).forEach(function(c){cs.push({r:x.r,c:c})})});
-    if(cs.length)h+='<div class="rpcaps">'+cs.map(function(y){var dt=new Date(y.c.t);return'<figure><img src="'+(U[y.c.k]||'')+'" alt="Capture '+esc(y.r.n+' '+y.r.plan)+'" loading="lazy"><figcaption><b>'+esc(y.r.n)+'</b> '+esc(y.r.plan)+'<small>'+dt.toLocaleDateString('fr-FR')+' '+dt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</small><button class="rpdel" type="button" data-k="'+esc(y.c.k)+'" aria-label="Supprimer cette capture">✕</button></figcaption></figure>'}).join('')+'</div>'})});
+})});
   if(!list.length)h+='<p>Aucun plan modifié pour le moment.</p>';
   return h}
-function csv(only){var q=function(s){return'"'+String(s).replace(/"/g,'""')+'"'};var L=[['Jour','Séquence','#','Plan','Statut'].concat(COLS.map(function(c){return c[1]})).concat(COLS.map(function(c){return c[1]+' (prévu)'})).concat(['Modifié','Note']).map(q).join(';')];
-  rows(only).forEach(function(x){var r=x.r,mod=FIELDS.some(function(f){return val(r,f)!==r.orig[f]});L.push([r.day,r.seq,r.n,r.plan,ST[x.e.st||'']].concat(COLS.map(function(c){return val(r,c[0])})).concat(COLS.map(function(c){return r.orig[c[0]]})).concat([mod?'oui':'non',x.e.note||'']).map(q).join(';'))});
+function csv(only){var q=function(s){return'"'+String(s).replace(/"/g,'""')+'"'};var L=[['Jour','Séquence','#','Plan','Statut'].concat(COLS.map(function(c){return c[1]})).concat(COLS.map(function(c){return c[1]+' (prévu)'})).concat(['Modifié','Note','Capture']).map(q).join(';')];
+  rows(only).forEach(function(x){var r=x.r,mod=FIELDS.some(function(f){return val(r,f)!==r.orig[f]});L.push([r.day,r.seq,r.n,r.plan,ST[x.e.st||'']].concat(COLS.map(function(c){return val(r,c[0])})).concat(COLS.map(function(c){return r.orig[c[0]]})).concat([mod?'oui':'non',x.e.note||'',(CAPS[r.id]||[])[0]?new Date(CAPS[r.id][0].t).toLocaleString('fr-FR'):'']).map(q).join(';'))});
   return '﻿'+L.join('\r\n')}
 var rp=document.getElementById('rp');
 function openReport(){rp.hidden=false;document.body.classList.add('rp-open');document.body.style.overflow='hidden';
@@ -1234,7 +1238,7 @@ function openReport(){rp.hidden=false;document.body.classList.add('rp-open');doc
   b.onclick=function(ev){var x=ev.target.closest&&ev.target.closest('.rpdel');if(!x)return;if(!confirm('Supprimer cette capture du compte-rendu ?'))return;var k=x.getAttribute('data-k'),id=k.split('|')[0],G=window.lgiCapsGH,ps=[window.lgiCaps.del(k).catch(function(){})];if(k.indexOf('gh|')===0)id=k.slice(3);if(G.can())ps.push(G.del(id).catch(function(){}));else if(k.indexOf('gh|')===0){alert('Active la synchro (jeton GitHub, menu ⋯) pour supprimer une capture partagée.');return}Promise.all(ps).then(loadCaps).then(up)};
   document.getElementById('rpx').onclick=closeReport;document.getElementById('rpp').onclick=function(){window.print()};
   document.getElementById('rpc').onclick=function(){dl('compte-rendu-camera.csv','text/csv;charset=utf-8',csv(o.checked))};
-  document.getElementById('rph').onclick=function(){var ks=[];Object.keys(CAPS).forEach(function(i){CAPS[i].forEach(function(c){ks.push(c)})});Promise.all(ks.map(function(c){return(c.b?Promise.resolve(c.b):fetch(c.url).then(function(r){return r.blob()})).then(b64).catch(function(){return c.url||''}).then(function(u){return[c.k,u]})})).then(function(P){var U={};P.forEach(function(p){U[p[0]]=p[1]});var st='';dl('compte-rendu-camera.html','text/html;charset=utf-8','<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compte-rendu caméra</title><style>body{font:14px system-ui,sans-serif;margin:16px;color:#141817}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #ccc;padding:4px 6px;text-align:left;vertical-align:top}th{background:#eee;font-size:10px;text-transform:uppercase}td.m{color:#c75f12;font-weight:700}small{display:block;color:#666;font-weight:400}h2{border-bottom:2px solid #0f8a52}h3{color:#555}.tw{overflow-x:auto}.rpcaps{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin:10px 0 18px}figure{margin:0}figure img{width:100%;border-radius:6px;display:block}figcaption{font-size:12px;margin-top:4px}.rpdel{display:none}</style>'+buildReport(o.checked,U)+st)})}}
+  document.getElementById('rph').onclick=function(){var ks=[];Object.keys(CAPS).forEach(function(i){CAPS[i].forEach(function(c){ks.push(c)})});Promise.all(ks.map(function(c){return(c.b?Promise.resolve(c.b):fetch(c.url).then(function(r){return r.blob()})).then(b64).catch(function(){return c.url||''}).then(function(u){return[c.k,u]})})).then(function(P){var U={};P.forEach(function(p){U[p[0]]=p[1]});var st='';dl('compte-rendu-camera.html','text/html;charset=utf-8','<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compte-rendu caméra</title><style>body{font:14px system-ui,sans-serif;margin:16px;color:#141817}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #ccc;padding:4px 6px;text-align:left;vertical-align:top}th{background:#eee;font-size:10px;text-transform:uppercase}td.m{color:#c75f12;font-weight:700}small{display:block;color:#666;font-weight:400}h2{border-bottom:2px solid #0f8a52}h3{color:#555}.tw{overflow-x:auto}.rpcaps{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin:10px 0 18px}figure{margin:0}figure img{width:100%;border-radius:6px;display:block}figcaption{font-size:12px;margin-top:4px}td.cap{width:220px}td.cap img{width:220px;display:block;border-radius:4px}.rpdel{display:none}</style>'+buildReport(o.checked,U)+st)})}}
 function closeReport(){rp.hidden=true;document.body.classList.remove('rp-open');document.body.style.overflow=''}
 document.getElementById('edrep').onclick=openReport;
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!rp.hidden)closeReport()});
