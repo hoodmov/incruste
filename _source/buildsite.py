@@ -1,5 +1,8 @@
 import os
 from PIL import Image as _Im
+def _V(src):
+    import hashlib
+    return src+"?v="+hashlib.md5(open("/home/claude/incruste/"+src,"rb").read()).hexdigest()[:8]
 def _wh(src):
     try:
         w,h=_Im.open('/home/claude/incruste/'+src.split('?')[0]).size
@@ -47,7 +50,7 @@ for d in D:
         if s['name'] in VIDEOS: body.append(f'<button class="vidbtn" type="button" data-src="vid/{VIDEOS[s["name"]]}.mp4" data-cap="Vidéo de référence · {E(s["name"])}"><span class="pl">▶</span> Voir la vidéo de référence</button>')
         for qi,x in enumerate(s['shots']):
             cap=(f'RÉFÉRENCE (non tournée) · {s["name"]} · {x["plan"]}' if x['ref'] else f'#{x["n"]} · {s["name"]} · {x["plan"]}')
-            pic=f'<button class="pic" type="button" data-full="{x["img"]}"{(" data-clean=\""+x["img"].replace("img/","img/clean/")+"?v="+__import__("hashlib").md5(open("/home/claude/incruste/"+x["img"].replace("img/","img/clean/"),"rb").read()).hexdigest()[:8]+"\"") if os.path.exists("/home/claude/incruste/"+x["img"].replace("img/","img/clean/")) else ""} data-cap="{E(cap)}" aria-label="Agrandir l&#39;image"><img src="{x["img"]}" alt="{E(cap)}" loading="lazy"{_wh(x["img"])}><span class="zoom">Agrandir</span></button><button class="lkbtn" type="button" data-img="{x["img"]}" data-cap="{E(cap)}"{(" data-vid=\"vid/"+VIDEOS[s["name"]]+".mp4\"") if s["name"] in VIDEOS else ""}>◉ Incruste live</button>'
+            pic=f'<button class="pic" type="button" data-full="{_V(x["img"])}"{(" data-clean=\""+x["img"].replace("img/","img/clean/")+"?v="+__import__("hashlib").md5(open("/home/claude/incruste/"+x["img"].replace("img/","img/clean/"),"rb").read()).hexdigest()[:8]+"\"") if os.path.exists("/home/claude/incruste/"+x["img"].replace("img/","img/clean/")) else ""} data-cap="{E(cap)}" aria-label="Agrandir l&#39;image"><img src="{_V(x["img"])}" alt="{E(cap)}" loading="lazy"{_wh(x["img"])}><span class="zoom">Agrandir</span></button><button class="lkbtn" type="button" data-img="{_V(x["img"])}" data-cap="{E(cap)}"{(" data-vid=\"vid/"+VIDEOS[s["name"]]+".mp4\"") if s["name"] in VIDEOS else ""}>◉ Incruste live</button>'
             if x['s']:
                 specs=f'''<div class="lens">{chip(x["s"])}<span class="foc">{E(x["f"])}</span></div>
 <dl class="grid"><div><dt>Diaph</dt><dd>{E(x["d"])}</dd></div><div><dt>Distance</dt><dd>{E(mm(x["dist"]))}</dd></div><div><dt>Hauteur caméra</dt><dd>{E(mm(x["h"]))}</dd></div><div><dt>Inclinaison</dt><dd>{E(x["tilt"])}</dd></div></dl>'''

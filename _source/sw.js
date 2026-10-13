@@ -5,7 +5,7 @@ const IMGS=__IMGS__;
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil((async()=>{
   const c=await caches.open(CORE);await Promise.all(FILES.map(f=>c.add(new Request(f,{cache:'reload'})).catch(()=>{})));
   const ic=await caches.open(IMG);const todo=[];for(const u of IMGS){if(!(await ic.match(u)))todo.push(u)}
-  for(let i=0;i<todo.length;i+=8){await Promise.all(todo.slice(i,i+8).map(u=>ic.add(u).catch(()=>{})))}
+  for(let i=0;i<todo.length;i+=8){await Promise.all(todo.slice(i,i+8).map(u=>ic.add(new Request(u,{cache:'reload'})).catch(()=>{})))}
 })())});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{
   for(const k of await caches.keys()){if((k.startsWith('lgi-core-')&&k!==CORE)||(k.startsWith('lgi-img-')&&k!==IMG))await caches.delete(k)}
@@ -18,7 +18,7 @@ async function networkFirst(req){
   const c=await cache.match(req,{ignoreSearch:true})||(req.mode==='navigate'?await cache.match('index.html'):null);
   return c||net}
 async function cacheFirst(req,name){const c=await caches.open(name);const h=await c.match(req.url);if(h)return h;
-  const r=await fetch(req);if(r&&r.ok)c.put(req.url,r.clone());return r}
+  const r=await fetch(req.url,{cache:'reload'}).catch(()=>fetch(req));if(r&&r.ok)c.put(req.url,r.clone());return r}
 async function ranged(req,resp){const m=/bytes=(\d*)-(\d*)/.exec(req.headers.get('range')||'');if(!m||!resp)return resp;
   const b=await resp.blob(),size=b.size;let s=m[1]?+m[1]:0,e=m[2]?+m[2]:size-1;if(!m[1]&&m[2]){s=Math.max(0,size-+m[2]);e=size-1}e=Math.min(e,size-1);
   return new Response(b.slice(s,e+1),{status:206,statusText:'Partial Content',headers:{'Content-Type':resp.headers.get('Content-Type')||'video/mp4','Content-Range':'bytes '+s+'-'+e+'/'+size,'Content-Length':String(e-s+1)}})}
