@@ -1458,7 +1458,19 @@ if('IntersectionObserver' in window){
 }
 // Lien vers un jour (#J3) : le contenu chargé ensuite (tableur, images) décale la page ; on recale tant que l'utilisateur n'a pas bougé
 var moved=false;['wheel','touchstart','keydown','mousedown'].forEach(function(ev){addEventListener(ev,function(){moved=true},{passive:true,once:true})});
-function recal(){if(moved||!location.hash)return;var t=document.getElementById(decodeURIComponent(location.hash.slice(1)));if(t)t.scrollIntoView({block:'start'})}
+// Actualisation : on revient sur le même plan (ancre = plan visible + décalage), recalé pendant le chargement des images
+var PK='lgi.pos',restoring=false;try{history.scrollRestoration='manual'}catch(e){}
+function shots(){return document.querySelectorAll('.shot,.seq h2,.dayhead')}
+function savePos(){try{var L=shots(),best=-1,off=0;for(var i=0;i<L.length;i++){var r=L[i].getBoundingClientRect();if(!r.height)continue;if(r.top<=90){best=i;off=r.top}else{if(best<0){best=i;off=r.top}break}}
+  sessionStorage.setItem(PK,JSON.stringify({i:best,o:off,y:scrollY}))}catch(e){}}
+addEventListener('scroll',function(){clearTimeout(savePos.t);savePos.t=setTimeout(savePos,150)},{passive:true});
+addEventListener('pagehide',savePos);
+var nav0=(performance.getEntriesByType&&performance.getEntriesByType('navigation')[0])||{},isReload=nav0.type==='reload'||nav0.type==='back_forward';
+var P=null;try{P=JSON.parse(sessionStorage.getItem(PK)||'null')}catch(e){}
+if(isReload&&P&&P.y>0){restoring=true;
+  var rp=function(){if(moved)return;var L=shots(),el=L[P.i];if(el&&el.getBoundingClientRect().height)scrollTo(0,el.getBoundingClientRect().top+scrollY-P.o);else scrollTo(0,P.y)};
+  rp();addEventListener('load',rp);[100,300,700,1200,2000,3200,5000].forEach(function(ms){setTimeout(rp,ms)})}
+function recal(){if(restoring||moved||!location.hash)return;var t=document.getElementById(decodeURIComponent(location.hash.slice(1)));if(t)t.scrollIntoView({block:'start'})}
 [300,900,1800,3200].forEach(function(ms){setTimeout(recal,ms)});
 addEventListener('hashchange',function(){moved=false;[400,1200].forEach(function(ms){setTimeout(recal,ms)})});
 // Note lumière vide : discrète
