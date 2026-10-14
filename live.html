@@ -61,6 +61,7 @@ ol{padding-left:20px;color:#9d9c96;margin-top:20px}ol li{margin:4px 0}
 #lk.fs #lkc{max-width:100vw;max-height:100vh;background:#000}
 #lkfsx{display:none;position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:12px;z-index:60;background:rgb(0 0 0 / .55)!important;color:#fff;border:1px solid rgb(255 255 255 / .35)!important;border-radius:10px;padding:10px 14px;font:600 .88rem var(--lk-f);opacity:0;transition:opacity .25s;cursor:pointer}
 #lk.fs #lkfsx{display:block}#lk.fs #lkfsx.vis{opacity:1}
+#lkcaminfo{font:500 .72rem var(--lk-m);color:var(--lk-mut);white-space:nowrap;align-self:center}#lkcaminfo.warn{color:#ffb020}
 #lkfscap{display:none;position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);left:12px;z-index:60;background:rgb(0 0 0 / .55)!important;color:#fff;border:1px solid rgb(255 255 255 / .35)!important;border-radius:10px;padding:10px 14px;font:600 .88rem var(--lk-f);opacity:0;transition:opacity .25s;cursor:pointer}
 #lk.fs #lkfscap{display:block}#lk.fs #lkfscap.vis{opacity:1}
 @media (max-width:1100px){#lk .ct{grid-template-columns:repeat(2,minmax(0,1fr))}#lk .grp:nth-child(3){border-left:0}#lk .grp:nth-child(n+3){border-top:1px solid var(--lk-line)}}
@@ -119,7 +120,7 @@ html.lkvt #lk .tb{view-transition-name:lk-bar}
 @media (max-width:700px){#lk .grp+.grp{border-left:0}}
 </style>
 <div id="lk" hidden role="dialog" aria-modal="true" aria-label="Incruste live">
-<div class="tb"><p id="lkcap"></p><select id="lkcam" aria-label="Caméra"></select><button id="lkcamr" type="button" title="Relancer la caméra (seulement si l’image est bloquée)" aria-label="Relancer la caméra">↻</button><button id="lkfs" type="button">⛶ Plein écran</button><button id="lkclose" type="button">Fermer</button></div>
+<div class="tb"><p id="lkcap"></p><select id="lkcam" aria-label="Caméra"></select><span id="lkcaminfo" title="Format reçu de la carte de capture · cadence réellement reçue"></span><button id="lkcamr" type="button" title="Relancer la caméra (seulement si l’image est bloquée)" aria-label="Relancer la caméra">↻</button><button id="lkfs" type="button">⛶ Plein écran</button><button id="lkclose" type="button">Fermer</button></div>
 <button id="lkfsx" type="button">✕ Quitter le plein écran</button><button id="lkfscap" type="button" title="Capture (touche C)">📸 Capture</button><div id="lkwrap"><canvas id="lkc"></canvas><img id="lkgh" alt="" hidden><canvas id="lkov"></canvas><div id="lkspl" hidden><i></i></div><canvas id="lkwf" width="320" height="140" hidden></canvas><div id="lkmsg" hidden></div></div>
 <div class="ct">
 <section class="grp" id="lkgfond"><h5>Fond</h5>
@@ -194,7 +195,7 @@ if(M.dirty){buildMask();M.dirty=false}
 drawOv();if(bgMode==='vid'&&bgv&&bgv.duration){if(!scrub)document.getElementById('lkbgt').value=Math.round(bgv.currentTime/bgv.duration*10000);document.getElementById('lkbgl').textContent=tc(bgv.currentTime)+'  /  '+tc(bgv.duration)+'  ·  '+fps+' i/s'}
 if(bgMode==='vid'&&bgv&&bgv.readyState>=2&&bgv.videoWidth>0){gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texBg);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,bgv)}
 gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,texV);
-if(ok&&(CW.nf||!CW.rvfc)){CW.nf=false;try{gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,vid)}catch(e){}}
+if(ok){CW.nf=false;try{gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,vid)}catch(e){}}
 var ca=cv.width/cv.height,va=ok?vid.videoWidth/vid.videoHeight:16/9;
 gl.uniform2f(U('key'),S.key[0],S.key[1]);gl.uniform2f(U('off'),S.x*.5,S.y*.5);gl.uniform2f(U('wh'),S.sc*va/ca,S.sc);
 gl.uniform1f(U('sim'),S.sim);gl.uniform1f(U('sm'),S.sm);gl.uniform1f(U('sp'),S.sp);gl.uniform1f(U('mir'),S.mir?1:0);gl.uniform1f(U('chk'),S.chk?1:0);gl.uniform1f(U('ready'),ok?1:0);gl.uniform1f(U('mon'),M.shapes.length?1:0);gl.uniform1f(U('rot'),S.rot);gl.uniform1f(U('ca'),ca);gl.uniform1f(U('fc'),X.fc?1:0);
@@ -243,7 +244,7 @@ window.lkRefresh=function(){if(!lk.hidden&&bgMode==='img'&&lastSrc)loadBg(lastSr
 var CW={nf:false,rvfc:false,last:0,mutedAt:0,lastRestart:0,want:null,vt:-1,vtAt:0,wl:null};
 function camHook(s){var t=s.getVideoTracks()[0];if(!t)return;
   t.onended=function(){CW.mutedAt=CW.mutedAt||Date.now()-5000};t.onmute=function(){CW.mutedAt=Date.now()};t.onunmute=function(){CW.mutedAt=0};
-  CW.last=performance.now();setTimeout(function(){if(!vid)return;CW.rvfc=!!vid.requestVideoFrameCallback;if(CW.rvfc){var me=vid;var cb=function(){if(vid!==me)return;CW.nf=true;CW.last=performance.now();me.requestVideoFrameCallback(cb)};me.requestVideoFrameCallback(cb)}},0)}
+  CW.last=performance.now();setTimeout(function(){if(!vid)return;CW.rvfc=!!vid.requestVideoFrameCallback;if(CW.rvfc){var me=vid;var cb=function(){if(vid!==me)return;CW.nf=true;CW.fc=(CW.fc||0)+1;CW.last=performance.now();me.requestVideoFrameCallback(cb)};me.requestVideoFrameCallback(cb)}},0)}
 /* On ménage la carte de capture : on ne la rouvre (stop + getUserMedia) qu'en dernier recours, avec un délai croissant.
    - signal absent (piste « muette ») : on attend, la Cam Link reprend seule quand la source revient ;
    - image figée : d'abord une relance douce du lecteur, réouverture seulement après 15 s ;
@@ -251,10 +252,13 @@ function camHook(s){var t=s.getVideoTracks()[0];if(!t)return;
 CW.fails=0;CW.okSince=0;CW.soft=0;CW.msg=false;
 function cwMsg(t){if(t){CW.msg=true;setMsg(t)}else if(CW.msg){CW.msg=false;setMsg('')}}
 function camRestart(why){var now=Date.now(),gap=[8000,15000,30000,60000][Math.min(CW.fails,3)];if(now-CW.lastRestart<gap)return;CW.lastRestart=now;CW.fails++;CW.mutedAt=0;CW.soft=0;cwMsg('Signal caméra perdu ('+why+'), reconnexion…');startCam(CW.want||savedCam()||null,true)}
+setInterval(function(){if(lk.hidden||document.hidden||!stream)return;var t=stream.getVideoTracks()[0];if(!t)return;var st=t.getSettings?t.getSettings():{},now=performance.now(),el=document.getElementById('lkcaminfo');
+  var tf=0;try{tf=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}var dt=(now-(CW.fcAt||now))/1000,f=dt>0&&CW.tf0!=null?(tf-CW.tf0)/dt:0;CW.tf0=tf;CW.fcAt=now;var nom=st.frameRate?Math.round(st.frameRate*100)/100:0;
+  if(el){el.textContent=(st.width?st.width+'×'+st.height:'')+(nom?' · '+nom+' i/s':'')+(dt>0?' · reçu '+f.toFixed(1):'');el.classList.toggle('warn',!!(nom&&dt>0&&f<nom*0.8))}},2000);
 setInterval(function(){if(lk.hidden||document.hidden||!stream)return;var t=stream.getVideoTracks()[0],now=performance.now();
   if(!t||t.readyState==='ended')return camRestart('coupé');
   if(t.muted||CW.mutedAt){cwMsg('Pas de signal sur la carte de capture : vérifie la source (HDMI/SDI). La caméra reprend toute seule dès que le signal revient.');CW.last=now;CW.vtAt=now;return}
-  var idle=0;if(vid&&vid.readyState>=2){if(CW.rvfc)idle=now-CW.last;else{if(vid.currentTime!==CW.vt){CW.vt=vid.currentTime;CW.vtAt=now}idle=now-CW.vtAt}}
+  var idle=0;if(vid&&vid.readyState>=2){var tq=0;try{tq=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}if(tq!==CW.tq){CW.tq=tq;CW.vtAt=now}idle=now-CW.vtAt;if(CW.rvfc)idle=Math.min(idle,now-CW.last)}
   if(idle<1500){if(!CW.okSince)CW.okSince=now;if(now-CW.okSince>30000)CW.fails=0;CW.soft=0;cwMsg('');}else CW.okSince=0;
   if(idle>3000&&!CW.soft){CW.soft=1;try{vid.srcObject=null;vid.srcObject=stream;var p0=vid.play();if(p0&&p0.catch)p0.catch(function(){})}catch(e){}}
   if(idle>6000)cwMsg('Image caméra figée, on attend qu’elle reprenne…');
@@ -289,10 +293,10 @@ function startCam(id,force){clearTimeout(CW.keep);var lt=liveTrack();
   var md=navigator.mediaDevices;
   function want(){if(id)return Promise.resolve(id);return listCams().then(function(c){var lab=c.some(function(d){return d.label});if(lab)return pickCam(c);
       return md.getUserMedia({video:true,audio:false}).then(function(t){t.getTracks().forEach(function(x){x.stop()});return listCams().then(pickCam)})})}
-  function open1(dev,rich){var v=rich?{width:{ideal:1920},height:{ideal:1080},resizeMode:'none'}:{};if(dev)v.deviceId={exact:dev};else if(rich)v.facingMode='environment';return md.getUserMedia({video:v,audio:false})}
+  function open1(dev,rich){var v=rich?{width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30,max:30}}:{};if(dev)v.deviceId={exact:dev};else if(rich)v.facingMode='environment';return md.getUserMedia({video:v,audio:false})}
   want().then(function(dev){if(my!==camSeq)return null;CW.want=dev||null;
     return open1(dev,true).catch(function(){return open1(dev,false)}).catch(function(e){if(dev){setMsg('Carte de capture introuvable, caméra par défaut en attendant…');return open1(null,false)}throw e})})
-  .then(function(s){if(!s)return;if(my!==camSeq){s.getTracks().forEach(function(t){t.stop()});return}stream=s;camHook(s);if(!vid){vid=document.createElement('video');vid.muted=true;vid.playsInline=true;vid.setAttribute('playsinline','');vid.setAttribute('aria-hidden','true');vid.style.cssText='position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none;z-index:-1';document.body.appendChild(vid)}
+  .then(function(s){if(!s)return;if(my!==camSeq){s.getTracks().forEach(function(t){t.stop()});return}stream=s;camHook(s);if(!vid){vid=document.createElement('video');vid.muted=true;vid.playsInline=true;vid.setAttribute('playsinline','');vid.setAttribute('aria-hidden','true');vid.style.cssText='position:fixed;left:0;top:0;width:2px;height:2px;opacity:.01;pointer-events:none;z-index:1';document.body.appendChild(vid)}
     vid.srcObject=s;vid.play().catch(function(){});var cur=s.getVideoTracks()[0]&&s.getVideoTracks()[0].getSettings().deviceId;if(!CW.want||cur===CW.want)setMsg('');return listCams().then(function(c){fillSel(c,cur)})})
   .catch(function(e){if(my!==camSeq)return;setMsg(e&&e.name==='NotAllowedError'?"Caméra refusée. Autorise la caméra pour ce site (réglages du navigateur) ou ouvre le lien directement dans Safari/Chrome.":"Caméra introuvable ("+(e&&e.name||'erreur')+"). Branche la source vidéo puis réessaie.")})}
 function tc(t){var f=Math.floor((t%1)*fps+1e-6),s=Math.floor(t),m=Math.floor(s/60),h=Math.floor(m/60);function z(n){return (n<10?'0':'')+n}return z(h)+':'+z(m%60)+':'+z(s%60)+':'+z(f)}
