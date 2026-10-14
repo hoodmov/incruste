@@ -15,11 +15,14 @@ function myName(){return lsGet('lgi.name')||('Appareil '+DID.slice(0,3))}
 function hdr(){var h={Accept:'application/vnd.github+json'};if(token())h.Authorization='Bearer '+token();return h}
 function dec(b){var bin=atob(b.replace(/\s/g,'')),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new TextDecoder().decode(u)}
 function enc(s){var u=new TextEncoder().encode(s),r='';for(var i=0;i<u.length;i++)r+=String.fromCharCode(u[i]);return btoa(r)}
+function tfetch(u,o,ms){o=o||{};var ac=window.AbortController?new AbortController():null;if(ac)o.signal=ac.signal;var t=setTimeout(function(){if(ac)ac.abort()},ms||10000);
+  return fetch(u,o).then(function(r){clearTimeout(t);return r},function(e){clearTimeout(t);throw e})}
+function wait(ms){return new Promise(function(ok){setTimeout(ok,ms)})}
 var URL_=function(){return 'https://api.github.com/repos/'+GH.repo+'/contents/'+GH.path};
 /* lecture (etag = lecture conditionnelle, gratuite côté quota si rien n'a changé) */
 var etag=null,cache={host:null,sig:{}},sha=null;
 function rd(cond){var h=hdr();if(cond&&etag)h['If-None-Match']=etag;
-  return fetch(URL_()+'?ref='+GH.branch+(cond?'':'&t='+Date.now()),{headers:h,cache:'no-store'}).then(function(r){
+  return tfetch(URL_()+'?ref='+GH.branch+'&t='+Date.now(),{headers:h,cache:'no-store'},8000).then(function(r){
     if(r.status===304)return{d:cache,same:true};
     if(r.status===404){sha=null;etag=null;cache={host:null,sig:{}};return{d:cache}}
     if(!r.ok)throw new Error('http '+r.status);
@@ -30,11 +33,11 @@ var wq=Promise.resolve();
 function upd(fn,n){n=n||0;
   return rd(false).then(function(R){var d=fn(JSON.parse(JSON.stringify(R.d)));if(!d)return R.d;
     var body={message:'live',content:enc(JSON.stringify(d)),branch:GH.branch};if(sha)body.sha=sha;
-    return fetch(URL_(),{method:'PUT',headers:hdr(),body:JSON.stringify(body)}).then(function(r){
-      if((r.status===409||r.status===422)&&n<4)return upd(fn,n+1);
+    return tfetch(URL_(),{method:'PUT',headers:hdr(),body:JSON.stringify(body)},12000).then(function(r){
+      if((r.status===409||r.status===422||r.status===403||r.status===429||r.status>=500)&&n<6)return wait(250+Math.random()*900*(n+1)).then(function(){return upd(fn,n+1)});
       if(!r.ok)throw new Error('http '+r.status);
       return r.json().then(function(j){sha=j.content.sha;etag=null;cache=d;return d})})})}
-function wupd(fn){wq=wq.then(function(){return upd(fn)},function(){return upd(fn)});return wq}
+function wupd(fn){var p=wq.then(function(){return upd(fn)},function(){return upd(fn)});wq=p.catch(function(){});return p}
 function iceDone(pc,ms){return new Promise(function(ok){if(pc.iceGatheringState==='complete')return ok();var t=setTimeout(fin,ms);function fin(){clearTimeout(t);pc.removeEventListener('icegatheringstatechange',ch);ok()}
   function ch(){if(pc.iceGatheringState==='complete')fin()}pc.addEventListener('icegatheringstatechange',ch)})}
 var supported=!!(window.RTCPeerConnection&&window.fetch);
@@ -43,7 +46,7 @@ var supported=!!(window.RTCPeerConnection&&window.fetch);
 var lk=document.getElementById('lk'),cv=document.getElementById('lkc');
 var H={on:false,stream:null,peers:{},seen:{},poll:null,hb:null,btn:null};
 function hcount(){return Object.keys(H.peers).filter(function(k){var s=H.peers[k].connectionState;return s==='connected'||s==='connecting'}).length}
-function hpaint(){if(!H.btn)return;var n=hcount();H.btn.textContent=H.on?('📡 En direct'+(n?' · '+n+' 👁':'')):'📡 Diffuser';H.btn.classList.toggle('on',H.on)}
+function hpaint(){if(!H.btn)return;var n=hcount();H.btn.textContent=H.on?('📡 En direct'+(n?' · '+n+' 👁':'')+(H.err&&Date.now()-H.err<20000?' · ⚠ synchro':'')):'📡 Diffuser';H.btn.classList.toggle('on',H.on)}
 /* faible latence : H.264 en priorité (décodage matériel iPhone/Mac), tampon de lecture minimal */
 function lowLat(tr){try{if(!tr||!tr.setCodecPreferences||!window.RTCRtpReceiver||!RTCRtpReceiver.getCapabilities)return;var c=RTCRtpReceiver.getCapabilities('video');if(!c||!c.codecs)return;
   var h=c.codecs.filter(function(x){return /h264/i.test(x.mimeType)}),o=c.codecs.filter(function(x){return !/h264/i.test(x.mimeType)});if(h.length)tr.setCodecPreferences(h.concat(o))}catch(e){}
@@ -56,14 +59,14 @@ function accept(k,s){var id=k+'|'+s.t;if(H.seen[id])return;H.seen[id]=1;if(H.pee
   pc.ondatachannel=function(e){var ch=e.channel;ch.onmessage=function(m){try{var j=JSON.parse(m.data);if(j.q&&QP[j.q]){pc._q=j.q;tune(pc);try{ch.send(JSON.stringify({ok:j.q}))}catch(_){}}}catch(_){}}};
   pc.onconnectionstatechange=function(){var st=pc.connectionState;if(st==='failed'||st==='closed'||st==='disconnected'){if(st!=='disconnected'){try{pc.close()}catch(e){}if(H.peers[k]===pc)delete H.peers[k]}}hpaint()};
   pc.setRemoteDescription({type:'offer',sdp:s.o}).then(function(){return pc.createAnswer()}).then(function(a){return pc.setLocalDescription(a)}).then(function(){return iceDone(pc,3500)}).then(function(){tune(pc);
-    return wupd(function(d){if(!d.sig[k]||d.sig[k].t!==s.t)return null;d.sig[k].a=pc.localDescription.sdp;return d})}).then(hpaint).catch(function(e){try{pc.close()}catch(x){}delete H.peers[k]})}
+    return wupd(function(d){if(!d.sig[k]||d.sig[k].t!==s.t)return null;d.sig[k].a=pc.localDescription.sdp;return d})}).then(hpaint).catch(function(e){try{pc.close()}catch(x){}if(H.peers[k]===pc)delete H.peers[k];delete H.seen[id];H.err=Date.now();hpaint()})}
 function hscan(R){var now=Date.now();Object.keys(R.d.sig||{}).forEach(function(k){var s=R.d.sig[k];if(s&&s.o&&!s.a&&now-s.t<120000)accept(k,s)})}
-function hbeat(){return wupd(function(d){d.host={id:DID,n:myName(),t:Date.now()};var now=Date.now();Object.keys(d.sig).forEach(function(k){if(now-d.sig[k].t>180000)delete d.sig[k]});return d}).catch(function(){})}
+function hbeat(){return wupd(function(d){H.ok=Date.now();d.host={id:DID,n:myName(),t:Date.now()};var now=Date.now();Object.keys(d.sig).forEach(function(k){if(now-d.sig[k].t>180000)delete d.sig[k]});return d}).then(function(){H.err=0;hpaint()},function(){H.err=Date.now();hpaint()})}
 function startHost(){if(H.on)return;if(!token()){alert("Pour diffuser, active d'abord la synchro (⋯ → ☁ Synchro entre appareils) avec le jeton GitHub.");return}
   if(!cv||!cv.captureStream){alert("Ce navigateur ne sait pas diffuser le rendu. Utilise Chrome ou Edge sur l'ordinateur.");return}
   H.stream=cv.captureStream(MAXFPS);H.on=true;H.seen={};hpaint();hbeat();
   H.hb=setInterval(hbeat,30000);
-  H.poll=setInterval(function(){rd(true).then(function(R){if(!R.same)hscan(R)}).catch(function(){})},2500)}
+  H.poll=setInterval(function(){rd(true).then(function(R){H.ok=Date.now();hscan(R)}).catch(function(){H.err=Date.now();hpaint()})},2000)}
 function stopHost(){if(!H.on)return;H.on=false;clearInterval(H.poll);clearInterval(H.hb);Object.keys(H.peers).forEach(function(k){try{H.peers[k].close()}catch(e){}});H.peers={};
   if(H.stream){H.stream.getTracks().forEach(function(t){t.stop()});H.stream=null}hpaint();
   wupd(function(d){if(d.host&&d.host.id===DID)d.host=null;return d}).catch(function(){})}
@@ -116,11 +119,12 @@ qui();
       else if(s==='disconnected'){msg('Connexion instable…')}};
     pc.createOffer().then(function(o){return pc.setLocalDescription(o)}).then(function(){return iceDone(pc,3500)}).then(function(){
       return wupd(function(d){d.sig[DID]={o:pc.localDescription.sdp,t:t};return d})}).then(function(){
-      msg('En attente de l’ordinateur…');var tries=0;
+      msg('En attente de l’ordinateur…');var tries=0,sent=Date.now();
       V.poll=setInterval(function(){if(V.pc!==pc){clearInterval(V.poll);return}tries++;
         rd(true).then(function(R){var s=R.d.sig&&R.d.sig[DID];if(s&&s.t===t&&s.a){clearInterval(V.poll);msg('Connexion…');pc.setRemoteDescription({type:'answer',sdp:s.a}).catch(function(){fail('Réponse invalide, réessaie.')})}
-          else if(tries>40){clearInterval(V.poll);fail("L’ordinateur ne répond pas. Vérifie que « 📡 Diffuser » est actif.")}}).catch(function(){})},1500);
-      V.timer=setTimeout(function(){if(V.pc===pc&&pc.connectionState!=='connected')fail("Connexion trop longue. Réessaie, ou mets-toi sur le même Wi-Fi que l’ordinateur.")},45000)}).catch(function(e){fail('Erreur : '+e.message)});
+          else if(tries>80){clearInterval(V.poll);fail("L’ordinateur ne répond pas. Vérifie que « 📡 Diffuser » est actif.")}
+          else if(Date.now()-sent>12000&&!(s&&s.t===t&&s.o)){sent=Date.now();msg('En attente de l’ordinateur… (nouvel envoi)');wupd(function(d){d.sig[DID]={o:pc.localDescription.sdp,t:t};return d}).catch(function(){})}}).catch(function(){})},1500);
+      V.timer=setTimeout(function(){if(V.pc===pc&&pc.connectionState!=='connected')fail("Connexion trop longue. Réessaie, ou mets-toi sur le même Wi-Fi que l’ordinateur.")},90000)}).catch(function(e){fail('Erreur : '+e.message)});
     V.watch=setInterval(function(){rd(true).then(function(R){if(!R.same&&!hostLive(R.d)&&V.pc){vstop(true);fail('La diffusion est terminée.')}}).catch(function(){})},8000)}
   lb.onclick=function(){if(!token()){alert('Active la synchro avec le jeton GitHub pour voir le live.');return}lv.hidden=false;document.getElementById('lvcap').textContent='Incruste live · '+(V.host?V.host.n:'');document.body.style.overflow='hidden';vconnect()};
   vre.onclick=function(){rd(false).then(function(R){paintLb(R.d);if(!V.host){fail('Aucune diffusion en cours.');return}vconnect()}).catch(function(){vconnect()})};
