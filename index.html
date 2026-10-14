@@ -512,6 +512,8 @@ ready(function(){
 #lk.fs #lkc{max-width:100vw;max-height:100vh;background:#000}
 #lkfsx{display:none;position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:12px;z-index:60;background:rgb(0 0 0 / .55)!important;color:#fff;border:1px solid rgb(255 255 255 / .35)!important;border-radius:10px;padding:10px 14px;font:600 .88rem var(--lk-f);opacity:0;transition:opacity .25s;cursor:pointer}
 #lk.fs #lkfsx{display:block}#lk.fs #lkfsx.vis{opacity:1}
+#lkfscap{display:none;position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);left:12px;z-index:60;background:rgb(0 0 0 / .55)!important;color:#fff;border:1px solid rgb(255 255 255 / .35)!important;border-radius:10px;padding:10px 14px;font:600 .88rem var(--lk-f);opacity:0;transition:opacity .25s;cursor:pointer}
+#lk.fs #lkfscap{display:block}#lk.fs #lkfscap.vis{opacity:1}
 @media (max-width:1100px){#lk .ct{grid-template-columns:repeat(2,minmax(0,1fr))}#lk .grp:nth-child(3){border-left:0}#lk .grp:nth-child(n+3){border-top:1px solid var(--lk-line)}}
 @media (max-width:700px){#lk .ct{grid-template-columns:1fr;max-height:42vh}#lk .grp+.grp{border-left:0;border-top:1px solid var(--lk-line)}#lk .tb p{font-size:1rem}#lk .tb button,#lk .tb select{padding:8px 10px}}
 #lksnap{position:fixed;inset:0;z-index:50;background:rgb(0 0 0 / .92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:12px;font-family:var(--lk-f)}
@@ -569,7 +571,7 @@ html.lkvt #lk .tb{view-transition-name:lk-bar}
 </style>
 <div id="lk" hidden role="dialog" aria-modal="true" aria-label="Incruste live">
 <div class="tb"><p id="lkcap"></p><select id="lkcam" aria-label="Caméra"></select><button id="lkcamr" type="button" title="Relancer la caméra (seulement si l’image est bloquée)" aria-label="Relancer la caméra">↻</button><button id="lkfs" type="button">⛶ Plein écran</button><button id="lkclose" type="button">Fermer</button></div>
-<button id="lkfsx" type="button">✕ Quitter le plein écran</button><div id="lkwrap"><canvas id="lkc"></canvas><img id="lkgh" alt="" hidden><canvas id="lkov"></canvas><div id="lkspl" hidden><i></i></div><canvas id="lkwf" width="320" height="140" hidden></canvas><div id="lkmsg" hidden></div></div>
+<button id="lkfsx" type="button">✕ Quitter le plein écran</button><button id="lkfscap" type="button" title="Capture (touche C)">📸 Capture</button><div id="lkwrap"><canvas id="lkc"></canvas><img id="lkgh" alt="" hidden><canvas id="lkov"></canvas><div id="lkspl" hidden><i></i></div><canvas id="lkwf" width="320" height="140" hidden></canvas><div id="lkmsg" hidden></div></div>
 <div class="ct">
 <section class="grp" id="lkgfond"><h5>Fond</h5>
 <div class="row" id="lkbgrow" hidden><button id="lkbgi" type="button" class="on">Fond : image</button><button id="lkbgv" type="button">Fond : vidéo</button><button id="lkbgp" type="button">⏸ Pause</button><button id="lkbgr" type="button">⏮ Début</button></div>
@@ -775,7 +777,7 @@ function vt(fn,toLive,img){var de=document.documentElement;
 function open(src,c,btn,vsrc){var im=heroOf(btn);vtImg=im;vt(function(){openRaw(src,c,btn,vsrc)},true,im)}
 function close(){if(lk.hidden){closeRaw();return}var im=vtImg&&vtImg.isConnected?vtImg:null;vtImg=null;vt(closeRaw,false,im)}
 document.getElementById('lkclose').onclick=close;
-document.addEventListener('keydown',function(e){if(lk.hidden)return;if(e.key==='Escape'){if(lk.classList.contains('fs'))setFs(false);else close()}else if((e.key==='f'||e.key==='F')&&!/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||'')))setFs(!lk.classList.contains('fs'))});
+document.addEventListener('keydown',function(e){if(lk.hidden)return;if(e.key==='Escape'){if(lk.classList.contains('fs'))setFs(false);else close()}else if((e.key==='f'||e.key==='F')&&!/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||'')))setFs(!lk.classList.contains('fs'));else if((e.key==='c'||e.key==='C')&&!e.metaKey&&!e.ctrlKey&&!e.altKey&&!/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||''))){e.preventDefault();document.getElementById('lkcr').click()}});
 document.getElementById('lkcamr').onclick=function(){CW.lastRestart=0;CW.fails=0;cwMsg('Relance de la caméra…');startCam(CW.want||savedCam()||null,true)};
 sel.onchange=function(){try{localStorage.setItem('lgi.lk.cam2',sel.value);localStorage.removeItem('lgi.lk.cam')}catch(e){}CW.want=sel.value;startCam(sel.value)};
 document.getElementById('lkrot').addEventListener('input',function(e){S.rot=parseFloat(e.target.value)*Math.PI/180});
@@ -888,10 +890,12 @@ cv.addEventListener('dblclick',function(e){if(!M.tool&&!S.pick)resetCad()});
 syncUi();
 
 var fsx=document.getElementById('lkfsx'),fsT=0;
-function fsShow(){fsx.classList.add('vis');clearTimeout(fsT);fsT=setTimeout(function(){fsx.classList.remove('vis')},2600)}
+var fscap=document.getElementById('lkfscap');fscap.onclick=function(e){e.stopPropagation();document.getElementById('lkcr').click();fsShow()};
+try{lk.appendChild(document.getElementById('lkcrt'))}catch(_){}
+function fsShow(){fsx.classList.add('vis');fscap.classList.add('vis');clearTimeout(fsT);fsT=setTimeout(function(){fsx.classList.remove('vis');fscap.classList.remove('vis')},2600)}
 function isNativeFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement)}
 function setFs(on){if(on){lk.classList.add('fs');fsShow();try{var r=lk.requestFullscreen||lk.webkitRequestFullscreen;if(r){var pr=r.call(lk);if(pr&&pr.catch)pr.catch(function(){})}}catch(_){}}
-else{lk.classList.remove('fs');clearTimeout(fsT);fsx.classList.remove('vis');try{if(isNativeFs()){var x=document.exitFullscreen||document.webkitExitFullscreen;var pr=x.call(document);if(pr&&pr.catch)pr.catch(function(){})}}catch(_){}}}
+else{lk.classList.remove('fs');clearTimeout(fsT);fsx.classList.remove('vis');fscap.classList.remove('vis');try{if(isNativeFs()){var x=document.exitFullscreen||document.webkitExitFullscreen;var pr=x.call(document);if(pr&&pr.catch)pr.catch(function(){})}}catch(_){}}}
 document.getElementById('lkfs').onclick=function(){setFs(true)};
 fsx.onclick=function(){setFs(false)};
 ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){document.addEventListener(ev,function(){if(!isNativeFs()&&lk.classList.contains('fs'))setFs(false)})});
