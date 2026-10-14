@@ -436,9 +436,19 @@ syncUi();
 var fsx=document.getElementById('lkfsx'),fsT=0;
 var fscap=document.getElementById('lkfscap');fscap.onclick=function(e){e.stopPropagation();document.getElementById('lkcr').click();fsShow()};
 try{lk.appendChild(document.getElementById('lkcrt'))}catch(_){}
-function fsShow(){fsx.classList.add('vis');fscap.classList.add('vis');clearTimeout(fsT);fsT=setTimeout(function(){fsx.classList.remove('vis');fscap.classList.remove('vis')},2600)}
+function fsShow(){fsx.classList.add('vis');fscap.classList.add('vis');clearTimeout(fsT);fsT=setTimeout(function(){fsx.classList.remove('vis');fscap.classList.remove('vis')},5000)}
+/* iPhone : pas de plein écran possible sur un élément de page ; on passe le rendu dans le lecteur vidéo natif (vrai plein écran, barres masquées) */
+var iosV=null;function noElFs(){return !(document.fullscreenEnabled||document.webkitFullscreenEnabled)}
+function prepIosV(){if(iosV)return;iosV=document.createElement('video');iosV.muted=true;iosV.playsInline=true;iosV.setAttribute('playsinline','');iosV.setAttribute('aria-hidden','true');iosV.style.cssText='position:fixed;left:0;top:0;width:2px;height:2px;opacity:.01;pointer-events:none;z-index:1';document.body.appendChild(iosV);
+    iosV.addEventListener('webkitendfullscreen',function(){if(lk.hidden)iosCool()})}
+function iosFs(){try{if(!cv.captureStream)return false;prepIosV();
+  if(!iosV.webkitEnterFullscreen)return false;if(iosV.srcObject&&iosV.readyState>=1){iosV.webkitEnterFullscreen();return true}
+  iosWarm();var p=iosV.play();var go=function(){try{iosV.webkitEnterFullscreen()}catch(e){}};if(p&&p.then)p.then(go,go);else go();return true}catch(e){return false}}
+function iosWarm(){try{if(!iosV||iosV.srcObject||!cv.captureStream)return;iosV.srcObject=cv.captureStream(30);var p=iosV.play();if(p&&p.catch)p.catch(function(){})}catch(e){}}
+function iosCool(){try{if(iosV&&iosV.srcObject){var s=iosV.srcObject;iosV.srcObject=null;s.getTracks().forEach(function(t){t.stop()})}}catch(e){}}
+if(noElFs()&&cv.captureStream){new MutationObserver(function(){if(lk.hidden)iosCool();else{iosFs.prep=1;if(!iosV){iosFs.mk=1}setTimeout(function(){if(!lk.hidden){if(!iosV)prepIosV();iosWarm()}},800)}}).observe(lk,{attributes:true,attributeFilter:['hidden']})}
 function isNativeFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement)}
-function setFs(on){if(on){lk.classList.add('fs');fsShow();try{var r=lk.requestFullscreen||lk.webkitRequestFullscreen;if(r){var pr=r.call(lk);if(pr&&pr.catch)pr.catch(function(){})}}catch(_){}}
+function setFs(on){if(on&&noElFs()&&iosFs())return;if(on){lk.classList.add('fs');fsShow();try{var r=lk.requestFullscreen||lk.webkitRequestFullscreen;if(r){var pr=r.call(lk);if(pr&&pr.catch)pr.catch(function(){})}}catch(_){}}
 else{lk.classList.remove('fs');clearTimeout(fsT);fsx.classList.remove('vis');fscap.classList.remove('vis');try{if(isNativeFs()){var x=document.exitFullscreen||document.webkitExitFullscreen;var pr=x.call(document);if(pr&&pr.catch)pr.catch(function(){})}}catch(_){}}}
 document.getElementById('lkfs').onclick=function(){setFs(true)};
 fsx.onclick=function(){setFs(false)};
