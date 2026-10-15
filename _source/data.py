@@ -77,14 +77,14 @@ A[163]=dict(s=GM70,f="100 mm",d="f/2.8",dist="2,5",h="1,45",tilt="0°",lum="Key 
 A[164]=dict(s=GM16,f="24 mm",d="f/5.6",dist="5,0",h="1,60",tilt="plongée 5°",lum="Plateau TV : éclairage uniforme, haut et diffus (≈ 5600 K), sol brillant et reflets, fond extérieur clair.",lec="Plateau entier avec fenêtre d'insert vidéo à droite (ajoutée en post).")
 
 SHOTORDER={"Michael Jackson – Thriller":[44,42]}  # top shot cercueil en premier (14/10)
-DAYOF={"INA – Mode":"J4","Stranger Things":"J3","Star Wars – Kylo":"J2","Star Wars – Vador":"J2","Pink – So What":"J8","Zidane – coup de pied":"J1","Le 5ème Beatles – Hello Goodbye":"J8","Les Choristes":"J3"}
+DAYOF={"Gims – Parisienne":"J3","INA – Mode":"J4","Stranger Things":"J3","Star Wars – Kylo":"J2","Star Wars – Vador":"J2","Pink – So What":"J8","Zidane – coup de pied":"J1","Le 5ème Beatles – Hello Goodbye":"J8","Les Choristes":"J3"}
 ORDER={
 "J1":["Fruit Love Island","Lipsync voiture","Zidane – coup de pied","L'Exorciste","Fort Boyard","Pape mobile","Macron / Atol","Dune","Le Seigneur des anneaux"],
 "J2":["Titanic","Titanic short","L'Odyssée","Gold – Plus près des étoiles","Gold – Laissez-nous chanter","Mariah Carey – It's Time","Trump","Céline Dion JO","Hollande sous la pluie","Star Wars – Vador","Star Wars – Kylo"],
-"J3":["Michael Jackson – Thriller","Le Comte de Monte-Cristo","Tapie","Les Choristes","Stranger Things"],
+"J3":["Michael Jackson – Thriller","Le Comte de Monte-Cristo","Tapie","Les Choristes","Gims – Parisienne","Stranger Things"],
 "J4":["INA – Mode","Un dimanche à la campagne","INA – Piercings","Gourou","Tiny Desk","INA – Alcool","Tous les sports (extérieurs)"],
 "J6":["INA – Internet","Qui veut épouser mon fils"],
-"J8":["Pink – So What","Couronnement roi Charles – short","Le 5ème Beatles – Hello Goodbye","Miley Cyrus – Wrecking Ball","ITW Sophie Adenot – ISS","Vanessa Carlton","Gims – Parisienne"],
+"J8":["Pink – So What","Couronnement roi Charles – short","Le 5ème Beatles – Hello Goodbye","Miley Cyrus – Wrecking Ball","ITW Sophie Adenot – ISS","Vanessa Carlton"],
 "J9":["Poltronesofà","Poltronesofà – Franck Leboeuf","Love Actually (V1 + V2 Franck Leboeuf)","Terminator (V1 + V2 Franck Leboeuf)","James Bond – Casino poker","Qui veut être mon associé","Couronnement roi Charles"],
 "J10":["Danse avec les stars","Tous les sports (studio)","The Voice","Love Cam Coldplay"],
 "J11":["1000% Logique","Maillon faible","JT 2h","Fast & Furious"]}
