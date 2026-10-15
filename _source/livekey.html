@@ -179,7 +179,9 @@ if(M.dirty){buildMask();M.dirty=false}
 drawOv();if(bgMode==='vid'&&bgv&&bgv.duration){if(!scrub)document.getElementById('lkbgt').value=Math.round(bgv.currentTime/bgv.duration*10000);document.getElementById('lkbgl').textContent=tc(bgv.currentTime)+'  /  '+tc(bgv.duration)+'  ·  '+fps+' i/s'}
 if(bgMode==='vid'&&bgv&&bgv.readyState>=2&&bgv.videoWidth>0){gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texBg);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,bgv)}
 gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,texV);
-if(ok){CW.nf=false;try{gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,vid)}catch(e){}}
+var up=ok;if(ok){var tq=-1;try{tq=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}var nat=CW.nat||30,dv=Math.max(1,Math.ceil(nat/30.5));
+  if(tq>0){if(CW.upF!=null&&tq>=CW.upF&&tq-CW.upF<dv)up=false;else CW.upF=tq}else{var tn=performance.now();if(CW.upT&&tn-CW.upT<1000/31)up=false;else CW.upT=tn}}
+if(up){CW.nf=false;CW.ups=(CW.ups||0)+1;try{gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,vid)}catch(e){}}
 var ca=cv.width/cv.height,va=ok?vid.videoWidth/vid.videoHeight:16/9;
 gl.uniform2f(U('key'),S.key[0],S.key[1]);gl.uniform2f(U('off'),S.x*.5,S.y*.5);gl.uniform2f(U('wh'),S.sc*va/ca,S.sc);
 gl.uniform1f(U('sim'),S.sim);gl.uniform1f(U('sm'),S.sm);gl.uniform1f(U('sp'),S.sp);gl.uniform1f(U('mir'),S.mir?1:0);gl.uniform1f(U('chk'),S.chk?1:0);gl.uniform1f(U('ready'),ok?1:0);gl.uniform1f(U('mon'),M.shapes.length?1:0);gl.uniform1f(U('rot'),S.rot);gl.uniform1f(U('ca'),ca);gl.uniform1f(U('fc'),X.fc?1:0);gl.uniform3f(U('bgt'),S.bz,S.bx,S.by);gl.uniform1f(U('fr'),S.fr||0);gl.uniform2f(U('pxs'),1/((ok&&vid.videoWidth)||1920),1/((ok&&vid.videoHeight)||1080));if(!gh.hidden){gh.style.transformOrigin='50% 50%';gh.style.transform=(S.bz!==1||S.bx||S.by)?'translate('+(S.bx*100)+'%,'+(-S.by*100)+'%) scale('+S.bz+')':''}
@@ -237,8 +239,8 @@ CW.fails=0;CW.okSince=0;CW.soft=0;CW.msg=false;
 function cwMsg(t){if(t){CW.msg=true;setMsg(t)}else if(CW.msg){CW.msg=false;setMsg('')}}
 function camRestart(why){var now=Date.now(),gap=[8000,15000,30000,60000][Math.min(CW.fails,3)];if(now-CW.lastRestart<gap)return;CW.lastRestart=now;CW.fails++;CW.mutedAt=0;CW.soft=0;cwMsg('Signal caméra perdu ('+why+'), reconnexion…');startCam(CW.want||savedCam()||null,true)}
 setInterval(function(){if(lk.hidden||document.hidden||!stream)return;var t=stream.getVideoTracks()[0];if(!t)return;var st=t.getSettings?t.getSettings():{},now=performance.now(),el=document.getElementById('lkcaminfo');
-  var tf=0;try{tf=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}var dt=(now-(CW.fcAt||now))/1000,f=dt>0&&CW.tf0!=null?(tf-CW.tf0)/dt:0;CW.tf0=tf;CW.fcAt=now;var nom=st.frameRate?Math.round(st.frameRate*100)/100:0;
-  if(el){el.textContent=(st.width?st.width+'×'+st.height:'')+(nom?' · '+nom+' i/s':'')+(dt>0?' · reçu '+f.toFixed(1):'');el.classList.toggle('warn',!!(nom&&dt>0&&f<nom*0.8))}},2000);
+  var tf=0;try{tf=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}var dt=(now-(CW.fcAt||now))/1000,f=dt>0&&CW.tf0!=null?(tf-CW.tf0)/dt:0;CW.tf0=tf;CW.fcAt=now;var nom=st.frameRate?Math.round(st.frameRate*100)/100:0;if(nom)CW.nat=nom;var rr=dt>0?(CW.ups||0)/dt:0;CW.ups=0;
+  if(el){el.textContent=(st.width?st.width+'×'+st.height:'')+(nom?' · '+nom+' i/s':'')+(dt>0?' · reçu '+f.toFixed(1)+(nom>31?' → affiché '+rr.toFixed(0):''):'');el.classList.toggle('warn',!!(nom&&dt>0&&f<nom*0.8))}},2000);
 setInterval(function(){if(lk.hidden||document.hidden||!stream)return;var t=stream.getVideoTracks()[0],now=performance.now();
   if(!t||t.readyState==='ended')return camRestart('coupé');
   if(t.muted||CW.mutedAt){cwMsg('Pas de signal sur la carte de capture : vérifie la source (HDMI/SDI). La caméra reprend toute seule dès que le signal revient.');CW.last=now;CW.vtAt=now;return}
@@ -277,7 +279,7 @@ function startCam(id,force){clearTimeout(CW.keep);var lt=liveTrack();
   var md=navigator.mediaDevices;
   function want(){if(id)return Promise.resolve(id);return listCams().then(function(c){var lab=c.some(function(d){return d.label});if(lab)return pickCam(c);
       return md.getUserMedia({video:true,audio:false}).then(function(t){t.getTracks().forEach(function(x){x.stop()});return listCams().then(pickCam)})})}
-  function open1(dev,rich){var v=rich?{width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30,max:30}}:{};if(dev)v.deviceId={exact:dev};else if(rich)v.facingMode='environment';return md.getUserMedia({video:v,audio:false})}
+  function open1(dev,rich){var v=rich?{width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30}}:{width:{ideal:1920},height:{ideal:1080}};if(dev)v.deviceId={exact:dev};else if(rich)v.facingMode='environment';return md.getUserMedia({video:v,audio:false})}
   want().then(function(dev){if(my!==camSeq)return null;CW.want=dev||null;
     return open1(dev,true).catch(function(){return open1(dev,false)}).catch(function(e){if(dev){setMsg('Carte de capture introuvable, caméra par défaut en attendant…');return open1(null,false)}throw e})})
   .then(function(s){if(!s)return;if(my!==camSeq){s.getTracks().forEach(function(t){t.stop()});return}stream=s;camHook(s);if(!vid){vid=document.createElement('video');vid.muted=true;vid.playsInline=true;vid.setAttribute('playsinline','');vid.setAttribute('aria-hidden','true');vid.style.cssText='position:fixed;left:0;top:0;width:2px;height:2px;opacity:.01;pointer-events:none;z-index:1';document.body.appendChild(vid)}
