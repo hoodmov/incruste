@@ -28,7 +28,7 @@ for k in ["Fort Boyard","Danse avec les stars","The Voice","Tous les sports (stu
 SRC["Qui veut épouser mon fils"]="Origine : télé-réalité, caméras type Sony FS7/FX9 et zooms (déduit). 16:9."
 for k in ["INA – Piercings","INA – Mode","INA – Internet","INA – Alcool"]: SRC[k]="Origine : archive INA (16 mm ou vidéo ENG selon l'époque, déduit). À tourner au zoom télé vintage."
 EXTRA={"Love Cam Coldplay":"On ne tourne que le plan de Camille et de la personne à côté de lui. Il y a 4 panneaux filés : 1) panneau filé d'entrée, de la droite vers la gauche, qui arrive sur eux ; ils disent « non, nous on n'est pas en couple, regardez à gauche » ; 2) panneau filé de sortie vers la gauche, sur un contre-champ que l'on ne tourne pas ; 3) panneau filé d'entrée, de la gauche vers la droite, de retour sur Camille et sa voisine ; 4) panneau filé de sortie vers la droite.","Fast & Furious":"Seul Camille est tourné : il est côté passager, à la place de la miniature à côté de Vin Diesel. Deux plans seulement (face, ¾ profil). Les plans de Vin Diesel au volant sont des références de médias à afficher dans l'écran XR, ils ne sont pas dans ce document.","Un dimanche à la campagne":"Texte : Frédéric Lopez accueille de l'autre côté de l'eau. Camille joue plein d'invités différents (backgammon, etc.) et tombe à l'eau à chaque fois, en montage jumpcut. Un seul plan est tourné : Camille dans la forêt. La chute et le « plouf » sont faits en post-prod.","Tous les sports (extérieurs)":"Texte : « Tout le sport », magazine sportif parodique. Camille joue les sportifs, avec une tenue de sport différente pour chaque personnage. Plusieurs petits magnétos de sportifs à tourner en extérieur. Pas de média de référence : voici ce qu'il faut tourner. Optique : tout au G Master 24-70.","Pink – So What":"Réf. costume : Ned Flanders (Les Simpson).","Poltronesofà – Franck Leboeuf":"L'artisan reprend la même réf. que Poltronesofà.","Lipsync voiture":"La vue voiture d'origine est upscalée en post (droite et gauche) : seul Camille est tourné.","Danse avec les stars":"Le schéma prévoit un écran XR, un plan au Steadicam, une machine à brouillard, une passe Steadicam et une passe à la branche au ralenti."}
-REMOVED=["Plans I.A. et plaques sans prise de vue réelle (papamobile, désert, tarmac, mur béton, plateau, voiture)","Barbie : toutes les scènes (annulées)","Dune : 2 plans de grue (I.A.) + plan serré (retiré le 13/10)","Maillon faible : plateau large (I.A., effacer/ajouter un participant)","Gims – Parisienne : plan I.A. full + 2 plans volés au vrai clip","Un dimanche à la campagne : la chute (faite en post)","ITW ISS : 2 plans « prompt I.A. Camille de dos qui se cogne »","Love Cam : goodies déco (accessoires) ; la transition panneau se fait en post","Pour le plaisir : upscale uniquement"]
+REMOVED=["Plans I.A. et plaques sans prise de vue réelle (papamobile, désert, tarmac, mur béton, plateau, voiture)","Barbie : toutes les scènes (annulées)","Dune : 2 plans de grue (I.A.) + plan serré (retiré le 13/10)","Maillon faible : plateau large (I.A., effacer/ajouter un participant)","Gims – Parisienne : plan I.A. full + 2 plans volés au vrai clip","Un dimanche à la campagne : la chute (faite en post)","ITW ISS : 2 plans « prompt I.A. Camille de dos qui se cogne »","Love Cam : goodies déco (accessoires) ; la transition panneau se fait en post","Pour le plaisir : upscale uniquement","Tous les sports (extérieurs) : séquence retirée le 15/10"]
 HORS=["Nos jours heureux (rangé en RIP)","Arrivée des joueurs à Clairefontaine","Verisure","Pour le plaisir","Star Ac' (pas de screen)","Chirac / Camille en Bernadette (RIP)"]
 
 import re as _re
@@ -138,6 +138,7 @@ A[165]=dict(A[65]);A[165]['lec']=A[65]['lec']+" (INA – Alcool : même réf que
 A[2]['lec']=A[2]['lec'].replace("Smartphone tenu proche, grand-angle, tout net.","Smartphone posé sur le tableau de bord, grand-angle, tout net.")
 A[16]['lec']=A[16]['lec'].replace("Désert complètement fondu derrière : longue focale.","Désert fondu derrière (incruste ancienne), mais Camille est assez au contact : 50 mm.")
 A[78]['lec']=A[78]['lec'].replace("Champ/contrechamp avec #77 : même focale.","Champ/contrechamp avec le plan 5 : même focale (85 mm).")
+REMOVE_SEQ={"Tous les sports (extérieurs)"}
 def build():
     order=["J1","J2","J3","J4","J6","J7","J8","J9","J10","J11"]
     allseq=[];n=0
@@ -149,6 +150,7 @@ def build():
             else: n+=1; nn=n
             if nn in REMOVE_N: continue
             shots.append((nn,l,v))
+        if s in REMOVE_SEQ: continue
         if s in SHOTORDER: shots.sort(key=lambda q:SHOTORDER[s].index(q[0]) if q[0] in SHOTORDER[s] else 999)
         if not shots and not CARDS.get(s): continue
         allseq.append((DAYOF.get(s,j),s,shots))
