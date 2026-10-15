@@ -22,7 +22,7 @@ PLAN=[
 ("J2","Hollande sous la pluie",[(R(26,1),"Discours sous la pluie, île de Sein","Fond vert, costume trempé")]),
 ("J3","Michael Jackson – Thriller",[(R(24,0),"Visage 1","XR 1"),(R(24,2),"Visage 2","XR 1"),(R(24,1),"Cercueil (plongée)","XR 1")]),
 ("J3","Le Comte de Monte-Cristo",[(R(8,0),"Visage dans le noir (Faria)","Juste fond noir et lumière")]),
-("J3","Tapie",[(R(4,0),"Plan 1 – Tapie","Pas de VFX"),(R(4,1),"Plan 2 – procureur, chemise bleue","Pas de VFX")]),
+("J3","Tapie",[(R(4,0),"Contrechamp Tapie (réf. – non tourné)","Référence seulement, on ne tourne pas ce plan"),(R(4,1),"Plan 2 – procureur, chemise bleue","Pas de VFX")]),
 ("J3","Star Wars – Kylo",[(N+'J3_kylo_1.jpg',"Officier, passerelle","Fond vert"),(N+'J3_kylo_2_explosion.jpg',"Même plan, flash d'explosion","Fond vert, effet lumière explosion")]),
 ("J3","Star Wars – Vador",[(N+'J3_vador_tarkin.jpg',"Tarkin, salle de réunion","Fond vert, Camille assis")]),
 ("J3","Le 5ème Beatles – Hello Goodbye",[(N+f"J3_beatles_{i+1}.jpg",f"Plan {i+1}/4","Fond vert, 4 plans à vérifier au montage") for i in range(4)]),

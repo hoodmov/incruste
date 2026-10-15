@@ -33,7 +33,7 @@ HORS=["Nos jours heureux (rangé en RIP)","Arrivée des joueurs à Clairefontain
 
 import re as _re
 GREEN={"Fruit Love Island","Lipsync voiture","Pape mobile","L'Exorciste","Fort Boyard","Pink – So What","Macron / Atol","Dune","Le Seigneur des anneaux","Titanic","Titanic short","Gold – Plus près des étoiles","Gold – Laissez-nous chanter","Mariah Carey – It's Time","Trump","Céline Dion JO","Hollande sous la pluie","Michael Jackson – Thriller","Star Wars – Kylo","Star Wars – Vador","Le 5ème Beatles – Hello Goodbye","Intro Hotu","Zidane – coup de pied","Couronnement roi Charles – short","Les Choristes","Miley Cyrus – Wrecking Ball","ITW Sophie Adenot – ISS","Vanessa Carlton","Gims – Parisienne","Poltronesofà","Poltronesofà – Franck Leboeuf","Love Actually (V1 + V2 Franck Leboeuf)","Terminator (V1 + V2 Franck Leboeuf)","James Bond – Casino poker","Qui veut être mon associé","Couronnement roi Charles","1000% Logique","L'Odyssée"}
-REMOVE_N={17,43,46,86,87,109,133,135,91,92,138,143,144,145,146,147,148,149,150,151,152,153,154,155,83,94,99,113,34,36,82,119,126,158}
+REMOVE_N={17,43,86,87,109,133,135,91,92,138,143,144,145,146,147,148,149,150,151,152,153,154,155,83,94,99,113,34,36,82,119,126,158}
 def _gm(n,name):
     if n not in A: return
     v=A[n]
@@ -131,6 +131,7 @@ for _n,_v in OVR.items():
     _v=dict(_v);_a=_v.pop('lec_add','')
     A[_n].update(_v)
     if _a and _a not in A[_n]['lec']:A[_n]['lec']=A[_n]['lec']+_a
+_ref(46,lec="Contrechamp sur Tapie : référence seulement, non tourné.")
 A[165]=dict(A[65]);A[165]['lec']=A[65]['lec']+" (INA – Alcool : même réf que INA – Internet, optionnel au déroulé J4.)"
 
 A[2]['lec']=A[2]['lec'].replace("Smartphone tenu proche, grand-angle, tout net.","Smartphone posé sur le tableau de bord, grand-angle, tout net.")
