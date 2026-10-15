@@ -34,6 +34,7 @@ PLAN=[
 ("J4","Tous les sports (extérieurs)",[]),
 ("J6","INA – Mode",[(R(11,1),"Micro-trottoir N&B","Pas de VFX, rue de repérage")]),
 ("J6","INA – Internet",[(R(11,2),"Micro-trottoir années 90","Rue de repérage")]),
+("J4","INA – Alcool",[(R(11,2),"Micro-trottoir (optionnel)","Rue – optionnel au déroulé. Même réf que INA – Internet",165)]),
 ("J6","Qui veut épouser mon fils",[(N+'J6_qvemf_1_pretendante.jpg',"Prétendante (Camille)","Naturel, appartement"),(N+'J6_qvemf_2_canape.jpg',"Fils et mère sur le canapé","Naturel")]),
 ("J7","Intro Hotu",[(R(1,0),"Conducteur, profil","Fond vert / XR pour le taxi"),(R(1,1),"Passager arrière, ¾","Fond vert / XR")]),
 ("J8","Zidane – coup de pied",[(N+"J8_zidane_v14.jpg","Arbitre assis, drapeau – plan large","Fond vert américain, tenue d'arbitre ; bonus Camille au sol")]),
