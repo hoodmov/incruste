@@ -1,6 +1,6 @@
 exec(open('/home/claude/shots.py').read()); exec(open('/home/claude/ana.py').read())
 DAYS={"J1":("Mardi 13/10","Cyclo fond vert","INT"),"J2":("Mercredi 14/10","Cyclo fond vert","INT"),"J3":("Jeudi 15/10","Cyclo fond vert","INT"),
-"J4":("Vendredi 16/10","Extérieur / décors naturels","INT/EXT"),"J6":("Mardi 20/10","Appartement 42 av. de Wagram (Paris 8e) + rues (Passage Doisy, place des Ternes)","INT/EXT"),"J7":("Mercredi 21/10","Plateau XR fond vert","INT"),
+"J4":("Vendredi 16/10","Extérieur / décors naturels","INT/EXT"),"J6":("Mardi 20/10","Appartement 42 av. de Wagram (Paris 8e) + rues (Passage Doisy, place des Ternes)","INT/EXT"),"J7":("Mercredi 21/10","IM SO PROD Studio, 121 rue d'Aguesseau, Boulogne – grand fond vert (intro)","INT"),
 "J8":("Jeudi 22/10","Plateau XR fond vert","INT"),"J9":("Vendredi 23/10","Plateau XR fond vert","INT"),"J10":("Lundi 26/10","Plateau XR vidéo","INT"),"J11":("Mardi 27/10","Plateau XR vidéo","INT")}
 SRC={
 "L'Exorciste":"Origine : Arriflex 35 IIC « Panavisée », 35 mm sphérique, 1.85 (ASC).",
@@ -84,9 +84,10 @@ ORDER={
 "J3":["Michael Jackson – Thriller","Le Comte de Monte-Cristo","Tapie","Les Choristes","Gims – Parisienne","Stranger Things"],
 "J4":["INA – Mode","Un dimanche à la campagne","INA – Piercings","Gourou","Tiny Desk","Tous les sports (extérieurs)"],
 "J6":["INA – Alcool","INA – Internet","Je peux visiter ton appart ?","Tu payes combien ton loyer ?","JT – JRI","Qui veut épouser mon fils"],
+"J7":["Intro – Scan Camille en stormtrooper","Intro – Scan Camille en costume","Intro – Chevalier : studio puis Les Visiteurs","Intro – Suspension puis arène de Gladiator","Intro – Chute dans Men in Black (grue)","Intro – Course : Jurassic Park, Forrest Gump, Harry Potter","Intro – Plans en option (absents du déroulé)"],
 "J8":["Pink – So What","Le 5ème Beatles – Hello Goodbye","Miley Cyrus – Wrecking Ball","Couronnement roi Charles – short","ITW Sophie Adenot – ISS","Qui veut être mon associé","Vanessa Carlton"],
 "J9":["Poltronesofà","Poltronesofà – Franck Leboeuf","Love Actually (V1 + V2 Franck Leboeuf)","Terminator (V1 + V2 Franck Leboeuf)","James Bond – Casino poker","Qui veut être mon associé","Couronnement roi Charles"],
-"J10":["Danse avec les stars","Love Cam Coldplay"],
+"J10":["Danse avec les stars","Love Cam Coldplay","Intro – Réalisateur en régie"],
 "J11":["Maillon faible","The Voice","Fast & Furious","JT 2h","1000% Logique"]}
 
 # Notes lumière : effets lumière à faire en vrai au tournage (pas la description de la lumière)
@@ -133,12 +134,13 @@ for _n,_v in OVR.items():
     if _a and _a not in A[_n]['lec']:A[_n]['lec']=A[_n]['lec']+_a
 _ref(78,lec="Contrechamp sur Mathieu : référence seulement, non tourné.")
 _ref(46,lec="Contrechamp sur Tapie : référence seulement, non tourné.")
+exec(open('/home/claude/intro_data.py').read())
 A[165]=dict(A[65]);A[165]['lec']=A[65]['lec']+" (INA – Alcool : même réf que INA – Internet.)"
 
 A[2]['lec']=A[2]['lec'].replace("Smartphone tenu proche, grand-angle, tout net.","Smartphone posé sur le tableau de bord, grand-angle, tout net.")
 A[16]['lec']=A[16]['lec'].replace("Désert complètement fondu derrière : longue focale.","Désert fondu derrière (incruste ancienne), mais Camille est assez au contact : 50 mm.")
 A[78]['lec']=A[78]['lec'].replace("Champ/contrechamp avec #77 : même focale.","Champ/contrechamp avec le plan 5 : même focale (85 mm).")
-REMOVE_SEQ={"Tous les sports (extérieurs)","Tous les sports (studio)"}
+REMOVE_SEQ={"Intro Hotu","Tous les sports (extérieurs)","Tous les sports (studio)"}
 def build():
     order=["J1","J2","J3","J4","J6","J7","J8","J9","J10","J11"]
     allseq=[];n=0

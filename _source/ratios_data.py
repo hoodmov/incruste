@@ -121,3 +121,36 @@ def ratio_txt(iid):
     r,k,c=RT[iid];base=r.split(' ')[0]
     il=IL.get(base,'');rr=r+(f' ({il})' if il and '(' not in r else (f' — {il}' if il else ''))
     return f"Ratio ≈ {rr} · Key : {k} · Contre : {c}"
+
+# Intro (J7 21/10 + régie 26/10)
+RT.update({
+'166':('1,5:1','diffuse haute, légèrement de face (ciel enfumé)','oui, chaud et vacillant droite cadre (flammes)'),
+'167':('1,5:1','douce de face, légèrement haute','oui, chaud droite cadre (flammes)'),
+'168':('1,3:1','douce de face, légèrement gauche cadre (ciel couvert)','non'),
+'169':('1,3:1','douce de face, légèrement gauche cadre (ciel couvert)','non'),
+'170':('1,2:1','pas de key : ambiance diffuse (brume de sable)','oui, doux, tout le fond (brume claire)'),
+'171':('1,5:1','haute et diffuse, légèrement droite cadre','léger, ciel blanc derrière'),
+'172':('1,5:1','douce de face, légèrement haute (studio)','non'),
+'195':('1,5:1','douce de face (studio)','non'),
+'173':('1,5:1','douce ¾ face, gauche cadre','non'),
+'174':('1,3:1','diffuse haute, légèrement droite cadre','non'),
+'175':('1,5:1','douce, gauche cadre','non'),
+'176':('1,5:1','douce haute, gauche cadre','léger, ciel derrière'),
+'177':('1,5:1','douce de face, haute (studio)','non'),
+'178':('1,5:1','douce de face, haute (studio)','non'),
+'179':('2:1','dure ¾ haute, gauche cadre (soleil)','léger, chaud gauche cadre'),
+'180':('2:1','dure ¾ arrière, gauche cadre (soleil)','oui, dur et chaud gauche cadre'),
+'181':('2:1','¾ haute, gauche cadre (soleil)','non'),
+'182':('2:1','dure, haut gauche cadre (soleil)','oui, ciel clair'),
+'183':('4:1','pas de key : torche rouge droite cadre','oui, dur et froid, haut arrière'),
+'184':('1,3:1','diffuse (ciel couvert)','non'),
+'185':('1,3:1','diffuse (ciel couvert)','non'),
+'186':('2:1','douce de face, gauche cadre','non'),
+'187':('3:1','douce de face, droite cadre','oui, froid gauche cadre (vitraux)'),
+'188':('1,5:1','douce de face, haute','léger, vitraux froids derrière'),
+'189':('3:1','dure, haute gauche cadre (soleil)','non'),
+'190':('1,5:1','douce de face, haute (studio)','non'),
+'191':('1,5:1','douce de face, haute (studio)','non'),
+'192':('1,5:1','douce et haute (studio)','non'),
+'193':('3:1','écrans de face (froide)','léger, voyants de régie derrière'),
+})
