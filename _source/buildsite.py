@@ -53,7 +53,7 @@ for d in D:
             pic=f'<button class="pic" type="button" data-full="{_V(x["img"])}"{(" data-source=\""+_V(x["img"].replace("img/","img/source/"))+"\"") if os.path.exists("/home/claude/incruste/"+x["img"].replace("img/","img/source/")) else ""}{(" data-clean=\""+x["img"].replace("img/","img/clean/")+"?v="+__import__("hashlib").md5(open("/home/claude/incruste/"+x["img"].replace("img/","img/clean/"),"rb").read()).hexdigest()[:8]+"\"") if os.path.exists("/home/claude/incruste/"+x["img"].replace("img/","img/clean/")) else ""} data-cap="{E(cap)}" aria-label="Agrandir l&#39;image"><img src="{_V(x["img"])}" alt="{E(cap)}" loading="lazy"{_wh(x["img"])}><span class="zoom">Agrandir</span></button><button class="lkbtn" type="button" data-img="{_V(x["img"])}" data-cap="{E(cap)}"{(" data-vid=\"vid/"+VIDEOS[s["name"]]+".mp4\"") if s["name"] in VIDEOS else ""}>◉ Incruste live</button>'
             if x['s']:
                 specs=f'''<div class="lens">{chip(x["s"])}<span class="foc">{E(x["f"])}</span></div>
-<dl class="grid"><div><dt>Diaph</dt><dd>{E(x["d"])}</dd></div><div><dt>Distance</dt><dd>{E(mm(x["dist"]))}</dd></div><div><dt>Hauteur caméra</dt><dd>{E(mm(x["h"]))}</dd></div><div><dt>Inclinaison</dt><dd>{E(x["tilt"])}</dd></div>{('<div class="hz"><dt>Horizon</dt><dd>'+E(x["hz"])+'</dd></div>') if x.get("hz") else ''}</dl>'''
+<dl class="grid"><div><dt>Diaph</dt><dd>{E(x["d"])}</dd></div><div><dt>Distance</dt><dd>{E(mm(x["dist"]))}</dd></div><div><dt>Hauteur caméra</dt><dd>{E(mm(x["h"]))}</dd></div><div><dt>Inclinaison</dt><dd>{E(x["tilt"])}</dd></div></dl>'''
             else:
                 specs=''
             tag='<span class="refbadge">Référence · non tournée</span>' if x['ref'] else f'<span class="n">#{x["n"]}</span>'
