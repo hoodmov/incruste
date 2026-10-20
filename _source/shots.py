@@ -33,8 +33,11 @@ PLAN=[
 ("J4","Un dimanche à la campagne",[(N+"J4_dimanche_foret.jpg","Camille qui marche dans la forêt (plan unique)","Un seul plan tourné : Camille marche dans la forêt. Chute dans l'eau (plouf) faite en post-prod")]),
 ("J4","Tous les sports (extérieurs)",[]),
 ("J6","INA – Mode",[(R(11,1),"Micro-trottoir N&B","Pas de VFX, rue de repérage")]),
-("J6","INA – Internet",[(R(11,2),"Micro-trottoir années 90","Rue de repérage")]),
-("J4","INA – Alcool",[(R(11,2),"Micro-trottoir (optionnel)","Rue – optionnel au déroulé. Même réf que INA – Internet",165)]),
+("J6","INA – Internet",[(R(11,2),"Micro-trottoir années 90","Rue – Passage Doisy (avec Booder)")]),
+("J6","INA – Alcool",[(R(11,2),"Micro-trottoir","Rue – Passage Doisy. Même réf que INA – Internet",165)]),
+("J6","Je peux visiter ton appart ?",[]),
+("J6","Tu payes combien ton loyer ?",[]),
+("J6","JT – JRI",[]),
 ("J6","Qui veut épouser mon fils",[(N+'J6_qvemf_1_pretendante.jpg',"Prétendante (Camille)","Naturel, appartement"),(N+'J6_qvemf_2_canape.jpg',"Fils et mère sur le canapé","Naturel")]),
 ("J7","Intro Hotu",[(R(1,0),"Conducteur, profil","Fond vert / XR pour le taxi"),(R(1,1),"Passager arrière, ¾","Fond vert / XR")]),
 ("J8","Zidane – coup de pied",[(N+"J8_zidane_v14.jpg","Arbitre assis, drapeau – plan large","Fond vert américain, tenue d'arbitre ; bonus Camille au sol")]),
@@ -62,4 +65,4 @@ PLAN=[
 ("J11","Fast & Furious",[("x","x","x")]*13+[(N+"FF_face.jpg","Plan de face, vitre arrière – Camille dans la miniature","Image inversée en miroir pour montrer Vin Diesel côté passager. XR vidéo : faire défiler les 12 médias dans l'écran XR, derrière la vitre, dans le même plan (sans coupe)",160),(N+"FF_trois_quarts.jpg","Plan ¾ profil latéral, vitre latérale – Camille dans la miniature","Image inversée en miroir pour montrer Vin Diesel côté passager. XR vidéo : faire défiler les 12 médias dans l'écran XR, derrière la vitre, dans le même plan (sans coupe)",161)]),
 ("J11","La Femme de ménage (en rouge au plan)",[(R(3,3),"Voiture – téléphone","Tournage XR"),(R(3,4),"Voiture – main bandée","Tournage XR"),(R(3,5),"Extérieur – voiture blanche (plaque)","Média 1 voiture arrêtée / média 2 voiture qui roule")]),
 ]
-MISSING={"J2":[],"J4":[],"J6":["INA – Mai 68 – screen à venir","Tu payes combien ton loyer ? – pas de média","Je peux visiter ton appart ? – pas de média"],"J7":["Intro voiture (équipe B) – voir Intro Hotu"],"J11":[]}
+MISSING={"J2":[],"J4":[],"J6":[],"J7":["Intro voiture (équipe B) – voir Intro Hotu"],"J11":[]}
