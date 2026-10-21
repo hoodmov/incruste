@@ -173,13 +173,18 @@ prog=gl.createProgram();gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS));gl.attachS
 var b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);var l=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,2,gl.FLOAT,false,0,0);
 texBg=tex();texV=tex();texMk=tex();gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.uniform1i(gl.getUniformLocation(prog,'bg'),0);gl.uniform1i(gl.getUniformLocation(prog,'vd'),1);gl.uniform1i(gl.getUniformLocation(prog,'mk'),2);M.dirty=true;return true}
 function U(n){return gl.getUniformLocation(prog,n)}
+/* Synchro image : quand la caméra fournit requestVideoFrameCallback, le rendu WebGL est fait à chaque nouvelle image caméra (cadence régulière, aucune image sautée ou doublée par le rafraîchissement de l'écran). Repli automatique sur l'ancien mode si le rappel s'arrête > 120 ms. Désactivable : localStorage lgi.lk.sync = 0 ou ?lksync=0 */
+var SYNC=(function(){try{if(/[?&]lksync=0/.test(location.search))return false;return localStorage.getItem('lgi.lk.sync')!=='0'}catch(e){return true}})();
+function camSync(){return SYNC&&CW.rvfc&&bgMode!=='vid'&&vid&&vid.readyState>=2&&vid.videoWidth>0&&(performance.now()-CW.last)<120}
+function vfDraw(){if(!gl||lk.hidden||!camSync())return;if(M.dirty){buildMask();M.dirty=false}var nat=CW.nat||30,dv=Math.max(1,Math.ceil(nat/30.5));CW.vk=(CW.vk||0)+1;if(CW.vk<dv)return;CW.vk=0;render(true)}
 function frame(){raf=requestAnimationFrame(frame);if(!gl||lk.hidden)return;
 var ok=vid&&vid.readyState>=2&&vid.videoWidth>0;
 if(M.dirty){buildMask();M.dirty=false}
-drawOv();if(bgMode==='vid'&&bgv&&vidB&&!bgv.paused&&!scrub&&bgv.currentTime>=vidB&&bgv.currentTime<vidB+0.6){bgv.currentTime=vidA}if(bgMode==='vid'&&bgv&&bgv.duration){if(!scrub)document.getElementById('lkbgt').value=Math.round(bgv.currentTime/bgv.duration*10000);document.getElementById('lkbgl').textContent=tc(bgv.currentTime)+'  /  '+tc(bgv.duration)+'  ·  '+fps+' i/s'+(vidB?'  ·  plan '+tc(vidA)+' → '+tc(vidB):'')}
+drawOv();if(camSync())return;render(false)}
+function render(vsync){var ok=vid&&vid.readyState>=2&&vid.videoWidth>0;if(bgMode==='vid'&&bgv&&vidB&&!bgv.paused&&!scrub&&bgv.currentTime>=vidB&&bgv.currentTime<vidB+0.6){bgv.currentTime=vidA}if(bgMode==='vid'&&bgv&&bgv.duration){if(!scrub)document.getElementById('lkbgt').value=Math.round(bgv.currentTime/bgv.duration*10000);document.getElementById('lkbgl').textContent=tc(bgv.currentTime)+'  /  '+tc(bgv.duration)+'  ·  '+fps+' i/s'+(vidB?'  ·  plan '+tc(vidA)+' → '+tc(vidB):'')}
 if(bgMode==='vid'&&bgv&&bgv.readyState>=2&&bgv.videoWidth>0){gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texBg);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,bgv)}
 gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,texV);
-var up=ok;if(ok){var tq=-1;try{tq=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}var nat=CW.nat||30,dv=Math.max(1,Math.ceil(nat/30.5));
+var up=ok;if(ok&&!vsync){var tq=-1;try{tq=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}var nat=CW.nat||30,dv=Math.max(1,Math.ceil(nat/30.5));
   if(tq>0){if(CW.upF!=null&&tq>=CW.upF&&tq-CW.upF<dv)up=false;else CW.upF=tq}else{var tn=performance.now();if(CW.upT&&tn-CW.upT<1000/31)up=false;else CW.upT=tn}}
 if(up){CW.nf=false;CW.ups=(CW.ups||0)+1;try{gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,vid)}catch(e){}}
 var ca=cv.width/cv.height,va=ok?vid.videoWidth/vid.videoHeight:16/9;
@@ -207,7 +212,9 @@ function fwd(vx,vy){var g=G(),q=[(vx-.5)*g.whx,(vy-.5)*g.why],pr=[q[0]*g.ca,q[1]
 function tpx(u,w,h){return[u[0]*w,(1-u[1])*h]}
 function handles(w,h){var tl=tpx(fwd(0,1),w,h),tr=tpx(fwd(1,1),w,h),br=tpx(fwd(1,0),w,h),bl=tpx(fwd(0,0),w,h),c=tpx(fwd(.5,.5),w,h),tm=[(tl[0]+tr[0])/2,(tl[1]+tr[1])/2];
 var dx=c[0]-tm[0],dy=c[1]-tm[1],l=Math.hypot(dx,dy)||1,rh=[tm[0]+dx/l*34,tm[1]+dy/l*34],ex=c[0]-br[0],ey=c[1]-br[1],m=Math.hypot(ex,ey)||1,sh=[br[0]+ex/m*26,br[1]+ey/m*26];function cl(p){return[Math.min(w-22,Math.max(22,p[0])),Math.min(h-22,Math.max(22,p[1]))]}return{tl:tl,tr:tr,br:br,bl:bl,c:c,tm:tm,rh:cl(rh),sh:cl(sh)}}
-function drawOv(){var r=cv.getBoundingClientRect(),wr=wrap.getBoundingClientRect(),w=Math.round(r.width),h=Math.round(r.height);
+var OVS='';function drawOv(){var r=cv.getBoundingClientRect(),wr=wrap.getBoundingClientRect(),w=Math.round(r.width),h=Math.round(r.height);
+var sig;try{sig=[w,h,r.left-wr.left,r.top-wr.top,cv.width,cv.height,vid?vid.videoWidth+'x'+vid.videoHeight:0,F.show,F.mode,JSON.stringify(S),JSON.stringify(X),M.out,M.tool,M.inv,M.cur?JSON.stringify(M.cur):'',JSON.stringify(M.shapes),gh.hidden,spl.hidden].join('|')}catch(e){sig=Math.random()}
+if(sig===OVS)return;OVS=sig;
 if(ov.width!==w||ov.height!==h){ov.width=w;ov.height=h}ov.style.left=(r.left-wr.left)+'px';ov.style.top=(r.top-wr.top)+'px';ov.style.width=w+'px';ov.style.height=h+'px';
 var c=ov.getContext('2d');c.clearRect(0,0,w,h);xtra(c,w,h,r,wr);if(F.show&&!S.bed&&!M.tool&&!S.pick&&vid&&vid.videoWidth){var H=handles(w,h);c.setLineDash([]);c.lineWidth=2;c.strokeStyle='#ffd400';c.beginPath();c.moveTo(H.tl[0],H.tl[1]);c.lineTo(H.tr[0],H.tr[1]);c.lineTo(H.br[0],H.br[1]);c.lineTo(H.bl[0],H.bl[1]);c.closePath();c.stroke();c.beginPath();c.moveTo(H.tm[0],H.tm[1]);c.lineTo(H.rh[0],H.rh[1]);c.stroke();c.fillStyle='#ffd400';c.beginPath();c.arc(H.rh[0],H.rh[1],9,0,6.2832);c.fill();c.fillRect(H.sh[0]-9,H.sh[1]-9,18,18);c.beginPath();c.arc(H.c[0],H.c[1],4,0,6.2832);c.fill()}
 if(!M.out&&!M.cur)return;c.lineWidth=2;c.setLineDash([6,4]);c.strokeStyle='#00e5ff';c.fillStyle='rgba(0,229,255,.12)';
@@ -230,7 +237,7 @@ window.lkRefresh=function(){if(!lk.hidden&&bgMode==='img'&&lastSrc)loadBg(lastSr
 var CW={nf:false,rvfc:false,last:0,mutedAt:0,lastRestart:0,want:null,vt:-1,vtAt:0,wl:null};
 function camHook(s){var t=s.getVideoTracks()[0];if(!t)return;
   t.onended=function(){CW.mutedAt=CW.mutedAt||Date.now()-5000};t.onmute=function(){CW.mutedAt=Date.now()};t.onunmute=function(){CW.mutedAt=0};
-  CW.last=performance.now();setTimeout(function(){if(!vid)return;CW.rvfc=!!vid.requestVideoFrameCallback;if(CW.rvfc){var me=vid;var cb=function(){if(vid!==me)return;CW.nf=true;CW.fc=(CW.fc||0)+1;CW.last=performance.now();me.requestVideoFrameCallback(cb)};me.requestVideoFrameCallback(cb)}},0)}
+  CW.last=performance.now();setTimeout(function(){if(!vid)return;CW.rvfc=!!vid.requestVideoFrameCallback;if(CW.rvfc){var me=vid;var cb=function(){if(vid!==me)return;CW.nf=true;CW.fc=(CW.fc||0)+1;CW.last=performance.now();me.requestVideoFrameCallback(cb);try{vfDraw()}catch(e){}};me.requestVideoFrameCallback(cb)}},0)}
 /* On ménage la carte de capture : on ne la rouvre (stop + getUserMedia) qu'en dernier recours, avec un délai croissant.
    - signal absent (piste « muette ») : on attend, la Cam Link reprend seule quand la source revient ;
    - image figée : d'abord une relance douce du lecteur, réouverture seulement après 15 s ;
