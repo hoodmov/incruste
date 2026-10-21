@@ -58,7 +58,7 @@ for d in D:
                 specs=''
             tag='<span class="refbadge">Référence · non tournée</span>' if x['ref'] else f'<span class="n">#{x["n"]}</span>'
             body.append(f'''<div class="shot{' isref' if x['ref'] else ''}"><div class="shot-pic">{pic}</div><div class="shot-info"><p class="plan">{tag}{E(x["plan"])}</p>{specs}
-<div class="light"><h4>Lumière</h4><p>{E(x["lum"])}</p>{('<p class="ratio"><span>'+E(ratio_txt(x["img"][4:7]))+'</span></p>') if ratio_txt(x["img"][4:7]) else ''}</div>{('<div class="dlg"><h4>Texte</h4><p>'+E(x["dlg"])+'</p></div>') if x.get("dlg") else ''}<p class="vfx">{E(x["vfx"])}</p><p class="lfx"><span class="lfxv">{E(x.get("lfx") or "—")}</span></p></div></div>''' + ('</div>' if qi==0 else ''))
+<div class="light"><h4>Lumière</h4><p>{E(x["lum"])}</p>{('<p class="ratio"><span>'+E(ratio_txt(x["img"][4:7]))+'</span></p>') if ratio_txt(x["img"][4:7]) else ''}</div>{('<div class="dlg"><h4>Texte</h4><p>'+E(x["dlg"])+'</p></div>') if x.get("dlg") else ''}{('<button class="vidbtn shotvid" type="button" data-src="vid/'+VIDEOS.get(s["name"],"intro")+'.mp4#t='+str(x["clip"][0])+','+str(x["clip"][1])+'" data-cap="Prévisu · '+E(x["plan"])+'"><span class="pl">▶</span> Prévisu du plan ('+f'{int(x["clip"][0]//60)}:{int(x["clip"][0]%60):02d}'+' → '+f'{int(x["clip"][1]//60)}:{int(x["clip"][1]%60):02d}'+')</button>') if x.get("clip") else ''}<p class="vfx">{E(x["vfx"])}</p><p class="lfx"><span class="lfxv">{E(x.get("lfx") or "—")}</span></p></div></div>''' + ('</div>' if qi==0 else ''))
         if s.get('cards'):
             body.append('<div class="cards">'+''.join(f'<div class="card">'+(f'<img src="img/{c[3].split("/")[-1]}" style="width:100%;border-radius:6px;display:block;margin-bottom:6px">' if len(c)>3 else '')+f'<span class="refbadge">À tourner{"" if len(c)>3 else " · pas d\'image"}</span><h3>{E(c[0])}</h3><p>{E(c[1])}</p><p class="acc"><b>Accessoires :</b> {E(c[2])}</p></div>' for c in s['cards'])+'</div>')
         body.append('</article>')
@@ -135,7 +135,7 @@ nav.days a:focus-visible,.pic:focus-visible,button:focus-visible{{outline:3px so
 .grid div{{background:var(--surface);padding:7px 10px;min-width:0}}
 .grid dt{{font:500 .68rem var(--body);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}}
 .grid dd{{margin:0;font:500 1rem var(--mono);font-variant-numeric:tabular-nums}}
-.grid div.hz{{grid-column:1/-1}}.grid div.hz dd{{font:500 .9rem var(--body);line-height:1.35}}.dlg{{margin:10px 0 0;padding:9px 12px;border-left:3px solid var(--key);background:var(--surface);border-radius:4px}}.dlg h4{{margin:0 0 4px;font:600 .68rem var(--body);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}}.dlg p{{margin:0;white-space:pre-line;font-size:.92rem;line-height:1.4}}
+.vidbtn.shotvid{{margin:10px 0 0;padding:7px 12px;font-size:.85rem}}.vidbtn.shotvid .pl{{width:20px;height:20px;font-size:.7rem}}.grid div.hz{{grid-column:1/-1}}.grid div.hz dd{{font:500 .9rem var(--body);line-height:1.35}}.dlg{{margin:10px 0 0;padding:9px 12px;border-left:3px solid var(--key);background:var(--surface);border-radius:4px}}.dlg h4{{margin:0 0 4px;font:600 .68rem var(--body);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}}.dlg p{{margin:0;white-space:pre-line;font-size:.92rem;line-height:1.4}}
 .light{{border-left:4px solid var(--key);padding:2px 0 2px 10px}}
 .light h4{{margin:0;font:600 .7rem var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--key)}}
 .light p{{margin:2px 0 0}}
