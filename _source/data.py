@@ -1,7 +1,7 @@
 exec(open('/home/claude/shots.py').read()); exec(open('/home/claude/ana.py').read())
 DAYS={"J1":("Mardi 13/10","Cyclo fond vert","INT"),"J2":("Mercredi 14/10","Cyclo fond vert","INT"),"J3":("Jeudi 15/10","Cyclo fond vert","INT"),
-"J4":("Vendredi 16/10","Extérieur / décors naturels","INT/EXT"),"J5":("Mardi 20/10","Appartement 42 av. de Wagram (Paris 8e) + rues (Passage Doisy, place des Ternes)","INT/EXT"),"J6":("Mercredi 21/10","IM SO PROD Studio, 121 rue d'Aguesseau, Boulogne – grand fond vert (intro)","INT"),
-"J7":("Jeudi 22/10","Plateau XR fond vert","INT"),"J8":("Vendredi 23/10","Plateau XR fond vert","INT"),"J9":("Lundi 26/10","Plateau XR vidéo","INT"),"J10":("Mardi 27/10","Plateau XR vidéo","INT")}
+"J4":("Vendredi 16/10","Extérieur / décors naturels","INT/EXT"),"J6":("Mardi 20/10","Appartement 42 av. de Wagram (Paris 8e) + rues (Passage Doisy, place des Ternes)","INT/EXT"),"J7":("Mercredi 21/10","IM SO PROD Studio, 121 rue d'Aguesseau, Boulogne – grand fond vert (intro)","INT"),
+"J8":("Jeudi 22/10","Plateau XR fond vert","INT"),"J9":("Vendredi 23/10","Plateau XR fond vert","INT"),"J10":("Lundi 26/10","Plateau XR vidéo","INT"),"J11":("Mardi 27/10","Plateau XR vidéo","INT")}
 SRC={
 "L'Exorciste":"Origine : Arriflex 35 IIC « Panavisée », 35 mm sphérique, 1.85 (ASC).",
 "Dune":"Origine : ARRI Alexa 65 + Mini LF, optiques sphériques Moviecam re-boîtées, pas d'anamorphique (British Cinematographer).",
@@ -77,18 +77,18 @@ A[163]=dict(s=GM70,f="100 mm",d="f/2.8",dist="2,5",h="1,45",tilt="0°",lum="Key 
 A[164]=dict(s=GM16,f="24 mm",d="f/5.6",dist="5,0",h="1,60",tilt="plongée 5°",lum="Plateau TV : éclairage uniforme, haut et diffus (≈ 5600 K), sol brillant et reflets, fond extérieur clair.",lec="Plateau entier avec fenêtre d'insert vidéo à droite (ajoutée en post).")
 
 SHOTORDER={"Michael Jackson – Thriller":[44,42]}  # top shot cercueil en premier (14/10)
-DAYOF={"INA – Alcool":"J5","Qui veut être mon associé":"J7","The Voice":"J10","Gims – Parisienne":"J3","INA – Mode":"J4","Stranger Things":"J3","Star Wars – Kylo":"J2","Star Wars – Vador":"J2","Pink – So What":"J7","Zidane – coup de pied":"J1","Le 5ème Beatles – Hello Goodbye":"J7","Les Choristes":"J3"}
+DAYOF={"INA – Alcool":"J6","Qui veut être mon associé":"J8","The Voice":"J11","Gims – Parisienne":"J3","INA – Mode":"J4","Stranger Things":"J3","Star Wars – Kylo":"J2","Star Wars – Vador":"J2","Pink – So What":"J8","Zidane – coup de pied":"J1","Le 5ème Beatles – Hello Goodbye":"J8","Les Choristes":"J3"}
 ORDER={
 "J1":["Fruit Love Island","Lipsync voiture","Zidane – coup de pied","L'Exorciste","Fort Boyard","Pape mobile","Macron / Atol","Dune","Le Seigneur des anneaux"],
 "J2":["Titanic","Titanic short","L'Odyssée","Gold – Plus près des étoiles","Gold – Laissez-nous chanter","Mariah Carey – It's Time","Trump","Céline Dion JO","Hollande sous la pluie","Star Wars – Vador","Star Wars – Kylo"],
 "J3":["Michael Jackson – Thriller","Le Comte de Monte-Cristo","Tapie","Les Choristes","Gims – Parisienne","Stranger Things"],
 "J4":["INA – Mode","Un dimanche à la campagne","INA – Piercings","Gourou","Tiny Desk","Tous les sports (extérieurs)"],
-"J5":["INA – Alcool","INA – Internet","Je peux visiter ton appart ?","Tu payes combien ton loyer ?","JT – JRI","Qui veut épouser mon fils"],
-"J6":["Intro – Scan Camille en stormtrooper","Intro – Scan Camille en costume","Intro – Chevalier : studio puis Les Visiteurs","Intro – Suspension puis arène de Gladiator","Intro – Chute dans Men in Black (grue)","Intro – Course : Jurassic Park, Forrest Gump, Harry Potter","Intro – Plans en option (absents du déroulé)"],
-"J7":["Pink – So What","Le 5ème Beatles – Hello Goodbye","Miley Cyrus – Wrecking Ball","Couronnement roi Charles – short","ITW Sophie Adenot – ISS","Qui veut être mon associé","Vanessa Carlton"],
-"J8":["Poltronesofà","Poltronesofà – Franck Leboeuf","Love Actually (V1 + V2 Franck Leboeuf)","Terminator (V1 + V2 Franck Leboeuf)","James Bond – Casino poker","Qui veut être mon associé","Couronnement roi Charles"],
-"J9":["Danse avec les stars","Love Cam Coldplay","Intro – Réalisateur en régie"],
-"J10":["Maillon faible","The Voice","Fast & Furious","JT 2h","1000% Logique"]}
+"J6":["INA – Alcool","INA – Internet","Je peux visiter ton appart ?","Tu payes combien ton loyer ?","JT – JRI","Qui veut épouser mon fils"],
+"J7":["Intro – Scan Camille en stormtrooper","Intro – Scan Camille en costume","Intro – Chevalier : studio puis Les Visiteurs","Intro – Suspension puis arène de Gladiator","Intro – Chute dans Men in Black (grue)","Intro – Course : Jurassic Park, Forrest Gump, Harry Potter","Intro – Plans en option (absents du déroulé)"],
+"J8":["Pink – So What","Le 5ème Beatles – Hello Goodbye","Miley Cyrus – Wrecking Ball","Couronnement roi Charles – short","ITW Sophie Adenot – ISS","Qui veut être mon associé","Vanessa Carlton"],
+"J9":["Poltronesofà","Poltronesofà – Franck Leboeuf","Love Actually (V1 + V2 Franck Leboeuf)","Terminator (V1 + V2 Franck Leboeuf)","James Bond – Casino poker","Qui veut être mon associé","Couronnement roi Charles"],
+"J10":["Danse avec les stars","Love Cam Coldplay","Intro – Réalisateur en régie"],
+"J11":["Maillon faible","The Voice","Fast & Furious","JT 2h","1000% Logique"]}
 
 # Notes lumière : effets lumière à faire en vrai au tournage (pas la description de la lumière)
 LFX={
@@ -142,7 +142,7 @@ A[16]['lec']=A[16]['lec'].replace("Désert complètement fondu derrière : longu
 A[78]['lec']=A[78]['lec'].replace("Champ/contrechamp avec #77 : même focale.","Champ/contrechamp avec le plan 5 : même focale (85 mm).")
 REMOVE_SEQ={"Intro Hotu","Tous les sports (extérieurs)","Tous les sports (studio)"}
 def build():
-    order=["J1","J2","J3","J4","J5","J6","J7","J8","J9","J10"]
+    order=["J1","J2","J3","J4","J6","J7","J8","J9","J10","J11"]
     allseq=[];n=0
     for j,s,sh in PLAN:
         shots=[]
@@ -190,7 +190,6 @@ CARDS["Vanessa Carlton"]=[
 ("Plan 6 – Camille sur une Harley (serré)","Camille sur la moto en plan serré, vu de l'avant. Même installation que le plan 5. G Master 70-200 à 85 mm, f/2.8, caméra à environ 2,5 m, hauteur poitrine, tilt 0°. Lumière : idem plan 5.","Harley (ou moto de studio sur support)","newrefs/V_moto_serre.jpg")]
 
 VIDEOS={"Couronnement roi Charles":"couronnement_roi","Couronnement roi Charles – short":"couronnement_short","Dune":"dune","Fast & Furious":"fast_x","Fort Boyard":"fort_boyard","ITW Sophie Adenot – ISS":"iss","La Femme de ménage (en rouge au plan)":"femme_de_menage","L'Odyssée":"odyssee","Qui veut épouser mon fils":"qvemf","Star Wars – Vador":"vador","Star Wars – Kylo":"kylo","Terminator (V1 + V2 Franck Leboeuf)":"terminator","The Voice":"the_voice","Titanic":"titanic","Vanessa Carlton":"vanessa","Un dimanche à la campagne":"dimanche","L'Exorciste":"exorciste","Les Choristes":"choristes","Miley Cyrus – Wrecking Ball":"miley","Stranger Things":"stranger","Michael Jackson – Thriller":"thriller","Gims – Parisienne":"gims"}
-for _k in [k for k in SRC if k.startswith('Intro – ')]: VIDEOS[_k]='intro'
 
 CARDS["Je peux visiter ton appart ?"]=[("Plan 1 – Micro-trottoir rue","Place des Ternes, ext. jour. Camille, micro-trottoir cadré épaules.","—")]
 CARDS["Tu payes combien ton loyer ?"]=[("Plan 1 – Micro-trottoir rue","Place des Ternes, ext. jour. Camille + 2 policiers, micro-trottoir cadré épaules.","Brassards policiers"),("Plan 2 – Appartement","Cuisine / chambre, int. jour. Maxence, Honorine Magnier, Yoann Riou (femme, amant). Cadre épaules, style docu avec regards caméra.","—")]

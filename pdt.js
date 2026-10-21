@@ -3,7 +3,7 @@
 'use strict';
 var SID='1PLOfV565TSiZAZUXRAENBZw_GuMrHH9G365ocodiuzE';
 var URL_PDT='https://docs.google.com/spreadsheets/d/'+SID+'/edit?usp=drivesdk';
-var TABS={J1:'sheet=Jour%201',J2:'gid=570741923',J3:'gid=1003886348',J4:'gid=1859686738',J5:'gid=2138050842',J6:'sheet=Jour%206',J7:'sheet=Jour%207',J8:'sheet=Jour%208',J9:'sheet=Jour%209',J10:'sheet=Jour%2010'};
+var TABS={J1:'sheet=Jour%201',J2:'gid=570741923',J3:'gid=1003886348',J4:'gid=1859686738',J5:'gid=2138050842',J6:'sheet=Jour%205',J7:'sheet=Jour%206',J8:'sheet=Jour%207'};
 var bar=document.getElementById('edbar');
 if(bar){var b=document.createElement('button');b.type='button';b.id='edpdt';b.textContent='🗓 PDT';b.setAttribute('aria-label','Plan de travail (Google Sheets)');
   b.onclick=function(){window.open(URL_PDT,'_blank','noopener')};var rp=document.getElementById('edrep');bar.insertBefore(b,rp?rp.nextSibling:bar.firstChild)}

@@ -115,7 +115,3 @@ SRC.update({
 "Intro – Plans en option (absents du déroulé)":"Plans du découpage qui ne figurent pas au déroulé J6 : à tourner seulement si le temps le permet.",
 "Intro – Réalisateur en régie":"Mail de Sabine du 20/10 : le reste de l'intro avec les autres personnages est tourné le 26/10. Plans du découpage, sans réf image.",
 })
-
-# Prévisu (Frame.io « Export 2.mp4 », 2 min 30) : extrait par plan (secondes début, fin)
-CLIP={172:(27.5,32.9),173:(32.9,41.7),174:(41.7,49.8),175:(45.0,51.4),176:(51.4,55.0),166:(55.0,58.9),167:(58.9,65.6),168:(65.6,72.7),169:(72.7,74.4),182:(74.4,77.8),177:(77.8,99.3),178:(80.5,82.8),193:(82.8,90.5),194:(99.3,100.4),179:(100.4,115.6),180:(109.2,110.4),181:(114.3,119.9),189:(115.6,116.5),170:(119.9,128.7),171:(128.7,131.1),183:(131.1,134.4),184:(134.4,138.8),186:(138.8,142.2),187:(142.2,147.5),188:(147.5,150.4)}
-for _n,_c in CLIP.items(): A[_n]['clip']=_c
