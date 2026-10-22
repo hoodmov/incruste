@@ -6,7 +6,7 @@
 var GH={repo:'hoodmov/incruste',path:'data/live.json',branch:'data'};
 var ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
 var MAXW=960,MAXBR=2500000,MAXFPS=30;
-var QP={fl:{w:640,br:1200000,fps:30,jb:0,n:'Réactif'},eq:{w:960,br:2500000,fps:30,jb:0,n:'Équilibré'},hd:{w:1280,br:6000000,fps:30,jb:60,n:'HD'},max:{w:99999,br:12000000,fps:25,jb:150,n:'Max'}};
+var QP={fl:{w:640,br:1200000,fps:30,jb:0,n:'Réactif'},eq:{w:960,br:2500000,fps:30,jb:0,n:'Équilibré'},hd:{w:1920,br:8000000,fps:30,jb:60,n:'HD 1080p'},max:{w:99999,br:12000000,fps:25,jb:150,n:'Max'}};
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function token(){return lsGet('lgi.gh')||''}
@@ -52,7 +52,7 @@ function lowLat(tr){try{if(!tr||!tr.setCodecPreferences||!window.RTCRtpReceiver|
   var h=c.codecs.filter(function(x){return /h264/i.test(x.mimeType)}),o=c.codecs.filter(function(x){return !/h264/i.test(x.mimeType)});if(h.length)tr.setCodecPreferences(h.concat(o))}catch(e){}
   try{if(tr&&tr.receiver){tr.receiver.jitterBufferTarget=0;tr.receiver.playoutDelayHint=0}}catch(e){}}
 function tune(pc){try{pc.getSenders().forEach(function(s){if(!s.track||s.track.kind!=='video')return;var p=s.getParameters();if(!p.encodings||!p.encodings.length)p.encodings=[{}];
-  var q=QP[pc._q]||QP.eq;p.encodings[0].maxBitrate=q.br;p.encodings[0].maxFramerate=q.fps;p.encodings[0].priority='high';p.encodings[0].networkPriority='high';try{p.degradationPreference='maintain-framerate'}catch(_){}try{s.track.contentHint='motion'}catch(_){}var w=cv.width||1280;p.encodings[0].scaleResolutionDownBy=Math.max(1,w/q.w);s.setParameters(p).catch(function(){})})}catch(e){}}
+  var q=QP[pc._q]||QP.hd;p.encodings[0].maxBitrate=q.br;p.encodings[0].maxFramerate=q.fps;p.encodings[0].priority='high';p.encodings[0].networkPriority='high';try{p.degradationPreference='maintain-framerate'}catch(_){}try{s.track.contentHint='motion'}catch(_){}var w=cv.width||1280;p.encodings[0].scaleResolutionDownBy=Math.max(1,w/q.w);s.setParameters(p).catch(function(){})})}catch(e){}}
 function accept(k,s){var id=k+'|'+s.t;if(H.seen[id])return;H.seen[id]=1;if(H.peers[k]){try{H.peers[k].close()}catch(e){}delete H.peers[k]}
   var pc=new RTCPeerConnection(ICE);H.peers[k]=pc;
   H.stream.getTracks().forEach(function(t){pc.addTrack(t,H.stream)});
@@ -87,7 +87,7 @@ if(bar&&supported){
   '#lv .msg{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);text-align:center;padding:0 16px;font-size:.95rem;text-shadow:0 1px 4px #000;pointer-events:none}';
   document.head.appendChild(css);
   var lv=document.createElement('div');lv.id='lv';lv.hidden=true;lv.setAttribute('role','dialog');lv.setAttribute('aria-label','Incruste live (diffusion)');
-  lv.innerHTML='<div class="tb"><p id="lvcap">Incruste live</p><button id="lvfs" type="button">⛶ Plein écran</button><button id="lvre" type="button" hidden>↻ Reconnecter</button><button id="lvclose" type="button">Fermer</button></div><div class="qb"><div class="seg" id="lvq"><button type="button" data-q="fl">Réactif</button><button type="button" data-q="eq">Équilibré</button><button type="button" data-q="hd">HD</button><button type="button" data-q="max">Max</button></div><span id="lvst"></span></div><video id="lvv" autoplay muted playsinline></video><div class="msg" id="lvmsg"></div><button id="lvx" type="button">✕ Quitter le plein écran</button>';
+  lv.innerHTML='<div class="tb"><p id="lvcap">Incruste live</p><button id="lvfs" type="button">⛶ Plein écran</button><button id="lvre" type="button" hidden>↻ Reconnecter</button><button id="lvclose" type="button">Fermer</button></div><div class="qb"><div class="seg" id="lvq"><button type="button" data-q="fl">Réactif</button><button type="button" data-q="eq">Équilibré</button><button type="button" data-q="hd">HD 1080p</button><button type="button" data-q="max">Max</button></div><span id="lvst"></span></div><video id="lvv" autoplay muted playsinline></video><div class="msg" id="lvmsg"></div><button id="lvx" type="button">✕ Quitter le plein écran</button>';
   document.body.appendChild(lv);
   var V={pc:null,t:0,poll:null,watch:null,timer:null,host:null},vv=document.getElementById('lvv'),vm=document.getElementById('lvmsg'),vre=document.getElementById('lvre');
   function msg(t){vm.textContent=t||''}
@@ -97,7 +97,7 @@ if(bar&&supported){
   function chk(){if(!token()||document.hidden)return;rd(true).then(function(R){if(!R.same||lb.hidden)paintLb(R.d)}).catch(function(){})}
   setTimeout(chk,2500);setInterval(chk,15000);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});
   /* réglage de qualité côté écran qui reçoit : chaque téléphone choisit son compromis latence / qualité */
-var LQ=(function(){try{return localStorage.getItem('lgi.lvq')||'eq'}catch(e){return 'eq'}})();
+var LQ=(function(){try{return localStorage.getItem('lgi.lvq')||'hd'}catch(e){return 'hd'}})();
 function qui(){[].forEach.call(document.querySelectorAll('#lvq button'),function(b){b.classList.toggle('on',b.dataset.q===LQ);b.classList.toggle('wait',b.dataset.q===LQ&&V.qok!==LQ&&!!V.pc)})}
 function applyJb(){try{var q=QP[LQ]||QP.eq;if(V.pc)V.pc.getReceivers().forEach(function(r){try{r.jitterBufferTarget=q.jb}catch(_){}try{r.playoutDelayHint=q.jb/1000}catch(_){}})}catch(e){}}
 function sendQ(){applyJb();if(V.ch&&V.ch.readyState==='open'){try{V.ch.send(JSON.stringify({q:LQ}))}catch(e){}}qui()}
