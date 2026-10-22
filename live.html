@@ -191,7 +191,7 @@ function tex(){var t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);gl.texPa
 function initGL(){if(gl)return true;gl=cv.getContext('webgl',{preserveDrawingBuffer:true,antialias:false})||cv.getContext('experimental-webgl',{preserveDrawingBuffer:true});if(!gl)return false;
 prog=gl.createProgram();gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);gl.useProgram(prog);
 var b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);var l=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,2,gl.FLOAT,false,0,0);
-texBg=tex();texV=tex();texMk=tex();try{CW.held=false}catch(e){}gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.uniform1i(gl.getUniformLocation(prog,'bg'),0);gl.uniform1i(gl.getUniformLocation(prog,'vd'),1);gl.uniform1i(gl.getUniformLocation(prog,'mk'),2);M.dirty=true;return true}
+texBg=tex();texV=tex();texMk=tex();try{CW.held=false;CW.fb=null;CW.sOk=0}catch(e){}gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.uniform1i(gl.getUniformLocation(prog,'bg'),0);gl.uniform1i(gl.getUniformLocation(prog,'vd'),1);gl.uniform1i(gl.getUniformLocation(prog,'mk'),2);M.dirty=true;return true}
 function U(n){return gl.getUniformLocation(prog,n)}
 /* Mode léger (opt-in, adresse avec ?leger=1) : affichage 960 px, rendu seulement si nouvelle image caméra ou réglage modifié, calque de repères redessiné seulement s'il change. Sans le paramètre : comportement inchangé. */
 var LIGHT=/[?&]leger=1/.test(location.search),RS='',RT=0;
@@ -206,6 +206,15 @@ var up=ok;if(ok){var tq=-1;try{tq=vid.getVideoPlaybackQuality().totalVideoFrames
   if(tq>0){if(CW.upF!=null&&tq>=CW.upF&&tq-CW.upF<dv)up=false;else CW.upF=tq}else{var tn=performance.now();if(CW.upT&&tn-CW.upT<1000/31)up=false;else CW.upT=tn}}
 if(LIGHT&&bgMode!=='vid'){var sg=rsig(),tn2=performance.now();if(!up&&sg===RS&&tn2-RT<250)return;RS=sg;RT=tn2}
 if(up){CW.nf=false;CW.ups=(CW.ups||0)+1;try{gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,vid);CW.held=true;CW.hw=vid.videoWidth;CW.hh=vid.videoHeight}catch(e){}}
+/* Image figée (perte HF) : on n'affiche pas la toute dernière image (souvent déchirée/mélangée au moment de la coupure)
+   mais une copie propre prise 0,4 à 0,8 s avant. */
+var tnw=performance.now();if(up)CW.upAt=tnw;
+try{if(!CW.fb){CW.fb=gl.createFramebuffer();CW.s1=tex();CW.s2=tex();CW.sAt=0;CW.sOk=0;gl.bindTexture(gl.TEXTURE_2D,texV)}
+  if(up&&CW.hw&&tnw-CW.sAt>400){CW.sAt=tnw;var t2=CW.s2;CW.s2=CW.s1;CW.s1=t2;gl.bindFramebuffer(gl.FRAMEBUFFER,CW.fb);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,texV,0);
+    if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)===gl.FRAMEBUFFER_COMPLETE){gl.bindTexture(gl.TEXTURE_2D,CW.s1);gl.copyTexImage2D(gl.TEXTURE_2D,0,gl.RGBA,0,0,CW.hw,CW.hh,0);CW.sOk++;CW.sw=CW.hw;CW.sh=CW.hh}else CW.sOk=0;
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.bindTexture(gl.TEXTURE_2D,texV)}}catch(e){CW.sOk=0}
+var frz=!!CW.held&&!!CW.upAt&&tnw-CW.upAt>300&&CW.sOk>=2&&CW.sw===CW.hw&&CW.sh===CW.hh;
+if(frz){gl.bindTexture(gl.TEXTURE_2D,CW.s2)}
 var hold=!ok&&!!CW.held&&!!CW.hw;
 var ca=cv.width/cv.height,va=ok?vid.videoWidth/vid.videoHeight:(hold?CW.hw/CW.hh:16/9);
 gl.uniform2f(U('key'),S.key[0],S.key[1]);gl.uniform2f(U('off'),S.x*.5,S.y*.5);gl.uniform2f(U('wh'),S.sc*va/ca,S.sc);
@@ -662,4 +671,4 @@ if(f.type.indexOf('video')===0)window.__lk.open(null,f.name,b,u);else window.__l
 </script>
 <script src="diffusion.js"></script>
 <script src="clean.js"></script>
-<script src="offline.js"></script><script>window.LGI_BUILD='20261022-174723-2f51'</script><script src="update.js"></script></body></html>
+<script src="offline.js"></script><script>window.LGI_BUILD='20261022-180313-eebc'</script><script src="update.js"></script></body></html>
