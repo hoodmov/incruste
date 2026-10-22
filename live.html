@@ -191,7 +191,7 @@ function tex(){var t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);gl.texPa
 function initGL(){if(gl)return true;gl=cv.getContext('webgl',{preserveDrawingBuffer:true,antialias:false})||cv.getContext('experimental-webgl',{preserveDrawingBuffer:true});if(!gl)return false;
 prog=gl.createProgram();gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);gl.useProgram(prog);
 var b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);var l=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,2,gl.FLOAT,false,0,0);
-texBg=tex();texV=tex();texMk=tex();gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.uniform1i(gl.getUniformLocation(prog,'bg'),0);gl.uniform1i(gl.getUniformLocation(prog,'vd'),1);gl.uniform1i(gl.getUniformLocation(prog,'mk'),2);M.dirty=true;return true}
+texBg=tex();texV=tex();texMk=tex();try{CW.held=false}catch(e){}gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.uniform1i(gl.getUniformLocation(prog,'bg'),0);gl.uniform1i(gl.getUniformLocation(prog,'vd'),1);gl.uniform1i(gl.getUniformLocation(prog,'mk'),2);M.dirty=true;return true}
 function U(n){return gl.getUniformLocation(prog,n)}
 /* Mode léger (opt-in, adresse avec ?leger=1) : affichage 960 px, rendu seulement si nouvelle image caméra ou réglage modifié, calque de repères redessiné seulement s'il change. Sans le paramètre : comportement inchangé. */
 var LIGHT=/[?&]leger=1/.test(location.search),RS='',RT=0;
@@ -205,10 +205,11 @@ gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,texV);
 var up=ok;if(ok){var tq=-1;try{tq=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}var nat=CW.nat||30,dv=Math.max(1,Math.ceil(nat/30.5));
   if(tq>0){if(CW.upF!=null&&tq>=CW.upF&&tq-CW.upF<dv)up=false;else CW.upF=tq}else{var tn=performance.now();if(CW.upT&&tn-CW.upT<1000/31)up=false;else CW.upT=tn}}
 if(LIGHT&&bgMode!=='vid'){var sg=rsig(),tn2=performance.now();if(!up&&sg===RS&&tn2-RT<250)return;RS=sg;RT=tn2}
-if(up){CW.nf=false;CW.ups=(CW.ups||0)+1;try{gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,vid)}catch(e){}}
-var ca=cv.width/cv.height,va=ok?vid.videoWidth/vid.videoHeight:16/9;
+if(up){CW.nf=false;CW.ups=(CW.ups||0)+1;try{gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,vid);CW.held=true;CW.hw=vid.videoWidth;CW.hh=vid.videoHeight}catch(e){}}
+var hold=!ok&&!!CW.held&&!!CW.hw;
+var ca=cv.width/cv.height,va=ok?vid.videoWidth/vid.videoHeight:(hold?CW.hw/CW.hh:16/9);
 gl.uniform2f(U('key'),S.key[0],S.key[1]);gl.uniform2f(U('off'),S.x*.5,S.y*.5);gl.uniform2f(U('wh'),S.sc*va/ca,S.sc);
-gl.uniform1f(U('sim'),S.sim);gl.uniform1f(U('sm'),S.sm);gl.uniform1f(U('sp'),S.sp);gl.uniform1f(U('mir'),S.mir?1:0);gl.uniform1f(U('bmir'),S.bmir?1:0);gl.uniform1f(U('ch'),S.ch||0);gl.uniform1f(U('chk'),S.chk?1:0);gl.uniform1f(U('ready'),ok?1:0);gl.uniform1f(U('mon'),M.shapes.length?1:0);gl.uniform1f(U('rot'),S.rot);gl.uniform1f(U('ca'),ca);gl.uniform1f(U('fc'),X.fc?1:0);gl.uniform3f(U('bgt'),S.bz,S.bx,S.by);gl.uniform1f(U('fr'),S.fr||0);gl.uniform2f(U('pxs'),1/((ok&&vid.videoWidth)||1920),1/((ok&&vid.videoHeight)||1080));if(!gh.hidden){gh.style.transformOrigin='50% 50%';gh.style.transform=((S.bz!==1||S.bx||S.by)?'translate('+(S.bx*100)+'%,'+(-S.by*100)+'%) scale('+S.bz+')':'')+(S.bmir?' scaleX(-1)':'')}
+gl.uniform1f(U('sim'),S.sim);gl.uniform1f(U('sm'),S.sm);gl.uniform1f(U('sp'),S.sp);gl.uniform1f(U('mir'),S.mir?1:0);gl.uniform1f(U('bmir'),S.bmir?1:0);gl.uniform1f(U('ch'),S.ch||0);gl.uniform1f(U('chk'),S.chk?1:0);gl.uniform1f(U('ready'),(ok||hold)?1:0);gl.uniform1f(U('mon'),M.shapes.length?1:0);gl.uniform1f(U('rot'),S.rot);gl.uniform1f(U('ca'),ca);gl.uniform1f(U('fc'),X.fc?1:0);gl.uniform3f(U('bgt'),S.bz,S.bx,S.by);gl.uniform1f(U('fr'),S.fr||0);gl.uniform2f(U('pxs'),1/((ok&&vid.videoWidth)||(hold&&CW.hw)||1920),1/((ok&&vid.videoHeight)||(hold&&CW.hh)||1080));if(!gh.hidden){gh.style.transformOrigin='50% 50%';gh.style.transform=((S.bz!==1||S.bx||S.by)?'translate('+(S.bx*100)+'%,'+(-S.by*100)+'%) scale('+S.bz+')':'')+(S.bmir?' scaleX(-1)':'')}
 gl.viewport(0,0,cv.width,cv.height);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);}
 
 function pth(c,s,w,h){var p=s.pts,x0=p[0][0]*w,y0=p[0][1]*h;c.beginPath();
@@ -261,19 +262,19 @@ function camHook(s){var t=s.getVideoTracks()[0];if(!t)return;
    - image figée : d'abord une relance douce du lecteur, réouverture seulement après 15 s ;
    - piste terminée (carte débranchée) : réouverture. */
 CW.fails=0;CW.okSince=0;CW.soft=0;CW.msg=false;
-function cwMsg(t){if(t){CW.msg=true;setMsg(t)}else if(CW.msg){CW.msg=false;setMsg('')}}
+/* messages de signal : petit bandeau dans la barre du haut, jamais par-dessus l'image (sortie HDMI) */
+function cwMsg(t){var b=document.getElementById('lksig');if(!b){var ci=document.getElementById('lkcaminfo');if(!ci)return;b=document.createElement('span');b.id='lksig';b.style.cssText='font:600 .72rem var(--lk-m);color:#ffb020;align-self:center;min-width:0;max-width:38vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';ci.parentNode.insertBefore(b,ci.nextSibling)}t=t||'';if(b.textContent!==(t?'⚠ '+t:'')){b.textContent=t?'⚠ '+t:'';b.title=t}CW.msg=!!t}
 function camRestart(why){var now=Date.now(),gap=[8000,15000,30000,60000][Math.min(CW.fails,3)];if(now-CW.lastRestart<gap)return;CW.lastRestart=now;CW.fails++;CW.mutedAt=0;CW.soft=0;cwMsg('Signal caméra perdu ('+why+'), reconnexion…');startCam(CW.want||savedCam()||null,true)}
 setInterval(function(){if(lk.hidden||document.hidden||!stream)return;var t=stream.getVideoTracks()[0];if(!t)return;var st=t.getSettings?t.getSettings():{},now=performance.now(),el=document.getElementById('lkcaminfo');
   var tf=0;try{tf=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}var dt=(now-(CW.fcAt||now))/1000,f=dt>0&&CW.tf0!=null?(tf-CW.tf0)/dt:0;CW.tf0=tf;CW.fcAt=now;var nom=st.frameRate?Math.round(st.frameRate*100)/100:0;if(nom)CW.nat=nom;var rr=dt>0?(CW.ups||0)/dt:0;CW.ups=0;
   if(el){el.textContent=(st.width?st.width+'×'+st.height:'')+(nom?' · '+nom+' i/s':'')+(dt>0?' · reçu '+f.toFixed(1)+(nom>31?' → affiché '+rr.toFixed(0):''):'');if(el&&LIGHT)el.textContent+=' · mode léger';el.classList.toggle('warn',!!(nom&&dt>0&&f<nom*0.8))}},2000);
 setInterval(function(){if(lk.hidden||document.hidden||!stream)return;var t=stream.getVideoTracks()[0],now=performance.now();
   if(!t||t.readyState==='ended')return camRestart('coupé');
-  if(t.muted||CW.mutedAt){cwMsg('Pas de signal sur la carte de capture : vérifie la source (HDMI/SDI). La caméra reprend toute seule dès que le signal revient.');CW.last=now;CW.vtAt=now;return}
+  if(t.muted||CW.mutedAt){cwMsg('Pas de signal sur la carte de capture (HF / HDMI) : on garde la dernière image, la caméra reprend toute seule dès que le signal revient.');CW.last=now;CW.vtAt=now;return}
   var idle=0;if(vid&&vid.readyState>=2){var tq=0;try{tq=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}if(tq!==CW.tq){CW.tq=tq;CW.vtAt=now}idle=now-CW.vtAt;if(CW.rvfc)idle=Math.min(idle,now-CW.last)}
   if(idle<1500){if(!CW.okSince)CW.okSince=now;if(now-CW.okSince>30000)CW.fails=0;CW.soft=0;cwMsg('');}else CW.okSince=0;
   if(idle>3000&&!CW.soft){CW.soft=1;try{vid.srcObject=null;vid.srcObject=stream;var p0=vid.play();if(p0&&p0.catch)p0.catch(function(){})}catch(e){}}
-  if(idle>6000)cwMsg('Image caméra figée, on attend qu’elle reprenne…');
-  if(idle>15000)camRestart('figé');
+  if(idle>6000)cwMsg('Image figée (perte du signal, HF ?) : on garde la dernière image, la caméra reprend dès que le signal revient.');
   if(vid&&vid.paused&&vid.srcObject){var pr=vid.play();if(pr&&pr.catch)pr.catch(function(){})}},1000);
 if(navigator.mediaDevices&&navigator.mediaDevices.addEventListener)navigator.mediaDevices.addEventListener('devicechange',function(){if(lk.hidden)return;var want=CW.want||savedCam();if(!want){listCams().then(function(c){var p=pickCam(c),cur=stream&&stream.getVideoTracks()[0],cid=cur&&cur.getSettings().deviceId;if(p&&p!==cid){CW.lastRestart=0;CW.fails=0;CW.want=p;camRestart('carte de capture détectée')}}).catch(function(){});return}
   navigator.mediaDevices.enumerateDevices().then(function(ds){var cur=stream&&stream.getVideoTracks()[0],cid=cur&&cur.getSettings&&cur.getSettings().deviceId;
@@ -308,10 +309,10 @@ function startCam(id,force){clearTimeout(CW.keep);var lt=liveTrack();
   function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
   function tryDev(dev){return open1(dev,true).catch(function(){return open1(dev,false)})}
   /* la carte de capture met parfois 1 à 3 s à être libérée/réapparaître : on réessaie (en la recherchant aussi par son nom) avant de prendre la caméra du Mac */
-  function retry(dev,n){return tryDev(dev).catch(function(e){if(my!==camSeq||n>=3)throw e;setMsg('Carte de capture pas encore prête, nouvel essai ('+(n+1)+'/3)…');
+  function retry(dev,n){return tryDev(dev).catch(function(e){if(my!==camSeq||n>=3)throw e;cwMsg('Carte de capture pas encore prête, nouvel essai ('+(n+1)+'/3)…');
       return wait(1500*(n+1)).then(function(){if(my!==camSeq)throw e;return listCams()}).then(function(c){var alt=null,br=0;c.forEach(function(d){var r=camRank(d.label);if(r>br){br=r;alt=d.deviceId}});return retry(c.some(function(d){return d.deviceId===dev})?dev:(br>=3?alt:dev),n+1)})})}
   (had?wait(1200):Promise.resolve()).then(want).then(function(dev){if(my!==camSeq)return null;CW.want=dev||null;
-    return (dev?retry(dev,0):tryDev(dev)).catch(function(e){if(dev){setMsg('Carte de capture introuvable : vérifie son câble USB (branche-la directement sur le Mac). Caméra par défaut en attendant…');return open1(null,false)}throw e})})
+    return (dev?retry(dev,0):tryDev(dev)).catch(function(e){if(dev){cwMsg('Carte de capture introuvable : on garde la dernière image et on attend qu’elle revienne (vérifie son câble USB).');clearTimeout(CW.keep);CW.keep=setTimeout(function(){if(!liveTrack()&&!lk.hidden)camRestart('attente carte')},20000);return null}throw e})})
   .then(function(s){if(!s)return;if(my!==camSeq){s.getTracks().forEach(function(t){t.stop()});return}stream=s;camHook(s);if(!vid){vid=document.createElement('video');vid.muted=true;vid.playsInline=true;vid.setAttribute('playsinline','');vid.setAttribute('aria-hidden','true');vid.style.cssText='position:fixed;left:0;top:0;width:2px;height:2px;opacity:.01;pointer-events:none;z-index:1';document.body.appendChild(vid)}
     vid.srcObject=s;vid.play().catch(function(){});var cur=s.getVideoTracks()[0]&&s.getVideoTracks()[0].getSettings().deviceId,lab=(s.getVideoTracks()[0]&&s.getVideoTracks()[0].label)||'';if(!CW.want||cur===CW.want||camRank(lab)>=3){setMsg('');if(camRank(lab)>=3&&cur){CW.want=cur;try{localStorage.setItem('lgi.lk.cam2',cur)}catch(e){}}}return listCams().then(function(c){fillSel(c,cur)})})
   .catch(function(e){if(my!==camSeq)return;setMsg(e&&e.name==='NotAllowedError'?"Caméra refusée. Autorise la caméra pour ce site (réglages du navigateur) ou ouvre le lien directement dans Safari/Chrome.":"Caméra introuvable ("+(e&&e.name||'erreur')+"). Branche la source vidéo puis réessaie.")})}
@@ -661,4 +662,4 @@ if(f.type.indexOf('video')===0)window.__lk.open(null,f.name,b,u);else window.__l
 </script>
 <script src="diffusion.js"></script>
 <script src="clean.js"></script>
-<script src="offline.js"></script><script>window.LGI_BUILD='20261022-171116-f0cb'</script><script src="update.js"></script></body></html>
+<script src="offline.js"></script><script>window.LGI_BUILD='20261022-174723-2f51'</script><script src="update.js"></script></body></html>
