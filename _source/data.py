@@ -32,7 +32,7 @@ REMOVED=["Plans I.A. et plaques sans prise de vue réelle (papamobile, désert, 
 HORS=["Nos jours heureux (rangé en RIP)","Arrivée des joueurs à Clairefontaine","Verisure","Pour le plaisir","Star Ac' (pas de screen)","Chirac / Camille en Bernadette (RIP)"]
 
 import re as _re
-GREEN={"Fruit Love Island","Lipsync voiture","Pape mobile","L'Exorciste","Fort Boyard","Pink – So What","Macron / Atol","Dune","Le Seigneur des anneaux","Titanic","Titanic short","Gold – Plus près des étoiles","Gold – Laissez-nous chanter","Mariah Carey – It's Time","Trump","Céline Dion JO","Hollande sous la pluie","Michael Jackson – Thriller","Star Wars – Kylo","Star Wars – Vador","Le 5ème Beatles – Hello Goodbye","Intro Hotu","Zidane – coup de pied","Couronnement roi Charles – short","Les Choristes","Miley Cyrus – Wrecking Ball","ITW Sophie Adenot – ISS","Vanessa Carlton","Gims – Parisienne","Poltronesofà","Poltronesofà – Franck Leboeuf","Love Actually (V1 + V2 Franck Leboeuf)","Terminator (V1 + V2 Franck Leboeuf)","James Bond – Casino poker","Qui veut être mon associé","Couronnement roi Charles","1000% Logique","L'Odyssée"}
+GREEN={"Fruit Love Island","Lipsync voiture","Pape mobile","L'Exorciste","Fort Boyard","Pink – So What","Macron / Atol","Dune","Le Seigneur des anneaux","Titanic","Titanic short","Gold – Plus près des étoiles","Gold – Laissez-nous chanter","Mariah Carey – It's Time","Trump","Céline Dion JO","Hollande sous la pluie","Michael Jackson – Thriller","Star Wars – Kylo","Star Wars – Vador","Le 5ème Beatles – Hello Goodbye","Intro Hotu","Zidane – coup de pied","Couronnement roi Charles – short","Les Choristes","Miley Cyrus – Wrecking Ball","ITW Sophie Adenot – ISS","Vanessa Carlton","Gims – Parisienne","Poltronesofà","Poltronesofà – Franck Leboeuf","Love Actually (V1 + V2 Franck Leboeuf)","Terminator (V1 + V2 Franck Leboeuf)","James Bond – Casino poker","Qui veut être mon associé","Couronnement roi Charles","1000% Logique","L'Odyssée","JT 2h"}
 # Pink : plan 10 (arbre, amorce) retiré le 22/10 à la demande de Hood ; on garde le plan sur Camille (11) et le large (12) — pour remettre le 10, l'enlever de REMOVE_N
 # Qui veut être mon associé (22/10) : on garde Télescopaille (111) en large + un serré zoomé sur la même réf (196) ; 108, 110 (pitch) et 112 (réaction investisseur) retirés — pour les remettre, les enlever de REMOVE_N
 REMOVE_N={108,110,112,10,17,43,77,89,86,87,109,133,135,91,92,138,143,144,145,146,147,148,149,150,151,152,153,154,155,83,94,99,113,34,36,82,119,126,158}
@@ -79,7 +79,7 @@ A[163]=dict(s=GM70,f="100 mm",d="f/2.8",dist="2,5",h="1,45",tilt="0°",lum="Key 
 A[164]=dict(s=GM16,f="24 mm",d="f/5.6",dist="5,0",h="1,60",tilt="plongée 5°",lum="Plateau TV : éclairage uniforme, haut et diffus (≈ 5600 K), sol brillant et reflets, fond extérieur clair.",lec="Plateau entier avec fenêtre d'insert vidéo à droite (ajoutée en post).")
 
 SHOTORDER={"Michael Jackson – Thriller":[44,42]}  # top shot cercueil en premier (14/10)
-DAYOF={"Vanessa Carlton":"J8","JT 2h":"J8","INA – Alcool":"J5","Qui veut être mon associé":"J7","The Voice":"J10","Gims – Parisienne":"J3","INA – Mode":"J4","Stranger Things":"J3","Star Wars – Kylo":"J2","Star Wars – Vador":"J2","Pink – So What":"J7","Zidane – coup de pied":"J1","Le 5ème Beatles – Hello Goodbye":"J7","Les Choristes":"J3"}
+DAYOF={"Vanessa Carlton":"J8","JT 2h":"J7","INA – Alcool":"J5","Qui veut être mon associé":"J7","The Voice":"J10","Gims – Parisienne":"J3","INA – Mode":"J4","Stranger Things":"J3","Star Wars – Kylo":"J2","Star Wars – Vador":"J2","Pink – So What":"J7","Zidane – coup de pied":"J1","Le 5ème Beatles – Hello Goodbye":"J7","Les Choristes":"J3"}
 ORDER={
 "J1":["Fruit Love Island","Lipsync voiture","Zidane – coup de pied","L'Exorciste","Fort Boyard","Pape mobile","Macron / Atol","Dune","Le Seigneur des anneaux"],
 "J2":["Titanic","Titanic short","L'Odyssée","Gold – Plus près des étoiles","Gold – Laissez-nous chanter","Mariah Carey – It's Time","Trump","Céline Dion JO","Hollande sous la pluie","Star Wars – Vador","Star Wars – Kylo"],
@@ -87,8 +87,8 @@ ORDER={
 "J4":["INA – Mode","Un dimanche à la campagne","INA – Piercings","Gourou","Tiny Desk","Tous les sports (extérieurs)"],
 "J5":["INA – Alcool","INA – Internet","Je peux visiter ton appart ?","Tu payes combien ton loyer ?","JT – JRI","Qui veut épouser mon fils"],
 "J6":["Intro – Scan Camille en stormtrooper","Intro – Scan Camille en costume","Intro – Chevalier : studio puis Les Visiteurs","Intro – Suspension puis arène de Gladiator","Intro – Chute dans Men in Black (grue)","Intro – Course : Jurassic Park, Forrest Gump, Harry Potter","Intro – Plans en option (absents du déroulé)"],
-"J7":["Pink – So What","Le 5ème Beatles – Hello Goodbye","Miley Cyrus – Wrecking Ball","Couronnement roi Charles – short","ITW Sophie Adenot – ISS","Qui veut être mon associé"],
-"J8":["Terminator (V1 + V2 Franck Leboeuf)","Love Actually (V1 + V2 Franck Leboeuf)","Poltronesofà – Franck Leboeuf","Poltronesofà","Couronnement roi Charles","James Bond – Casino poker","JT 2h","Vanessa Carlton"],
+"J7":["Pink – So What","Le 5ème Beatles – Hello Goodbye","Miley Cyrus – Wrecking Ball","Couronnement roi Charles – short","ITW Sophie Adenot – ISS","Qui veut être mon associé","JT 2h"],
+"J8":["Terminator (V1 + V2 Franck Leboeuf)","Love Actually (V1 + V2 Franck Leboeuf)","Poltronesofà – Franck Leboeuf","Poltronesofà","Couronnement roi Charles","James Bond – Casino poker","Vanessa Carlton"],
 "J9":["Danse avec les stars","Love Cam Coldplay","Intro – Réalisateur en régie"],
 "J10":["Maillon faible","The Voice","Fast & Furious","1000% Logique"]}
 
@@ -138,6 +138,7 @@ _ref(78,lec="Contrechamp sur Mathieu : référence seulement, non tourné.")
 _ref(46,lec="Contrechamp sur Tapie : référence seulement, non tourné.")
 exec(open('/home/claude/intro_data.py').read())
 A[165]=dict(A[65]);A[165]['lec']=A[65]['lec']+" (INA – Alcool : même réf que INA – Internet.)"
+A[197]=dict(s=GM24,f="70 mm",d="f/4",dist="4,0",h="1,50",tilt="0°",lum="Plateau météo : high key, grande source douce frontale (≈ 5600 K), débouchage léger, contre froide pour détacher du fond ; fond vert éclairé à part, uniforme, sans ombre portée.",lec="Camille debout à gauche cadre (sur l'Atlantique), plan américain, ¾ tourné vers la carte, la main désigne la France ; laisser libre le cartouche « DEMAIN MATIN » en haut à droite. Carte nette, incrustée en post.")
 A[196]=dict(s=GM70,f="105 mm",d="f/4",dist="3,1",h="1,50",tilt="0°",lum=A[111]['lum'],lec="Serré sur Camille (Télescopaille) : même axe et même distance que le plan large, on resserre au zoom (réf = zoom de la réf large).")
 
 A[2]['lec']=A[2]['lec'].replace("Smartphone tenu proche, grand-angle, tout net.","Smartphone posé sur le tableau de bord, grand-angle, tout net.")
