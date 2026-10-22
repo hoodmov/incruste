@@ -200,5 +200,9 @@ document.getElementById('vbclose').onclick=vclose;
 document.addEventListener('keydown',function(e){{if(!vb.hidden&&e.key==='Escape')vclose();}});
 }})();
 </script>'''
+import time as _t,random as _r,json as _js
+BUILD=_t.strftime('%Y%m%d-%H%M%S')+'-'+'%04x'%_r.randrange(65536)
+page=page.replace('<script src="pdt.js"></script>','<script src="pdt.js"></script>\n<script>window.LGI_BUILD='+repr(BUILD)+'</script><script src="update.js"></script>',1)
+_js.dump({'v':BUILD},open('/home/claude/incruste/version.json','w'))
 open('/home/claude/site/index.html','w').write(page)
 print(len(page))

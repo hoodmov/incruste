@@ -1,6 +1,6 @@
 /* Mode hors ligne – La Grande Incruste 3 */
 const CORE='__CORE__',IMG='lgi-img-v5',VID='lgi-vid-v1',RUN='lgi-run-v1';
-const FILES=['./','index.html','live.html','textes.json','diffusion.js','pdt.js','pdt.json','clean.js','offline.js','manifest.json','icon-192.png','icon-512.png'];
+const FILES=['./','index.html','live.html','textes.json','diffusion.js','pdt.js','pdt.json','clean.js','offline.js','manifest.json','update.js','icon-192.png','icon-512.png'];
 const IMGS=__IMGS__;
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil((async()=>{
   const c=await caches.open(CORE);await Promise.all(FILES.map(f=>c.add(new Request(f,{cache:'reload'})).catch(()=>{})));

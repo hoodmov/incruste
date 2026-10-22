@@ -1,7 +1,7 @@
 import os,hashlib,re
 R='/home/claude/incruste'
 h=hashlib.md5()
-for f in ['index.html','live.html','textes.json','diffusion.js','pdt.js','pdt.json','clean.js','offline.js','manifest.json']:
+for f in ['index.html','live.html','textes.json','diffusion.js','pdt.js','pdt.json','clean.js','offline.js','manifest.json','update.js']:
     h.update(open(f'{R}/{f}','rb').read())
 imgs=sorted('img/'+f for f in os.listdir(f'{R}/img') if f.endswith('.jpg'))+sorted('img/clean/'+f for f in os.listdir(f'{R}/img/clean') if f.endswith('.jpg'))
 imgs=[u+'?v='+hashlib.md5(open(f'{R}/{u}','rb').read()).hexdigest()[:8] for u in imgs]
