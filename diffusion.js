@@ -6,7 +6,7 @@
 var GH={repo:'hoodmov/incruste',path:'data/live.json',branch:'data'};
 var ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
 var MAXW=960,MAXBR=2500000,MAXFPS=30;
-var QP={fl:{w:640,br:1200000,fps:30,jb:0,n:'Réactif'},eq:{w:960,br:2500000,fps:30,jb:0,n:'Équilibré'},hd:{w:1920,br:8000000,fps:30,jb:60,n:'HD 1080p'},max:{w:99999,br:12000000,fps:25,jb:150,n:'Max'}};
+var QP={fl:{w:640,br:1200000,fps:30,jb:0,n:'Réactif'},eq:{w:960,br:2500000,fps:30,jb:0,n:'Équilibré'},hd:{w:1920,br:8000000,fps:30,jb:60,n:'HD'},max:{w:99999,br:12000000,fps:25,jb:150,n:'Max'}};
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function token(){return lsGet('lgi.gh')||''}
@@ -87,7 +87,7 @@ if(bar&&supported){
   '#lv .msg{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);text-align:center;padding:0 16px;font-size:.95rem;text-shadow:0 1px 4px #000;pointer-events:none}';
   document.head.appendChild(css);
   var lv=document.createElement('div');lv.id='lv';lv.hidden=true;lv.setAttribute('role','dialog');lv.setAttribute('aria-label','Incruste live (diffusion)');
-  lv.innerHTML='<div class="tb"><p id="lvcap">Incruste live</p><button id="lvfs" type="button">⛶ Plein écran</button><button id="lvre" type="button" hidden>↻ Reconnecter</button><button id="lvclose" type="button">Fermer</button></div><div class="qb"><div class="seg" id="lvq"><button type="button" data-q="fl">Réactif</button><button type="button" data-q="eq">Équilibré</button><button type="button" data-q="hd">HD 1080p</button><button type="button" data-q="max">Max</button></div><span id="lvst"></span></div><video id="lvv" autoplay muted playsinline></video><div class="msg" id="lvmsg"></div><button id="lvx" type="button">✕ Quitter le plein écran</button>';
+  lv.innerHTML='<div class="tb"><p id="lvcap">Incruste live</p><button id="lvfs" type="button">⛶ Plein écran</button><button id="lvre" type="button" hidden>↻ Reconnecter</button><button id="lvclose" type="button">Fermer</button></div><div class="qb"><div class="seg" id="lvq"><button type="button" data-q="fl">Réactif</button><button type="button" data-q="eq">Équilibré</button><button type="button" data-q="hd">HD</button><button type="button" data-q="max">Max</button></div><span id="lvst"></span></div><video id="lvv" autoplay muted playsinline></video><div class="msg" id="lvmsg"></div><button id="lvx" type="button">✕ Quitter le plein écran</button>';
   document.body.appendChild(lv);
   var V={pc:null,t:0,poll:null,watch:null,timer:null,host:null},vv=document.getElementById('lvv'),vm=document.getElementById('lvmsg'),vre=document.getElementById('lvre');
   function msg(t){vm.textContent=t||''}
