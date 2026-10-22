@@ -35,7 +35,8 @@ import re as _re
 GREEN={"Fruit Love Island","Lipsync voiture","Pape mobile","L'Exorciste","Fort Boyard","Pink – So What","Macron / Atol","Dune","Le Seigneur des anneaux","Titanic","Titanic short","Gold – Plus près des étoiles","Gold – Laissez-nous chanter","Mariah Carey – It's Time","Trump","Céline Dion JO","Hollande sous la pluie","Michael Jackson – Thriller","Star Wars – Kylo","Star Wars – Vador","Le 5ème Beatles – Hello Goodbye","Intro Hotu","Zidane – coup de pied","Couronnement roi Charles – short","Les Choristes","Miley Cyrus – Wrecking Ball","ITW Sophie Adenot – ISS","Vanessa Carlton","Gims – Parisienne","Poltronesofà","Poltronesofà – Franck Leboeuf","Love Actually (V1 + V2 Franck Leboeuf)","Terminator (V1 + V2 Franck Leboeuf)","James Bond – Casino poker","Qui veut être mon associé","Couronnement roi Charles","1000% Logique","L'Odyssée","JT 2h"}
 # Pink : plan 10 (arbre, amorce) retiré le 22/10 à la demande de Hood ; on garde le plan sur Camille (11) et le large (12) — pour remettre le 10, l'enlever de REMOVE_N
 # Qui veut être mon associé (22/10, 16h15) : retour au plan américain (110) + serré (108) ; Télescopaille 111, son serré zoomé 196 et 112 retirés — pour les remettre, les enlever de REMOVE_N
-REMOVE_N={111,112,196,10,17,43,77,89,86,87,109,133,135,91,92,138,143,144,145,146,147,148,149,150,151,152,153,154,155,83,94,99,113,34,36,82,119,126,158}
+# JT 2h : plans Le 20H (163 poitrine, 164 plateau + insert) retirés le 22/10 — pour les remettre, les enlever de REMOVE_N
+REMOVE_N={163,164,111,112,196,10,17,43,77,89,86,87,109,133,135,91,92,138,143,144,145,146,147,148,149,150,151,152,153,154,155,83,94,99,113,34,36,82,119,126,158}
 def _gm(n,name):
     if n not in A: return
     v=A[n]
