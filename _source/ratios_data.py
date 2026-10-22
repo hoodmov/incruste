@@ -124,6 +124,7 @@ def ratio_txt(iid):
 
 # Intro (J7 21/10 + régie 26/10)
 RT.update({
+'196':('2:1','frontale douce','non'),
 '166':('1,5:1','diffuse haute, légèrement de face (ciel enfumé)','oui, chaud et vacillant droite cadre (flammes)'),
 '167':('1,5:1','douce de face, légèrement haute','oui, chaud droite cadre (flammes)'),
 '168':('1,3:1','douce de face, légèrement gauche cadre (ciel couvert)','non'),

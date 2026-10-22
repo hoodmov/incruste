@@ -34,8 +34,8 @@ HORS=["Nos jours heureux (rangé en RIP)","Arrivée des joueurs à Clairefontain
 import re as _re
 GREEN={"Fruit Love Island","Lipsync voiture","Pape mobile","L'Exorciste","Fort Boyard","Pink – So What","Macron / Atol","Dune","Le Seigneur des anneaux","Titanic","Titanic short","Gold – Plus près des étoiles","Gold – Laissez-nous chanter","Mariah Carey – It's Time","Trump","Céline Dion JO","Hollande sous la pluie","Michael Jackson – Thriller","Star Wars – Kylo","Star Wars – Vador","Le 5ème Beatles – Hello Goodbye","Intro Hotu","Zidane – coup de pied","Couronnement roi Charles – short","Les Choristes","Miley Cyrus – Wrecking Ball","ITW Sophie Adenot – ISS","Vanessa Carlton","Gims – Parisienne","Poltronesofà","Poltronesofà – Franck Leboeuf","Love Actually (V1 + V2 Franck Leboeuf)","Terminator (V1 + V2 Franck Leboeuf)","James Bond – Casino poker","Qui veut être mon associé","Couronnement roi Charles","1000% Logique","L'Odyssée"}
 # Pink : plan 10 (arbre, amorce) retiré le 22/10 à la demande de Hood ; on garde le plan sur Camille (11) et le large (12) — pour remettre le 10, l'enlever de REMOVE_N
-# Qui veut être mon associé : 111 (Télescopaille) et 112 (réaction investisseur) retirés le 22/10 — on garde un large (110) et un serré (108) de Camille
-REMOVE_N={111,112,10,17,43,77,89,86,87,109,133,135,91,92,138,143,144,145,146,147,148,149,150,151,152,153,154,155,83,94,99,113,34,36,82,119,126,158}
+# Qui veut être mon associé (22/10) : on garde Télescopaille (111) en large + un serré zoomé sur la même réf (196) ; 108, 110 (pitch) et 112 (réaction investisseur) retirés — pour les remettre, les enlever de REMOVE_N
+REMOVE_N={108,110,112,10,17,43,77,89,86,87,109,133,135,91,92,138,143,144,145,146,147,148,149,150,151,152,153,154,155,83,94,99,113,34,36,82,119,126,158}
 def _gm(n,name):
     if n not in A: return
     v=A[n]
@@ -138,6 +138,7 @@ _ref(78,lec="Contrechamp sur Mathieu : référence seulement, non tourné.")
 _ref(46,lec="Contrechamp sur Tapie : référence seulement, non tourné.")
 exec(open('/home/claude/intro_data.py').read())
 A[165]=dict(A[65]);A[165]['lec']=A[65]['lec']+" (INA – Alcool : même réf que INA – Internet.)"
+A[196]=dict(s=GM70,f="105 mm",d="f/4",dist="3,1",h="1,50",tilt="0°",lum=A[111]['lum'],lec="Serré sur Camille (Télescopaille) : même axe et même distance que le plan large, on resserre au zoom (réf = zoom de la réf large).")
 
 A[2]['lec']=A[2]['lec'].replace("Smartphone tenu proche, grand-angle, tout net.","Smartphone posé sur le tableau de bord, grand-angle, tout net.")
 A[16]['lec']=A[16]['lec'].replace("Désert complètement fondu derrière : longue focale.","Désert fondu derrière (incruste ancienne), mais Camille est assez au contact : 50 mm.")
