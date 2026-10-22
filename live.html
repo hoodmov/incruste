@@ -168,6 +168,7 @@ html.lkvt #lk .tb{view-transition-name:lk-bar}
 (function(){
 var lk=document.getElementById('lk'),cv=document.getElementById('lkc'),msg=document.getElementById('lkmsg'),cap=document.getElementById('lkcap'),sel=document.getElementById('lkcam');
 var gl=null,prog=null,texBg,texV,texMk,vid=null,stream=null,raf=0,bgImg=null,last=null;
+window.__lkv=function(){return {v:vid,s:stream}};
 var S={fr:0,ch:0,sim:.18,sm:.12,sp:.6,sc:1,x:0,y:0,rot:0,mir:false,bmir:false,chk:false,key:[0,0],pick:false,bz:1,bx:0,by:0,bed:false};
 var F={show:true,mode:null,P:{},g:null};
 function cbcr(r,g,b){return[-0.169*r-0.331*g+0.5*b,0.5*r-0.419*g-0.081*b]}
@@ -584,11 +585,74 @@ lk.addEventListener('input',upd);var t=null;
 new MutationObserver(function(){clearInterval(t);if(!lk.hidden){upd();t=setInterval(upd,300)}}).observe(lk,{attributes:true,attributeFilter:['hidden']});upd();
 })();
 </script>
-
+<script>
+/* Journal caméra : observe sans rien toucher (aucune relance, aucune action sur la carte). */
+(function(){'use strict';
+var K='lgi.camlog',MAX=400,L=[];try{L=JSON.parse(localStorage.getItem(K)||'[]')}catch(e){L=[]}
+var saveT=0;function save(){clearTimeout(saveT);saveT=setTimeout(function(){try{localStorage.setItem(K,JSON.stringify(L.slice(-MAX)))}catch(e){}},500)}
+var CAUSE={usb:'Carte déconnectée en USB (câble, port, adaptateur, alimentation ou chauffe de la Cam Link)',hdmi:'Plus de signal HDMI vers la carte (caméra, câble HDMI, format de sortie)',fig:'Carte bloquée : branchée mais n’envoie plus d’images (saturation USB, chauffe, firmware)',lent:'La carte envoie moins d’images que prévu (débit USB, chauffe, format)',pc:'L’ordinateur a gelé la page (surcharge processeur/carte graphique, écrans, autre appli)',gpu:'La carte graphique a lâché l’affichage du site',err:'Erreur du site'};
+function hh(t){var d=new Date(t);function z(n){return(n<10?'0':'')+n}return z(d.getHours())+':'+z(d.getMinutes())+':'+z(d.getSeconds())}
+function log(lv,txt,c){var e={t:Date.now(),lv:lv,m:txt,c:c||''};L.push(e);if(L.length>MAX)L.splice(0,L.length-MAX);save();if(lv!=='i'){badge()}if(box&&!box.hidden)render()}
+window.lgiCamLog=log;
+/* getUserMedia : ouverture de la carte */
+var md=navigator.mediaDevices;
+function tdesc(t){var s={};try{s=t.getSettings()}catch(e){}return (t.label||'caméra')+' · '+(s.width||'?')+'×'+(s.height||'?')+(s.frameRate?' · '+Math.round(s.frameRate*100)/100+' i/s':'')}
+function watch(st){st.getVideoTracks().forEach(function(t){if(t.__lg)return;t.__lg=1;var lab=t.label||'caméra';
+  t.addEventListener('mute',function(){log('w','Signal coupé (piste muette) : '+lab,'hdmi')});
+  t.addEventListener('unmute',function(){log('i','Signal revenu : '+lab)});
+  t.addEventListener('ended',function(){if(t.__stop)return;log('e','Piste terminée sans qu’on l’arrête : '+lab,'usb')});
+  var st0=t.stop;t.stop=function(){t.__stop=1;return st0.apply(t,arguments)}})}
+if(md&&md.getUserMedia&&!md.__lg){md.__lg=1;var g=md.getUserMedia.bind(md);md.getUserMedia=function(c){var t0=performance.now();return g(c).then(function(s){var v=s.getVideoTracks()[0];if(v)log('i','Caméra ouverte en '+Math.round(performance.now()-t0)+' ms : '+tdesc(v));watch(s);return s},function(e){log('e','Ouverture caméra refusée : '+(e&&e.name)+' '+(e&&e.message||''),(e&&/NotReadable|Abort|NotFound|Overconstrained/.test(e.name))?'usb':'err');throw e})}}
+/* branchement / débranchement */
+var devs=null;function scan(){if(!md||!md.enumerateDevices)return;md.enumerateDevices().then(function(d){var v=d.filter(function(x){return x.kind==='videoinput'}).map(function(x){return x.label||x.deviceId.slice(0,6)});
+  if(devs){v.filter(function(x){return devs.indexOf(x)<0}).forEach(function(x){log('i','Branchée : '+x)});devs.filter(function(x){return v.indexOf(x)<0}).forEach(function(x){log('e','Débranchée / disparue du Mac : '+x,'usb')})}devs=v}).catch(function(){})}
+if(md&&md.addEventListener)md.addEventListener('devicechange',scan);scan();
+/* images reçues : figée / chute de cadence (lecture seule) */
+var lastTf=null,lastAt=0,frozeAt=0,low=0,lowN=0;
+setInterval(function(){var lk=document.getElementById('lk');if(!lk||lk.hidden||!window.__lkv)return;var o=window.__lkv(),v=o.v,s=o.s;if(!v||!s)return;var tr=s.getVideoTracks()[0];if(!tr||tr.readyState!=='live')return;
+  var tf=0;try{tf=v.getVideoPlaybackQuality().totalVideoFrames}catch(e){return}var now=performance.now();
+  if(lastTf!==null&&tf<lastTf){lastTf=tf;lastAt=now;return}
+  if(lastTf===null||tf!==lastTf){if(frozeAt){var d=now-frozeAt;log(d>3000?'w':'i','Image reprise après '+(d/1000).toFixed(1)+' s figée',d>3000?'fig':'');frozeAt=0}
+    if(lastTf!==null&&lastAt){var dt=(now-lastAt)/1000,f=(tf-lastTf)/dt,nom=0;try{nom=tr.getSettings().frameRate||0}catch(e){}
+      if(nom&&dt>0.5){if(f<nom*0.7){lowN++;if(lowN===3)log('w','Cadence reçue '+f.toFixed(1)+' i/s au lieu de '+Math.round(nom),'lent')}else{if(lowN>=3)log('i','Cadence revenue à '+f.toFixed(1)+' i/s');lowN=0}}}
+    lastTf=tf;lastAt=now}
+  else if(!frozeAt&&now-lastAt>700){frozeAt=lastAt;log(tr.muted?'w':'e','Image figée'+(tr.muted?' (piste muette)':'')+' : '+(tr.label||''),tr.muted?'hdmi':'fig')}
+},500);
+/* page gelée (ordinateur surchargé) */
+var pr=0,lastGap=0;function rf(t){if(pr&&!document.hidden){var g=t-pr;if(g>400&&t-lastGap>3000){lastGap=t;var lk=document.getElementById('lk');if(lk&&!lk.hidden)log('w','Page gelée '+Math.round(g)+' ms','pc')}}pr=t;requestAnimationFrame(rf)}requestAnimationFrame(rf);
+document.addEventListener('visibilitychange',function(){pr=0;var lk=document.getElementById('lk');if(lk&&!lk.hidden)log('i',document.hidden?'Onglet masqué / écran en veille':'Onglet de nouveau visible')});
+document.addEventListener('webglcontextlost',function(){log('e','Contexte WebGL perdu','gpu')},true);
+document.addEventListener('webglcontextrestored',function(){log('i','Contexte WebGL restauré')},true);
+window.addEventListener('error',function(e){if(e&&e.message)log('e','Erreur : '+e.message+(e.lineno?' (l.'+e.lineno+')':''),'err')});
+window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;if(r&&/NotAllowed|Abort/.test(r.name||''))return;log('w','Promesse rejetée : '+((r&&(r.name+' '+(r.message||'')))||r),'err')});
+/* messages affichés par l'Incruste live */
+var msgEl=document.getElementById('lkmsg');var lastMsg='';if(msgEl)new MutationObserver(function(){var m=msgEl.hidden?'':msgEl.textContent;if(m!==lastMsg){lastMsg=m;if(m)log('i','Message affiché : '+m)}}).observe(msgEl,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['hidden']});
+/* interface */
+var btn=document.createElement('button');btn.type='button';btn.id='lkjr';btn.title='Journal caméra : coupures et causes probables';btn.textContent='Journal';
+var st=document.createElement('style');st.textContent='#lkjr{position:relative}#lkjr[data-n]::after{content:attr(data-n);position:absolute;top:-6px;right:-6px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#e5484d;color:#fff;font:700 10px/16px system-ui;text-align:center}'+
+'#lkjbox{position:fixed;right:12px;top:56px;z-index:2147483000;width:min(560px,calc(100vw - 24px));max-height:70vh;display:flex;flex-direction:column;background:#111;color:#eee;border:1px solid #333;border-radius:10px;box-shadow:0 10px 40px rgb(0 0 0/.5);font:12px/1.4 ui-monospace,Menlo,monospace}#lkjbox[hidden]{display:none}'+
+'#lkjbox header{display:flex;gap:6px;align-items:center;padding:8px 10px;border-bottom:1px solid #333;font:700 13px system-ui}#lkjbox header span{flex:1}#lkjbox button{background:#2a2a2a;color:#eee;border:0;border-radius:6px;padding:5px 9px;font:600 12px system-ui;cursor:pointer}'+
+'#lkjsum{padding:8px 10px;border-bottom:1px solid #333;font:12px/1.45 system-ui;color:#ffd27a}#lkjlist{overflow:auto;padding:6px 10px}#lkjlist div{padding:2px 0;border-bottom:1px solid #1d1d1d}#lkjlist .e{color:#ff8a8a}#lkjlist .w{color:#ffc966}#lkjlist .i{color:#9a9a9a}#lkjlist small{display:block;color:#7fb4ff;padding-left:62px}';
+document.head.appendChild(st);
+var box=document.createElement('div');box.id='lkjbox';box.hidden=true;box.innerHTML='<header><span>Journal caméra</span><button type="button" data-a="cp">Copier</button><button type="button" data-a="clr">Vider</button><button type="button" data-a="x">✕</button></header><div id="lkjsum"></div><div id="lkjlist"></div>';
+var seen=0;try{seen=+localStorage.getItem(K+'.seen')||0}catch(e){}
+function badge(){var n=L.filter(function(e){return e.lv!=='i'&&e.t>seen}).length;if(n)btn.setAttribute('data-n',n>99?'99+':n);else btn.removeAttribute('data-n')}
+function render(){var since=Date.now()-3600e3,cnt={};L.forEach(function(e){if(e.c&&e.t>since)cnt[e.c]=(cnt[e.c]||0)+1});var ks=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]});
+  document.getElementById('lkjsum').innerHTML=ks.length?'<b>Dernière heure — causes probables :</b><br>'+ks.map(function(k){return cnt[k]+' × '+CAUSE[k]}).join('<br>'):'Aucun incident sur la dernière heure.';
+  var h='';for(var i=L.length-1;i>=0&&i>=L.length-200;i--){var e=L[i];h+='<div class="'+e.lv+'">'+hh(e.t)+'  '+e.m.replace(/[<>&]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[c]})+(e.c?'<small>→ '+CAUSE[e.c]+'</small>':'')+'</div>'}
+  document.getElementById('lkjlist').innerHTML=h||'<div class="i">Journal vide.</div>'}
+function txt(){return L.map(function(e){return new Date(e.t).toLocaleString('fr-FR')+' ['+e.lv+'] '+e.m+(e.c?' → '+CAUSE[e.c]:'')}).join('\n')}
+box.addEventListener('click',function(ev){var a=ev.target.getAttribute&&ev.target.getAttribute('data-a');if(a==='x')box.hidden=true;else if(a==='clr'){L=[];save();render();badge()}else if(a==='cp'){var t=txt();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){ev.target.textContent='Copié ✓';setTimeout(function(){ev.target.textContent='Copier'},1500)}).catch(function(){var w=document.createElement('textarea');w.value=t;document.body.appendChild(w);w.select();try{document.execCommand('copy')}catch(e){}w.remove()})}});
+btn.addEventListener('click',function(){box.hidden=!box.hidden;if(!box.hidden){render();seen=Date.now();try{localStorage.setItem(K+'.seen',seen)}catch(e){}badge()}});
+var r=document.getElementById('lkcamr');if(r&&r.parentNode){r.parentNode.insertBefore(btn,r.nextSibling)}
+var lk=document.getElementById('lk');(lk||document.body).appendChild(box);badge();
+log('i','Page chargée'+(window.LGI_BUILD?' (version '+window.LGI_BUILD+')':'')+' · '+navigator.userAgent.replace(/.*(Chrome\/[\d.]+|Version\/[\d.]+ Safari|Firefox\/[\d.]+).*/,'$1'));
+})();
+</script>
 <script>
 document.getElementById('ref').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var u=URL.createObjectURL(f),b=document.querySelector('label.big');
 if(f.type.indexOf('video')===0)window.__lk.open(null,f.name,b,u);else window.__lk.open(u,f.name,b);e.target.value=''});
 </script>
 <script src="diffusion.js"></script>
 <script src="clean.js"></script>
-<script src="offline.js"></script><script>window.LGI_BUILD='20261022-170430-5684'</script><script src="update.js"></script></body></html>
+<script src="offline.js"></script><script>window.LGI_BUILD='20261022-170902-4938'</script><script src="update.js"></script></body></html>
