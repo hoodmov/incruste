@@ -366,7 +366,7 @@ window.lgiCapsGH=window.lgiCapsGH||(function(){var REPO='hoodmov/incruste',BR='d
     return fetch(api('caps.json'),{method:'PUT',headers:hdr(),body:JSON.stringify(body)}).then(function(r){if((r.status===409||r.status===422)&&n<4)return upd(fn,n+1);if(!r.ok)throw new Error('GitHub '+r.status)})})}
   function putFile(path,data,n){n=n||0;return fetch(api(path)+'?ref='+BR+'&t='+Date.now(),{headers:hdr(),cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){var body={message:path,content:data,branch:BR};if(j&&j.sha)body.sha=j.sha;
     return fetch(api(path),{method:'PUT',headers:hdr(),body:JSON.stringify(body)}).then(function(r){if((r.status===409||r.status===422)&&n<3)return putFile(path,data,n+1);if(!r.ok)throw new Error('GitHub '+r.status)})})}
-  return{RAW:RAW,can:function(){return !!tok()},list:list,url:function(id,t){return RAW+'caps/'+encodeURIComponent(id)+'.jpg?v='+t},
+  return{RAW:RAW,putFile:putFile,can:function(){return !!tok()},list:list,url:function(id,t){return RAW+'caps/'+encodeURIComponent(id)+'.jpg?v='+t},
     put:function(id,cap,t,blob){if(!tok())return Promise.resolve(false);return b64(blob).then(function(d){return putFile('caps/'+id+'.jpg',d)}).then(function(){return upd(function(c){c[id]={t:t,cap:cap}})}).then(function(){return true})},
     del:function(id){if(!tok())return Promise.reject(new Error('token'));return upd(function(c){if(c[id])c[id].del=Date.now()})}}})();
 /* Copie de chaque capture dans un dossier de l'ordinateur (choisi une fois, mémorisé) ; sinon téléchargement classique */
@@ -627,6 +627,12 @@ box.addEventListener('click',function(ev){var a=ev.target.getAttribute&&ev.targe
 btn.addEventListener('click',function(){box.hidden=!box.hidden;if(!box.hidden){render();seen=Date.now();try{localStorage.setItem(K+'.seen',seen)}catch(e){}badge()}});
 var r=document.getElementById('lkcamr');if(r&&r.parentNode){r.parentNode.insertBefore(btn,r.nextSibling)}
 var lk=document.getElementById('lk');(lk||document.body).appendChild(box);badge();
+/* Envoi automatique du journal (pour analyse) : fichier camlog/<poste>.json sur la branche data, au plus une fois par minute, seulement s'il y a du nouveau */
+var dev='';try{dev=localStorage.getItem(K+'.dev')||'';if(!dev){dev=(/Mac/.test(navigator.platform)?'mac':/iPhone|iPad/.test(navigator.userAgent)?'ios':'pc')+'-'+Math.random().toString(36).slice(2,7);localStorage.setItem(K+'.dev',dev)}}catch(e){dev='poste'}
+var sent=0,sending=false;function up(){try{if(sending||!window.lgiCapsGH||!window.lgiCapsGH.can()||!L.length)return;var lt=L[L.length-1].t;if(lt<=sent)return;sending=true;
+  var j=JSON.stringify({dev:dev,ua:navigator.userAgent,build:window.LGI_BUILD||'',at:Date.now(),log:L.slice(-MAX)});var u=new TextEncoder().encode(j),b='';for(var i=0;i<u.length;i++)b+=String.fromCharCode(u[i]);
+  window.lgiCapsGH.putFile('camlog/'+dev+'.json',btoa(b)).then(function(){sent=lt}).catch(function(){}).finally(function(){sending=false})}catch(e){sending=false}}
+setInterval(function(){(window.requestIdleCallback||setTimeout)(up)},60000);
 log('i','Page chargée'+(window.LGI_BUILD?' (version '+window.LGI_BUILD+')':'')+' · '+navigator.userAgent.replace(/.*(Chrome\/[\d.]+|Version\/[\d.]+ Safari|Firefox\/[\d.]+).*/,'$1'));
 })();
 </script>
