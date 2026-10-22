@@ -776,8 +776,8 @@ drawOv();if(bgMode==='vid'&&bgv&&bgv.duration){if(!scrub)document.getElementById
 if(bgMode==='vid'&&bgv&&bgv.readyState>=2&&bgv.videoWidth>0){gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texBg);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,bgv)}
 gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,texV);
 var up=ok;if(ok){var tq=-1;try{tq=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}var nat=CW.nat||30,dv=Math.max(1,Math.ceil(nat/30.5));
-  /* cadence 25 : la carte envoie du 50 (chaque image du 25p en double) ; on prend au plus une image toutes les 30 ms, à l'heure, sans dépendre des images perdues */
-  var tn=performance.now();if(tq>0&&CW.upF!=null&&tq===CW.upF)up=false;else if(CW.upT&&tn-CW.upT<(nat>31?30:1000/31))up=false;else{CW.upF=tq;CW.upT=tn}}
+  /* affichage 50 i/s : chaque nouvelle image reçue de la carte est affichée */
+  var tn=performance.now();if(tq>0&&CW.upF!=null&&tq===CW.upF)up=false;else if(!(tq>0)&&CW.upT&&tn-CW.upT<1000/61)up=false;else{CW.upF=tq;CW.upT=tn}}
 if(LIGHT&&bgMode!=='vid'){var sg=rsig(),tn2=performance.now();if(!up&&sg===RS&&tn2-RT<250)return;RS=sg;RT=tn2}
 if(up){CW.nf=false;CW.ups=(CW.ups||0)+1;try{gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,vid);CW.held=true;CW.hw=vid.videoWidth;CW.hh=vid.videoHeight}catch(e){}}
 /* Image figée (perte HF) : on n'affiche pas la toute dernière image (souvent déchirée/mélangée au moment de la coupure)
@@ -2064,7 +2064,7 @@ paint();
 <script src="diffusion.js"></script>
 <script src="offline.js"></script>
 <script src="pdt.js"></script>
-<script>window.LGI_BUILD='20261022-180715-1efc'</script><script src="update.js"></script>
+<script>window.LGI_BUILD='20261022-181732-0124'</script><script src="update.js"></script>
 <script src="clean.js"></script>
 <script>
 (function(){
