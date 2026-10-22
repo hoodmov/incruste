@@ -1051,7 +1051,7 @@ function prepIosV(){if(iosV)return;iosV=document.createElement('video');iosV.mut
 function iosFs(){try{if(!cv.captureStream)return false;prepIosV();
   if(!iosV.webkitEnterFullscreen)return false;if(iosV.srcObject&&iosV.readyState>=1){iosV.webkitEnterFullscreen();return true}
   iosWarm();var p=iosV.play();var go=function(){try{iosV.webkitEnterFullscreen()}catch(e){}};if(p&&p.then)p.then(go,go);else go();return true}catch(e){return false}}
-function iosWarm(){try{if(!iosV||iosV.srcObject||!cv.captureStream)return;iosV.srcObject=cv.captureStream(30);var p=iosV.play();if(p&&p.catch)p.catch(function(){})}catch(e){}}
+function iosWarm(){try{if(!iosV||iosV.srcObject||!cv.captureStream)return;iosV.srcObject=cv.captureStream(25);var p=iosV.play();if(p&&p.catch)p.catch(function(){})}catch(e){}}
 function iosCool(){try{if(iosV&&iosV.srcObject){var s=iosV.srcObject;iosV.srcObject=null;s.getTracks().forEach(function(t){t.stop()})}}catch(e){}}
 if(noElFs()&&cv.captureStream){new MutationObserver(function(){if(lk.hidden)iosCool();else{iosFs.prep=1;if(!iosV){iosFs.mk=1}setTimeout(function(){if(!lk.hidden){if(!iosV)prepIosV();iosWarm()}},800)}}).observe(lk,{attributes:true,attributeFilter:['hidden']})}
 function isNativeFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement)}
@@ -1983,7 +1983,7 @@ paint();
 <script src="diffusion.js"></script>
 <script src="offline.js"></script>
 <script src="pdt.js"></script>
-<script>window.LGI_BUILD='20261022-170216-5ed2'</script><script src="update.js"></script>
+<script>window.LGI_BUILD='20261022-170257-5d4b'</script><script src="update.js"></script>
 <script src="clean.js"></script>
 <script>
 (function(){

@@ -6,7 +6,7 @@
 var GH={repo:'hoodmov/incruste',path:'data/live.json',branch:'data'};
 var ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
 var MAXW=960,MAXBR=2500000,MAXFPS=30;
-var QP={fl:{w:640,br:1200000,fps:30,jb:0,n:'Réactif'},eq:{w:960,br:2500000,fps:30,jb:0,n:'Équilibré'},hd:{w:1920,br:8000000,fps:30,jb:60,n:'HD'},max:{w:99999,br:12000000,fps:25,jb:150,n:'Max'}};
+var QP={fl:{w:640,br:1200000,fps:25,jb:0,n:'Réactif'},eq:{w:960,br:2500000,fps:25,jb:0,n:'Équilibré'},hd:{w:1920,br:8000000,fps:25,jb:60,n:'HD'},max:{w:99999,br:12000000,fps:25,jb:150,n:'Max'}};
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function token(){return lsGet('lgi.gh')||''}
