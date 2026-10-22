@@ -299,13 +299,18 @@ function fillSel(cams,cur){sel.innerHTML='';cams.forEach(function(d,i){var o=doc
 function liveTrack(){var t=stream&&stream.getVideoTracks()[0];return t&&t.readyState==='live'?t:null}
 function startCam(id,force){clearTimeout(CW.keep);var lt=liveTrack();
   if(!force&&lt){var cur=lt.getSettings&&lt.getSettings().deviceId,w=id||CW.want||savedCam();if(!w||cur===w){if(vid){if(vid.srcObject!==stream)vid.srcObject=stream;var p1=vid.play();if(p1&&p1.catch)p1.catch(function(){})}CW.last=performance.now();CW.vtAt=CW.last;return}}
-  var my=++camSeq;stopStream();if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setMsg("La caméra n'est pas accessible dans ce cadre. Ouvre le lien du site directement dans Safari ou Chrome (pas dans une appli) et autorise la caméra.");return}
+  var my=++camSeq,had=!!stream;stopStream();if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setMsg("La caméra n'est pas accessible dans ce cadre. Ouvre le lien du site directement dans Safari ou Chrome (pas dans une appli) et autorise la caméra.");return}
   var md=navigator.mediaDevices;
   function want(){if(id)return Promise.resolve(id);return listCams().then(function(c){var lab=c.some(function(d){return d.label});if(lab)return pickCam(c);
       return md.getUserMedia({video:true,audio:false}).then(function(t){t.getTracks().forEach(function(x){x.stop()});return listCams().then(pickCam)})})}
   function open1(dev,rich){var v=rich?{width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30}}:{width:{ideal:1920},height:{ideal:1080}};if(dev)v.deviceId={exact:dev};else if(rich)v.facingMode='environment';return md.getUserMedia({video:v,audio:false})}
-  want().then(function(dev){if(my!==camSeq)return null;CW.want=dev||null;
-    return open1(dev,true).catch(function(){return open1(dev,false)}).catch(function(e){if(dev){setMsg('Carte de capture introuvable, caméra par défaut en attendant…');return open1(null,false)}throw e})})
+  function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+  function tryDev(dev){return open1(dev,true).catch(function(){return open1(dev,false)})}
+  /* la carte de capture met parfois 1 à 3 s à être libérée/réapparaître : on réessaie (en la recherchant aussi par son nom) avant de prendre la caméra du Mac */
+  function retry(dev,n){return tryDev(dev).catch(function(e){if(my!==camSeq||n>=3)throw e;setMsg('Carte de capture pas encore prête, nouvel essai ('+(n+1)+'/3)…');
+      return wait(1500*(n+1)).then(function(){if(my!==camSeq)throw e;return listCams()}).then(function(c){var alt=null,br=0;c.forEach(function(d){var r=camRank(d.label);if(r>br){br=r;alt=d.deviceId}});return retry(c.some(function(d){return d.deviceId===dev})?dev:(br>=3?alt:dev),n+1)})})}
+  (had?wait(1200):Promise.resolve()).then(want).then(function(dev){if(my!==camSeq)return null;CW.want=dev||null;
+    return (dev?retry(dev,0):tryDev(dev)).catch(function(e){if(dev){setMsg('Carte de capture introuvable : vérifie son câble USB (branche-la directement sur le Mac). Caméra par défaut en attendant…');return open1(null,false)}throw e})})
   .then(function(s){if(!s)return;if(my!==camSeq){s.getTracks().forEach(function(t){t.stop()});return}stream=s;camHook(s);if(!vid){vid=document.createElement('video');vid.muted=true;vid.playsInline=true;vid.setAttribute('playsinline','');vid.setAttribute('aria-hidden','true');vid.style.cssText='position:fixed;left:0;top:0;width:2px;height:2px;opacity:.01;pointer-events:none;z-index:1';document.body.appendChild(vid)}
     vid.srcObject=s;vid.play().catch(function(){});var cur=s.getVideoTracks()[0]&&s.getVideoTracks()[0].getSettings().deviceId;if(!CW.want||cur===CW.want)setMsg('');return listCams().then(function(c){fillSel(c,cur)})})
   .catch(function(e){if(my!==camSeq)return;setMsg(e&&e.name==='NotAllowedError'?"Caméra refusée. Autorise la caméra pour ce site (réglages du navigateur) ou ouvre le lien directement dans Safari/Chrome.":"Caméra introuvable ("+(e&&e.name||'erreur')+"). Branche la source vidéo puis réessaie.")})}
@@ -341,7 +346,10 @@ function open(src,c,btn,vsrc){var im=heroOf(btn);vtImg=im;vt(function(){openRaw(
 function close(){if(lk.hidden){closeRaw();return}var im=vtImg&&vtImg.isConnected?vtImg:null;vtImg=null;vt(closeRaw,false,im)}
 document.getElementById('lkclose').onclick=close;
 document.addEventListener('keydown',function(e){if(lk.hidden)return;if(e.key==='Escape'){if(lk.classList.contains('fs'))setFs(false);else close()}else if((e.key==='f'||e.key==='F')&&!/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||'')))setFs(!lk.classList.contains('fs'));else if((e.key==='c'||e.key==='C')&&!e.metaKey&&!e.ctrlKey&&!e.altKey&&!/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||''))){e.preventDefault();document.getElementById('lkcr').click()}});
-document.getElementById('lkcamr').onclick=function(){CW.lastRestart=0;CW.fails=0;cwMsg('Relance de la caméra…');startCam(CW.want||savedCam()||null,true)};
+document.getElementById('lkcamr').onclick=function(){CW.lastRestart=0;CW.fails=0;var t=liveTrack();
+  if(t&&vid&&!t.muted){var q0=0;try{q0=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}cwMsg('Relance de l’image…');try{vid.srcObject=null;vid.srcObject=stream;var p0=vid.play();if(p0&&p0.catch)p0.catch(function(){})}catch(e){}
+    setTimeout(function(){var q1=0;try{q1=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}if(q1>q0+3||(q1<q0&&q1>3)){cwMsg('')}else{cwMsg('Relance de la caméra…');startCam(CW.want||savedCam()||null,true)}},2000);return}
+  cwMsg('Relance de la caméra…');startCam(CW.want||savedCam()||null,true)};
 sel.onchange=function(){try{localStorage.setItem('lgi.lk.cam2',sel.value);localStorage.removeItem('lgi.lk.cam')}catch(e){}CW.want=sel.value;startCam(sel.value)};
 document.getElementById('lkrot').addEventListener('input',function(e){S.rot=parseFloat(e.target.value)*Math.PI/180});
 [['lksim','sim'],['lksm','sm'],['lksp','sp'],['lkfr2','fr'],['lksc','sc'],['lkx','x'],['lky','y']].forEach(function(p){var el=document.getElementById(p[0]);el.addEventListener('input',function(){S[p[1]]=parseFloat(el.value)})});
