@@ -56,7 +56,7 @@ PLAN=[
 ("J7","Vanessa Carlton",[(R(25,0),"Plan 1 – Camille attend la répétition, Vanessa entre dans la pièce","Post-prod : Vanessa entre, s'installe au piano et commence à repartir. On tourne Camille le temps que Vanessa parte, la durée est réduite au montage. Travelling en vert ?"),(R(25,3),"Piano intérieur 2","Travelling en vert ?"),(R(25,5),"Piano intérieur 3","Travelling en vert ?"),(R(25,7),"Plan 2 – Camille court derrière Vanessa (piano dans la rue)","Tapis roulant ?")]),
 ("J7","Gims – Parisienne",[(R(21,0),"Fond vert ¾","Fond vert ¾ (tapis de marche)"),(R(21,1),"Fond vert face","Fond vert face (tapis de marche)")]),
 ("J7","Idée slam raté Shy'm (en rouge au plan)",[("x","x","x"),("x","x","x")]),
-("J8","Poltronesofà",[(R(30,3),"Artisan (réf. – non tourné)","Référence seulement"),(R(30,4),"Artisan 2","Regard juste à côté de la caméra / regard caméra"),(R(30,5),"Canapé – plan large","—"),(R(30,6),"Canapé – plan serré","—"),(R(32,0),"Psy – allongé (Camille)","Tourné avec Camille (plus de version Franck Leboeuf)",97)]),
+("J8","Poltronesofà",[(R(30,3),"Artisan (réf. – non tourné)","Référence seulement"),(R(30,4),"Artisan 2","Regard juste à côté de la caméra / regard caméra"),(R(30,5),"Canapé – plan large","—"),(R(30,6),"Canapé – plan serré","—")]),
 ("J8","Poltronesofà – Franck Leboeuf",[(R(32,0),"Psy – allongé","Possible fond vert ?"),(R(32,1),"Duo vendeur","—"),(R(32,2),"Artisan","—")]),
 ("J8","Love Actually (V1 + V2 Franck Leboeuf)",[(R(2,0),"Pancartes","Petit XR, pas de vraie amorce, shutter très bas"),(R(2,1),"Contrechamp","Petit XR")]),
 ("J8","Terminator (V1 + V2 Franck Leboeuf)",[(R(9,0),"Œil dans l'entrebâillement","Comme Monte-Cristo : fond noir et lumière"),(R(9,1),"Visage dans la porte","Idem")]),
