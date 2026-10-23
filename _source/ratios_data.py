@@ -124,6 +124,7 @@ def ratio_txt(iid):
 
 # Intro (J7 21/10 + régie 26/10)
 RT.update({
+'198':('4:1','soleil bas dur, ¾ face (chaud)','oui, doux 5600 K sur les cheveux'),
 '197':('1,2:1','grande source douce frontale (high key météo)','oui, froide, pour détacher du fond'),
 '196':('2:1','frontale douce','non'),
 '166':('1,5:1','diffuse haute, légèrement de face (ciel enfumé)','oui, chaud et vacillant droite cadre (flammes)'),
