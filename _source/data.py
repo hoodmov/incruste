@@ -38,7 +38,7 @@ GREEN={"Fruit Love Island","Lipsync voiture","Pape mobile","L'Exorciste","Fort B
 # JT 2h : plans Le 20H (163 poitrine, 164 plateau + insert) retirés le 22/10 — pour les remettre, les enlever de REMOVE_N
 # Couronnement roi Charles (23/10) : on ne garde que le duo commentateurs (114) ; cérémonie 115, 116, 117 retirés — pour les remettre, les enlever de REMOVE_N
 # Poltronesofà (23/10) : on ne garde que « Canapé – plan large » (95), avec Camille ; 93, 96 retirés et la séquence Franck Leboeuf (97, 98) supprimée
-# Vanessa Carlton (23/10) : on garde le plan 1 (85) et le plan 3 (198, ex-carte « Camille court en plan serré ») ; plan 2 (88) et cartes plans 4-6 retirés
+# Vanessa Carlton (23/10) : on garde le plan 1 (85), le plan 3 (198, ex-carte « Camille court en plan serré ») et le plan moto large (199) ; plan 2 (88) et cartes plans 4-6 retirés
 REMOVE_N={88,93,96,115,116,117,163,164,111,112,196,10,17,43,77,89,86,87,109,133,135,91,92,138,143,144,145,146,147,148,149,150,151,152,153,154,155,83,94,99,113,34,36,82,119,126,158}
 def _gm(n,name):
     if n not in A: return
@@ -142,6 +142,7 @@ _ref(78,lec="Contrechamp sur Mathieu : référence seulement, non tourné.")
 _ref(46,lec="Contrechamp sur Tapie : référence seulement, non tourné.")
 exec(open('/home/claude/intro_data.py').read())
 A[165]=dict(A[65]);A[165]['lec']=A[65]['lec']+" (INA – Alcool : même réf que INA – Internet.)"
+A[199]=dict(s=GM24,f="28 mm",d="f/2.8",dist="2,5",h="1,00",tilt="plongée 10°",lum="Soleil de plein jour (≈ 5600 K), dur de côté, remplissage doux.",lec="Camille sur la moto, plan large vu de l'avant côté piano, en route.")
 A[198]=dict(s=GM70,f="100 mm",d="f/2.8",dist="3,0",h="1,40",tilt="0°",lum="Soleil bas chaud de côté ¾ face (≈ 3200 K), source dure type fresnel ; contre-jour doux à 5600 K pour détacher les cheveux.",lec="Camille court en plan serré, violon à la main, sur tapis de marche devant le fond vert ; léger travelling arrière dans la course.")
 A[197]=dict(s=GM24,f="70 mm",d="f/4",dist="4,0",h="1,50",tilt="0°",lum="Plateau météo : high key, grande source douce frontale (≈ 5600 K), débouchage léger, contre froide pour détacher du fond ; fond vert éclairé à part, uniforme, sans ombre portée.",lec="Camille debout à gauche cadre (sur l'Atlantique), plan américain, ¾ tourné vers la carte, la main désigne la France ; laisser libre le cartouche « DEMAIN MATIN » en haut à droite. Carte nette, incrustée en post.")
 A[196]=dict(s=GM70,f="105 mm",d="f/4",dist="3,1",h="1,50",tilt="0°",lum=A[111]['lum'],lec="Serré sur Camille (Télescopaille) : même axe et même distance que le plan large, on resserre au zoom (réf = zoom de la réf large).")
