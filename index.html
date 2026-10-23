@@ -847,7 +847,7 @@ setInterval(function(){if(lk.hidden||document.hidden||!stream)return;var t=strea
   /* cadence réellement livrée par la carte (statistiques de la piste, Chrome) vs images arrivées dans la page */
   var cf=null;try{var ts=t.stats;if(ts&&ts.totalFrames!=null){if(CW.tsF!=null&&dt>0)cf=(ts.totalFrames-CW.tsF)/dt;CW.tsF=ts.totalFrames;if(ts.discardedFrames!=null){CW.dsc=ts.discardedFrames}}}catch(e){}
   if(cf!=null&&dt>0){CW.cfN=(CW.cfN||0)+1;if(cf<nom*0.8||f<cf*0.8){if(!CW.cfW||performance.now()-CW.cfW>20000){CW.cfW=performance.now();try{window.lgiCamLog&&window.lgiCamLog('w','Carte : '+cf.toFixed(1)+' i/s livrées · page : '+f.toFixed(1)+' i/s reçues (annoncé '+nom+')',f<cf*0.8?'pc':'lent')}catch(e){}}}}
-  if(el){el.textContent=(st.width?st.width+'×'+st.height:'')+(nom?' · '+nom+' i/s':'')+(cf!=null?' · carte '+cf.toFixed(1):'')+(dt>0?' · reçu '+f.toFixed(1)+(nom>31?' → affiché '+rr.toFixed(0):''):'');if(el&&LIGHT)el.textContent+=' · mode léger';el.classList.toggle('warn',!!(nom&&dt>0&&f<nom*0.8))}},2000);
+  if(el){el.textContent=(st.width?st.width+'×'+st.height:'')+(dt>0?' · '+f.toFixed(1)+' i/s':'');el.title='Images réellement reçues par seconde'+(cf!=null?' (la carte en livre '+cf.toFixed(1)+')':'');if(el&&LIGHT)el.textContent+=' · mode léger';el.classList.toggle('warn',!!(nom&&dt>0&&f<nom*0.8))}},2000);
 setInterval(function(){if(lk.hidden||document.hidden||!stream)return;var t=stream.getVideoTracks()[0],now=performance.now();
   if(!t||t.readyState==='ended')return camRestart('coupé');
   if(t.muted||CW.mutedAt){cwMsg('Pas de signal sur la carte de capture (HF / HDMI) : on garde la dernière image, la caméra reprend toute seule dès que le signal revient.');CW.last=now;CW.vtAt=now;return}
@@ -2061,7 +2061,7 @@ paint();
 <script src="diffusion.js"></script>
 <script src="offline.js"></script>
 <script src="pdt.js"></script>
-<script>window.LGI_BUILD='20261023-130121-512d'</script><script src="update.js"></script>
+<script>window.LGI_BUILD='20261023-130239-d781'</script><script src="update.js"></script>
 <script src="clean.js"></script>
 <script>
 (function(){
