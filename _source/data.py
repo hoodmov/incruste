@@ -36,7 +36,8 @@ GREEN={"Fruit Love Island","Lipsync voiture","Pape mobile","L'Exorciste","Fort B
 # Pink : plan 10 (arbre, amorce) retiré le 22/10 à la demande de Hood ; on garde le plan sur Camille (11) et le large (12) — pour remettre le 10, l'enlever de REMOVE_N
 # Qui veut être mon associé (22/10, 16h15) : retour au plan américain (110) + serré (108) ; Télescopaille 111, son serré zoomé 196 et 112 retirés — pour les remettre, les enlever de REMOVE_N
 # JT 2h : plans Le 20H (163 poitrine, 164 plateau + insert) retirés le 22/10 — pour les remettre, les enlever de REMOVE_N
-REMOVE_N={163,164,111,112,196,10,17,43,77,89,86,87,109,133,135,91,92,138,143,144,145,146,147,148,149,150,151,152,153,154,155,83,94,99,113,34,36,82,119,126,158}
+# Couronnement roi Charles (23/10) : on ne garde que le duo commentateurs (114) ; cérémonie 115, 116, 117 retirés — pour les remettre, les enlever de REMOVE_N
+REMOVE_N={115,116,117,163,164,111,112,196,10,17,43,77,89,86,87,109,133,135,91,92,138,143,144,145,146,147,148,149,150,151,152,153,154,155,83,94,99,113,34,36,82,119,126,158}
 def _gm(n,name):
     if n not in A: return
     v=A[n]
