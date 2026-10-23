@@ -101,7 +101,7 @@ html.lkvt #lk .tb{view-transition-name:lk-bar}
 @media (max-width:700px){#lk .grp+.grp{border-left:0}}
 </style>
 <div id="lk" hidden role="dialog" aria-modal="true" aria-label="Incruste live">
-<div class="tb"><p id="lkcap"></p><select id="lkcam" aria-label="Caméra"></select><span id="lkcaminfo" title="Format reçu de la carte de capture · cadence réellement reçue"></span><button id="lkcamr" type="button" title="Relancer la caméra (seulement si l’image est bloquée)" aria-label="Relancer la caméra">↻</button><button id="lkfs" type="button">⛶ Plein écran</button><button id="lkclose" type="button">Fermer</button></div>
+<div class="tb"><p id="lkcap"></p><select id="lkcam" aria-label="Caméra"></select><select id="lkfps" aria-label="Cadence demandée à la carte" title="Cadence demandée à la carte de capture (test des glitches)"><option value="0">Cadence auto</option><option value="25">25 i/s</option><option value="30">30 i/s</option><option value="50">50 i/s</option><option value="60">60 i/s</option></select><span id="lkcaminfo" title="Format reçu de la carte de capture · cadence réellement reçue"></span><button id="lkcamr" type="button" title="Relancer la caméra (seulement si l’image est bloquée)" aria-label="Relancer la caméra">↻</button><button id="lkfs" type="button">⛶ Plein écran</button><button id="lkclose" type="button">Fermer</button></div>
 <button id="lkfsx" type="button">✕ Quitter le plein écran</button><button id="lkfscap" type="button" title="Capture (touche C)">📸 Capture</button><div id="lkwrap"><canvas id="lkc"></canvas><img id="lkgh" alt="" hidden><canvas id="lkov"></canvas><div id="lkspl" hidden><i></i></div><canvas id="lkwf" width="320" height="140" hidden></canvas><div id="lkmsg" hidden></div></div>
 <div class="ct">
 <section class="grp" id="lkgfond"><h5>Fond</h5>
@@ -299,7 +299,7 @@ function startCam(id,force){clearTimeout(CW.keep);var lt=liveTrack();
   var md=navigator.mediaDevices;
   function want(){if(id)return Promise.resolve(id);return listCams().then(function(c){var lab=c.some(function(d){return d.label});if(lab)return pickCam(c);
       return md.getUserMedia({video:true,audio:false}).then(function(t){t.getTracks().forEach(function(x){x.stop()});return listCams().then(pickCam)})})}
-  function open1(dev,rich){var v={width:{ideal:1920},height:{ideal:1080}};/* aucune cadence imposée : on prend ce que la carte envoie */if(dev)v.deviceId={exact:dev};else if(rich)v.facingMode='environment';return md.getUserMedia({video:v,audio:false})}
+  function open1(dev,rich){var v={width:{ideal:1920},height:{ideal:1080}};var fq=0;try{fq=+localStorage.getItem('lgi.lk.fps')||0}catch(e){}if(fq&&rich)v.frameRate={ideal:fq};/* cadence demandée à la carte : Auto (rien d'imposé) ou choisie dans la barre */if(dev)v.deviceId={exact:dev};else if(rich)v.facingMode='environment';return md.getUserMedia({video:v,audio:false})}
   function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
   function tryDev(dev){return open1(dev,true).catch(function(){return open1(dev,false)})}
   /* la carte de capture met parfois 1 à 3 s à être libérée/réapparaître : on réessaie (en la recherchant aussi par son nom) avant de prendre la caméra du Mac */
@@ -346,6 +346,7 @@ document.getElementById('lkcamr').onclick=function(){CW.lastRestart=0;CW.fails=0
   if(t&&vid&&!t.muted){var q0=0;try{q0=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}cwMsg('Relance de l’image…');try{vid.srcObject=null;vid.srcObject=stream;var p0=vid.play();if(p0&&p0.catch)p0.catch(function(){})}catch(e){}
     setTimeout(function(){var q1=0;try{q1=vid.getVideoPlaybackQuality().totalVideoFrames}catch(e){}if(q1>q0+3||(q1<q0&&q1>3)){cwMsg('')}else{cwMsg('Relance de la caméra…');startCam(CW.want||savedCam()||null,true)}},2000);return}
   cwMsg('Relance de la caméra…');startCam(CW.want||savedCam()||null,true)};
+(function(){var f=document.getElementById('lkfps');if(!f)return;try{f.value=localStorage.getItem('lgi.lk.fps')||'0'}catch(e){}f.onchange=function(){try{localStorage.setItem('lgi.lk.fps',f.value)}catch(e){}try{window.lgiCamLog&&window.lgiCamLog('i','Cadence demandée : '+(f.value==='0'?'Auto':f.value+' i/s'))}catch(e){}startCam(CW.want||savedCam()||null,true)}})();
 sel.onchange=function(){try{localStorage.setItem('lgi.lk.cam2',sel.value);localStorage.removeItem('lgi.lk.cam')}catch(e){}CW.want=sel.value;startCam(sel.value)};
 document.getElementById('lkrot').addEventListener('input',function(e){S.rot=parseFloat(e.target.value)*Math.PI/180});
 [['lksim','sim'],['lksm','sm'],['lksp','sp'],['lkfr2','fr'],['lkch','ch'],['lksc','sc'],['lkx','x'],['lky','y']].forEach(function(p){var el=document.getElementById(p[0]);el.addEventListener('input',function(){S[p[1]]=parseFloat(el.value)})});
