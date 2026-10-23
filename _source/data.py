@@ -80,7 +80,7 @@ A[163]=dict(s=GM70,f="100 mm",d="f/2.8",dist="2,5",h="1,45",tilt="0°",lum="Key 
 A[164]=dict(s=GM16,f="24 mm",d="f/5.6",dist="5,0",h="1,60",tilt="plongée 5°",lum="Plateau TV : éclairage uniforme, haut et diffus (≈ 5600 K), sol brillant et reflets, fond extérieur clair.",lec="Plateau entier avec fenêtre d'insert vidéo à droite (ajoutée en post).")
 
 SHOTORDER={"Michael Jackson – Thriller":[44,42]}  # top shot cercueil en premier (14/10)
-DAYOF={"Vanessa Carlton":"J8","JT 2h":"J7","INA – Alcool":"J5","Qui veut être mon associé":"J7","The Voice":"J10","Gims – Parisienne":"J3","INA – Mode":"J4","Stranger Things":"J3","Star Wars – Kylo":"J2","Star Wars – Vador":"J2","Pink – So What":"J7","Zidane – coup de pied":"J1","Le 5ème Beatles – Hello Goodbye":"J7","Les Choristes":"J3"}
+DAYOF={"1000% Logique":"J9","Vanessa Carlton":"J8","JT 2h":"J7","INA – Alcool":"J5","Qui veut être mon associé":"J7","The Voice":"J10","Gims – Parisienne":"J3","INA – Mode":"J4","Stranger Things":"J3","Star Wars – Kylo":"J2","Star Wars – Vador":"J2","Pink – So What":"J7","Zidane – coup de pied":"J1","Le 5ème Beatles – Hello Goodbye":"J7","Les Choristes":"J3"}
 ORDER={
 "J1":["Fruit Love Island","Lipsync voiture","Zidane – coup de pied","L'Exorciste","Fort Boyard","Pape mobile","Macron / Atol","Dune","Le Seigneur des anneaux"],
 "J2":["Titanic","Titanic short","L'Odyssée","Gold – Plus près des étoiles","Gold – Laissez-nous chanter","Mariah Carey – It's Time","Trump","Céline Dion JO","Hollande sous la pluie","Star Wars – Vador","Star Wars – Kylo"],
@@ -89,9 +89,9 @@ ORDER={
 "J5":["INA – Alcool","INA – Internet","Je peux visiter ton appart ?","Tu payes combien ton loyer ?","JT – JRI","Qui veut épouser mon fils"],
 "J6":["Intro – Scan Camille en stormtrooper","Intro – Scan Camille en costume","Intro – Chevalier : studio puis Les Visiteurs","Intro – Suspension puis arène de Gladiator","Intro – Chute dans Men in Black (grue)","Intro – Course : Jurassic Park, Forrest Gump, Harry Potter","Intro – Plans en option (absents du déroulé)"],
 "J7":["Pink – So What","Le 5ème Beatles – Hello Goodbye","Miley Cyrus – Wrecking Ball","Couronnement roi Charles – short","ITW Sophie Adenot – ISS","Qui veut être mon associé","JT 2h"],
-"J8":["Terminator (V1 + V2 Franck Leboeuf)","Love Actually (V1 + V2 Franck Leboeuf)","Poltronesofà – Franck Leboeuf","Poltronesofà","Couronnement roi Charles","James Bond – Casino poker","Vanessa Carlton"],
-"J9":["Danse avec les stars","Love Cam Coldplay","Intro – Réalisateur en régie"],
-"J10":["Maillon faible","The Voice","Fast & Furious","1000% Logique"]}
+"J8":["Love Actually (V1 + V2 Franck Leboeuf)","Terminator (V1 + V2 Franck Leboeuf)","Couronnement roi Charles","Poltronesofà","Poltronesofà – Franck Leboeuf","James Bond – Casino poker","Vanessa Carlton"],
+"J9":["1000% Logique","Love Cam Coldplay","Intro – Réalisateur en régie","Danse avec les stars"],
+"J10":["Maillon faible","The Voice","Fast & Furious","La Femme de ménage (en rouge au plan)"]}
 
 # Notes lumière : effets lumière à faire en vrai au tournage (pas la description de la lumière)
 LFX={
