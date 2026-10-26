@@ -142,6 +142,16 @@ _ref(78,lec="Contrechamp sur Mathieu : référence seulement, non tourné.")
 _ref(46,lec="Contrechamp sur Tapie : référence seulement, non tourné.")
 exec(open('/home/claude/intro_data.py').read())
 A[165]=dict(A[65]);A[165]['lec']=A[65]['lec']+" (INA – Alcool : même réf que INA – Internet.)"
+A[201]=dict(s=GM70,f="85 mm",d="f/2.8",dist="1,8",h="1,00",tilt="0°",lum="Plein soleil d’été (≈ 5600 K) haut et latéral, visage en lumière réfléchie douce ; fond haie verte très flou.",lec="Plan épaule sur Camille (rôle de l’enfant), amorce floue de la fille à gauche.")
+A[202]=dict(s=GM24,f="35 mm",d="f/4",dist="2,5",h="1,00",tilt="0°",lum="Plein soleil d’été (≈ 5600 K) de face sur la fille, contre sur Camille en amorce ; piscine et baigneurs nets en fond.",lec="¾ dos fixe : Camille en amorce droite, la fille de face.")
+A[203]=dict(s=GM24,f="35 mm",d="f/2.8",dist="2,5",h="1,60",tilt="0°",lum="Couloir sombre, néons blanchâtres au plafond en perspective (≈ 4000 K), silhouettes en contre.",lec="Suivi de dos : Katerine encadré par les 2 gardes du corps.")
+A[204]=dict(s=GM16,f="24 mm",d="f/2.8",dist="1,5",h="0,90",tilt="contre-plongée 25°",lum="Plafond à grille éclairé, visages en lumière zénithale froide, fond sombre.",lec="Contre-plongée de face : garde et Katerine qui avancent.")
+A[205]=dict(s=GM70,f="85 mm",d="f/2.8",dist="2,2",h="1,30",tilt="0°",lum="Régie sombre : mur d’écrans bleus en fond (≈ 6500 K), key chaude douce latérale basse type lampe de pupitre (≈ 3200 K).",lec="Katerine de ¾ profil au micro, pupitre et écrans flous derrière.")
+A[206]=dict(s=GM70,f="70 mm",d="f/2.8",dist="2,0",h="1,25",tilt="0°",lum="Idem régie : key chaude douce de face-côté, écrans bleus flous en fond, amorce sombre.",lec="Contrechamp : Katerine face caméra, amorce de Chantal.")
+A[207]=dict(s=GM70,f="70 mm",d="f/2.8",dist="2,5",h="1,30",tilt="0°",lum="Idem régie : Chantal en key chaude douce, écrans bleus derrière, amorce de Katerine de dos à droite.",lec="Chantal face avec le chat blanc sur les genoux, amorce Katerine.")
+A[208]=dict(s=GM70,f="85 mm",d="f/2.8",dist="2,2",h="1,30",tilt="0°",lum="Idem régie : key chaude latérale, mur d’écrans bleus en fond net-flou.",lec="Chantal de ¾ profil devant les écrans (Camille au micro, off).")
+A[209]=dict(s=GM24,f="35 mm",d="f/4",dist="3,5",h="1,20",tilt="0°",lum="Large régie : mur d’écrans bleus allumés, Chantal en key chaude douce, amorces sombres floues gauche et droite.",lec="Large : Chantal dans le gros fauteuil au centre, mur d’écrans.")
+A[210]=dict(s=GM70,f="100 mm",d="f/2.8",dist="1,2",h="1,10",tilt="plongée 15°",lum="Insert : key chaude douce sur le chat, fond noir avec un point de lumière chaud.",lec="Insert : main de Chantal qui caresse le chat empaillé.")
 A[200]=dict(s=GM24,f="40 mm",d="f/2.8",dist="1,0",h="1,00",tilt="-90° (top shot, à la verticale)",lum="Soleil dur de côté (≈ 5600 K) pour les ombres sur le visage, léger remplissage opposé.",lec="Top shot très serré sur le visage de Camille au sol, sans VFX ; caméra à la verticale (perche ou grue).")
 A[199]=dict(s=GM24,f="28 mm",d="f/2.8",dist="2,5",h="1,00",tilt="plongée 10°",lum="Soleil de plein jour (≈ 5600 K), dur de côté, remplissage doux.",lec="Camille sur la moto, plan large vu de l'avant côté piano, en route.")
 A[198]=dict(s=GM70,f="100 mm",d="f/2.8",dist="3,0",h="1,40",tilt="0°",lum="Soleil bas chaud de côté ¾ face (≈ 3200 K), source dure type fresnel ; contre-jour doux à 5600 K pour détacher les cheveux.",lec="Camille court en plan serré, violon à la main, sur tapis de marche devant le fond vert ; léger travelling arrière dans la course.")
@@ -186,7 +196,7 @@ def build():
     return out
 
 
-CARDS={"Nos jours heureux":[("Réf à venir","Revenu au plan de travail le 23/10 (lundi 26/10). Aucune réf reçue pour l’instant : envoie les images et je crée les plans avec les réglages.","—")],"Affaire conclue":[("Réf à venir","Nouveau sketch (lundi 26/10). Aucune réf reçue pour l’instant : envoie les images et je crée les plans avec les réglages.","—")],"Tous les sports (extérieurs)":[
+CARDS={"Intro – Réalisateur en régie":[("Matin (10h30, studio) – Intro plan 1","Contre-plongée sur Camille → plafond du studio. Figurants : 2 gardes du corps. HMC : perruque fille, haut femme (à confirmer). Pas de réf image dans le déroulé.","2 gardes du corps")],"Affaire conclue":[("Réf à venir","Nouveau sketch (lundi 26/10). Aucune réf reçue pour l’instant : envoie les images et je crée les plans avec les réglages.","—")],"Tous les sports (extérieurs)":[
 ("Tennis de table basse","Table de ping-pong extrêmement basse. Camille joue plié en deux et montre ses douleurs de dos. Plan serré.","Table de ping-pong très basse"),
 ("Lancer de disque","Camille lance un CD hors de sa jaquette, comme un disque d'athlétisme. Plan d'action.","CD, boîtier de CD"),
 ("Monocycle (Tour de France)","Camille en cycliste avec casque de vélo pro. Il vérifie ses roues et se déplace sur un monocycle.","Monocycle x1, casque de vélo pro"),

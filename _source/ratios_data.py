@@ -124,6 +124,16 @@ def ratio_txt(iid):
 
 # Intro (J7 21/10 + régie 26/10)
 RT.update({
+'201':('2:1','plein soleil haut et latéral','oui, soleil d’été'),
+'202':('2:1','plein soleil de face (sur la fille)','oui, sur Camille en amorce'),
+'203':('6:1','néons plafond en perspective','oui, silhouettes'),
+'204':('4:1','zénithale froide (plafond)','non'),
+'205':('4:1','chaude douce latérale basse (pupitre)','écrans bleus en fond'),
+'206':('4:1','chaude douce face-côté','écrans bleus en fond'),
+'207':('4:1','chaude douce sur Chantal','écrans bleus en fond'),
+'208':('4:1','chaude latérale','écrans bleus en fond'),
+'209':('4:1','chaude douce sur Chantal','mur d’écrans bleus'),
+'210':('6:1','chaude douce sur le chat','non, fond noir'),
 '200':('4:1','soleil dur de côté','non'),
 '199':('3:1','soleil dur de côté (plein jour)','non'),
 '198':('4:1','soleil bas dur, ¾ face (chaud)','oui, doux 5600 K sur les cheveux'),
