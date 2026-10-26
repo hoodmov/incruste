@@ -154,6 +154,9 @@ A[209]=dict(s=GM24,f="35 mm",d="f/4",dist="3,5",h="1,20",tilt="0°",lum="Large r
 A[210]=dict(s=GM70,f="100 mm",d="f/2.8",dist="1,2",h="1,10",tilt="plongée 15°",lum="Insert : key chaude douce sur le chat, fond noir avec un point de lumière chaud.",lec="Insert : main de Chantal qui caresse le chat empaillé.")
 A[211]=dict(A[40]);A[211]['lec']="Même plan que Céline Dion Tour Eiffel, tourné en doublon : Camille en violoniste (costume nœud pap, violon)."
 _ref(202,lec="Contrechamp sur la fille : référence seulement, non tourné.")
+# Affaire conclue (26/10) : ref plateau France 2 + clean plate fourni par Hood
+A[212]=dict(s=GM24,f="50 mm",d="f/5.6",dist="4,5",h="1,45",tilt="plongée 3°",lum="Plateau TV high key : key douce et large de face, légèrement gauche cadre (≈ 4000 K), léger contre sur les cheveux ; décor chaud (niches et bougies ambrées, étagères rétroéclairées blanc froid), fond net.",lec="Plan large plateau, comptoir coupé en bas : personnages taille au-dessus du plateau du comptoir, on voit légèrement le dessus du comptoir (caméra un peu au-dessus, vers 1,45 m). Fond lisible et peu flou : fermer à f/5.6.")
+SRC["Affaire conclue"]=TVNOTE
 A[200]=dict(s=GM24,f="40 mm",d="f/2.8",dist="1,0",h="1,00",tilt="-90° (top shot, à la verticale)",lum="Soleil dur de côté (≈ 5600 K) pour les ombres sur le visage, léger remplissage opposé.",lec="Top shot très serré sur le visage de Camille au sol, sans VFX ; caméra à la verticale (perche ou grue).")
 A[199]=dict(s=GM24,f="28 mm",d="f/2.8",dist="2,5",h="1,00",tilt="plongée 10°",lum="Soleil de plein jour (≈ 5600 K), dur de côté, remplissage doux.",lec="Camille sur la moto, plan large vu de l'avant côté piano, en route.")
 A[198]=dict(s=GM70,f="100 mm",d="f/2.8",dist="3,0",h="1,40",tilt="0°",lum="Soleil bas chaud de côté ¾ face (≈ 3200 K), source dure type fresnel ; contre-jour doux à 5600 K pour détacher les cheveux.",lec="Camille court en plan serré, violon à la main, sur tapis de marche devant le fond vert ; léger travelling arrière dans la course.")
@@ -198,7 +201,7 @@ def build():
     return out
 
 
-CARDS={"Intro – Réalisateur en régie":[("Matin (10h30, studio) – Intro plan 1","Contre-plongée sur Camille → plafond du studio. Figurants : 2 gardes du corps. HMC : perruque fille, haut femme (à confirmer). Pas de réf image dans le déroulé.","2 gardes du corps")],"Affaire conclue":[("Réf à venir","Nouveau sketch (lundi 26/10). Aucune réf reçue pour l’instant : envoie les images et je crée les plans avec les réglages.","—")],"Tous les sports (extérieurs)":[
+CARDS={"Intro – Réalisateur en régie":[("Matin (10h30, studio) – Intro plan 1","Contre-plongée sur Camille → plafond du studio. Figurants : 2 gardes du corps. HMC : perruque fille, haut femme (à confirmer). Pas de réf image dans le déroulé.","2 gardes du corps")],"Tous les sports (extérieurs)":[
 ("Tennis de table basse","Table de ping-pong extrêmement basse. Camille joue plié en deux et montre ses douleurs de dos. Plan serré.","Table de ping-pong très basse"),
 ("Lancer de disque","Camille lance un CD hors de sa jaquette, comme un disque d'athlétisme. Plan d'action.","CD, boîtier de CD"),
 ("Monocycle (Tour de France)","Camille en cycliste avec casque de vélo pro. Il vérifie ses roues et se déplace sur un monocycle.","Monocycle x1, casque de vélo pro"),

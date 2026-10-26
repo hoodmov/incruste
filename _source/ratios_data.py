@@ -124,6 +124,7 @@ def ratio_txt(iid):
 
 # Intro (J7 21/10 + régie 26/10)
 RT.update({
+'212':('1,5:1','face douce, légèrement gauche cadre','oui, doux, haut arrière (cheveux)'),
 '211':('1,5:1','latérale douce froide, droite cadre','oui, dur, haut gauche cadre (+1,5 IL)'),
 '201':('2:1','plein soleil haut et latéral','oui, soleil d’été'),
 '202':('2:1','plein soleil de face (sur la fille)','oui, sur Camille en amorce'),
