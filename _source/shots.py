@@ -74,6 +74,6 @@ PLAN=[
 ("J10","La Femme de ménage (en rouge au plan)",[(R(3,3),"Voiture – téléphone","Tournage XR"),(R(3,4),"Voiture – main bandée","Tournage XR"),(R(3,5),"Extérieur – voiture blanche (plaque)","Média 1 voiture arrêtée / média 2 voiture qui roule")]),
 ("J9","Nos jours heureux",[(N+"201_njh_plan1.jpg","Plan 1 – épaule (Camille dans le rôle de l'enfant)","Fond XR · séquence « insulte de la piscine » · Camille torse nu ou t-shirt enfant",201),(N+"202_njh_plan2.jpg","Contrechamp sur la fille (réf. – non tourné)","Référence seulement",202)]),
 ("J9","Céline Dion violoniste",[(R(26,0),"Tour Eiffel – Camille en violoniste","Fond vert · même plan que Céline Dion Tour Eiffel (J2, tourné en doublon), Camille en violoniste · costume nœud pap · violon",211)]),
-("J9","Affaire conclue",[(N+"212_affaire_conclue.jpg","Plateau – plan large au comptoir (clean plate fourni)","Plateau XR vidéo · Camille au comptoir dans le décor d'Affaire conclue · clean plate du plateau vide fourni (bouton Clean)",212)]),
+("J9","Affaire conclue",[(N+"212_affaire_conclue.jpg","Plateau – plan large, Camille s'ajoute derrière le comptoir","Plateau XR vidéo · Camille ajouté derrière le comptoir, avec la présentatrice · Christophe Willem en objet · clean plate du plateau vide fourni (bouton Clean) · comptoir au premier plan : le garder devant Camille (couche avant de la plaque ou vrai comptoir à ≈ 1,05 m)",212)]),
 ]
 MISSING={"J2":[],"J4":[],"J5":[],"J6":[],"J10":[]}
