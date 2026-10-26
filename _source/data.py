@@ -153,7 +153,7 @@ A[208]=dict(s=GM70,f="85 mm",d="f/2.8",dist="2,2",h="1,30",tilt="0°",lum="Idem 
 A[209]=dict(s=GM24,f="35 mm",d="f/4",dist="3,5",h="1,20",tilt="0°",lum="Large régie : mur d’écrans bleus allumés, Chantal en key chaude douce, amorces sombres floues gauche et droite.",lec="Large : Chantal dans le gros fauteuil au centre, mur d’écrans.")
 A[210]=dict(s=GM70,f="100 mm",d="f/2.8",dist="1,2",h="1,10",tilt="plongée 15°",lum="Insert : key chaude douce sur le chat, fond noir avec un point de lumière chaud.",lec="Insert : main de Chantal qui caresse le chat empaillé.")
 A[211]=dict(A[40]);A[211]['lec']="Même plan que Céline Dion Tour Eiffel, tourné en doublon : Camille en violoniste (costume nœud pap, violon)."
-_ref(202,lec="Contrechamp sur la fille : référence seulement, non tourné.")
+# 202 : contrechamp tourné finalement le 26/10 (n’est plus une réf)
 # Affaire conclue (26/10) : ref plateau France 2 + clean plate fourni par Hood
 A[212]=dict(s=GM24,f="50 mm",d="f/5.6",dist="4,5",h="1,45",tilt="plongée 3°",lum="Plateau TV high key : key douce et large de face, légèrement gauche cadre (≈ 4000 K), léger contre sur les cheveux ; décor chaud (niches et bougies ambrées, étagères rétroéclairées blanc froid), fond net.",lec="Camille s'ajoute derrière le comptoir (il ne remplace personne). Christophe Willem joue l'objet. Plan large plateau, comptoir coupé en bas : personnages taille au-dessus du plateau du comptoir, on voit légèrement le dessus du comptoir (caméra un peu au-dessus, vers 1,45 m). Fond lisible et peu flou : fermer à f/5.6.")
 SRC["Affaire conclue"]=TVNOTE
