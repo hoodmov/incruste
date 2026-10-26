@@ -93,7 +93,7 @@ ORDER={
 "J6":["Intro – Scan Camille en stormtrooper","Intro – Scan Camille en costume","Intro – Chevalier : studio puis Les Visiteurs","Intro – Suspension puis arène de Gladiator","Intro – Chute dans Men in Black (grue)","Intro – Course : Jurassic Park, Forrest Gump, Harry Potter","Intro – Plans en option (absents du déroulé)"],
 "J7":["Pink – So What","Le 5ème Beatles – Hello Goodbye","Miley Cyrus – Wrecking Ball","Couronnement roi Charles – short","ITW Sophie Adenot – ISS","Qui veut être mon associé","JT 2h"],
 "J8":["Love Actually (V1 + V2 Franck Leboeuf)","Terminator (V1 + V2 Franck Leboeuf)","Couronnement roi Charles","Poltronesofà","Poltronesofà – Franck Leboeuf","James Bond – Casino poker","Vanessa Carlton"],
-"J9":["Nos jours heureux","Céline Dion V2","Intro – Réalisateur en régie","Affaire conclue"],
+"J9":["Nos jours heureux","Céline Dion violoniste","Intro – Réalisateur en régie","Affaire conclue"],
 "J10":["Maillon faible","The Voice","Fast & Furious"]}
 
 # Notes lumière : effets lumière à faire en vrai au tournage (pas la description de la lumière)
@@ -152,6 +152,8 @@ A[207]=dict(s=GM70,f="70 mm",d="f/2.8",dist="2,5",h="1,30",tilt="0°",lum="Idem 
 A[208]=dict(s=GM70,f="85 mm",d="f/2.8",dist="2,2",h="1,30",tilt="0°",lum="Idem régie : key chaude latérale, mur d’écrans bleus en fond net-flou.",lec="Chantal de ¾ profil devant les écrans (Camille au micro, off).")
 A[209]=dict(s=GM24,f="35 mm",d="f/4",dist="3,5",h="1,20",tilt="0°",lum="Large régie : mur d’écrans bleus allumés, Chantal en key chaude douce, amorces sombres floues gauche et droite.",lec="Large : Chantal dans le gros fauteuil au centre, mur d’écrans.")
 A[210]=dict(s=GM70,f="100 mm",d="f/2.8",dist="1,2",h="1,10",tilt="plongée 15°",lum="Insert : key chaude douce sur le chat, fond noir avec un point de lumière chaud.",lec="Insert : main de Chantal qui caresse le chat empaillé.")
+A[211]=dict(A[40]);A[211]['lec']="Même plan que Céline Dion Tour Eiffel, tourné en doublon : Camille en violoniste (costume nœud pap, violon)."
+_ref(202,lec="Contrechamp sur la fille : référence seulement, non tourné.")
 A[200]=dict(s=GM24,f="40 mm",d="f/2.8",dist="1,0",h="1,00",tilt="-90° (top shot, à la verticale)",lum="Soleil dur de côté (≈ 5600 K) pour les ombres sur le visage, léger remplissage opposé.",lec="Top shot très serré sur le visage de Camille au sol, sans VFX ; caméra à la verticale (perche ou grue).")
 A[199]=dict(s=GM24,f="28 mm",d="f/2.8",dist="2,5",h="1,00",tilt="plongée 10°",lum="Soleil de plein jour (≈ 5600 K), dur de côté, remplissage doux.",lec="Camille sur la moto, plan large vu de l'avant côté piano, en route.")
 A[198]=dict(s=GM70,f="100 mm",d="f/2.8",dist="3,0",h="1,40",tilt="0°",lum="Soleil bas chaud de côté ¾ face (≈ 3200 K), source dure type fresnel ; contre-jour doux à 5600 K pour détacher les cheveux.",lec="Camille court en plan serré, violon à la main, sur tapis de marche devant le fond vert ; léger travelling arrière dans la course.")
