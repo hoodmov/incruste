@@ -29,7 +29,7 @@ SRC["Qui veut épouser mon fils"]="Origine : télé-réalité, caméras type Son
 for k in ["INA – Piercings","INA – Mode","INA – Internet","INA – Alcool"]: SRC[k]="Origine : archive INA (16 mm ou vidéo ENG selon l'époque, déduit). À tourner au zoom télé vintage."
 EXTRA={"Love Cam Coldplay":"On ne tourne que le plan de Camille et de la personne à côté de lui. Il y a 4 panneaux filés : 1) panneau filé d'entrée, de la droite vers la gauche, qui arrive sur eux ; ils disent « non, nous on n'est pas en couple, regardez à gauche » ; 2) panneau filé de sortie vers la gauche, sur un contre-champ que l'on ne tourne pas ; 3) panneau filé d'entrée, de la gauche vers la droite, de retour sur Camille et sa voisine ; 4) panneau filé de sortie vers la droite.","Fast & Furious":"Seul Camille est tourné : il est côté passager, à la place de la miniature à côté de Vin Diesel. Deux plans seulement (face, ¾ profil). Les plans de Vin Diesel au volant sont des références de médias à afficher dans l'écran XR, ils ne sont pas dans ce document.","Un dimanche à la campagne":"Texte : Frédéric Lopez accueille de l'autre côté de l'eau. Camille joue plein d'invités différents (backgammon, etc.) et tombe à l'eau à chaque fois, en montage jumpcut. Un seul plan est tourné : Camille dans la forêt. La chute et le « plouf » sont faits en post-prod.","Tous les sports (extérieurs)":"Texte : « Tout le sport », magazine sportif parodique. Camille joue les sportifs, avec une tenue de sport différente pour chaque personnage. Plusieurs petits magnétos de sportifs à tourner en extérieur. Pas de média de référence : voici ce qu'il faut tourner. Optique : tout au G Master 24-70.","Pink – So What":"Réf. costume : Ned Flanders (Les Simpson).","Poltronesofà – Franck Leboeuf":"L'artisan reprend la même réf. que Poltronesofà.","Lipsync voiture":"La vue voiture d'origine est upscalée en post (droite et gauche) : seul Camille est tourné.","Danse avec les stars":"Le schéma prévoit un écran XR, un plan au Steadicam, une machine à brouillard, une passe Steadicam et une passe à la branche au ralenti."}
 REMOVED=["Plans I.A. et plaques sans prise de vue réelle (papamobile, désert, tarmac, mur béton, plateau, voiture)","Barbie : toutes les scènes (annulées)","Dune : 2 plans de grue (I.A.) + plan serré (retiré le 13/10)","Maillon faible : plateau large (I.A., effacer/ajouter un participant)","Gims – Parisienne : plan I.A. full + 2 plans volés au vrai clip","Un dimanche à la campagne : la chute (faite en post)","ITW ISS : 2 plans « prompt I.A. Camille de dos qui se cogne »","Love Cam : goodies déco (accessoires) ; la transition panneau se fait en post","Pour le plaisir : upscale uniquement","Tous les sports (extérieurs) : séquence retirée le 15/10","Tous les sports (studio) : absent du PDT du 19/10, retiré"]
-HORS=["Nos jours heureux (rangé en RIP)","Arrivée des joueurs à Clairefontaine","Verisure","Pour le plaisir","Star Ac' (pas de screen)","Chirac / Camille en Bernadette (RIP)"]
+HORS=["Arrivée des joueurs à Clairefontaine","Verisure","Pour le plaisir","Star Ac' (pas de screen)","Chirac / Camille en Bernadette (RIP)"]
 
 import re as _re
 GREEN={"Fruit Love Island","Lipsync voiture","Pape mobile","L'Exorciste","Fort Boyard","Pink – So What","Macron / Atol","Dune","Le Seigneur des anneaux","Titanic","Titanic short","Gold – Plus près des étoiles","Gold – Laissez-nous chanter","Mariah Carey – It's Time","Trump","Céline Dion JO","Hollande sous la pluie","Michael Jackson – Thriller","Star Wars – Kylo","Star Wars – Vador","Le 5ème Beatles – Hello Goodbye","Intro Hotu","Zidane – coup de pied","Couronnement roi Charles – short","Les Choristes","Miley Cyrus – Wrecking Ball","ITW Sophie Adenot – ISS","Vanessa Carlton","Gims – Parisienne","Poltronesofà","Poltronesofà – Franck Leboeuf","Love Actually (V1 + V2 Franck Leboeuf)","Terminator (V1 + V2 Franck Leboeuf)","James Bond – Casino poker","Qui veut être mon associé","Couronnement roi Charles","1000% Logique","L'Odyssée","JT 2h"}
@@ -93,8 +93,8 @@ ORDER={
 "J6":["Intro – Scan Camille en stormtrooper","Intro – Scan Camille en costume","Intro – Chevalier : studio puis Les Visiteurs","Intro – Suspension puis arène de Gladiator","Intro – Chute dans Men in Black (grue)","Intro – Course : Jurassic Park, Forrest Gump, Harry Potter","Intro – Plans en option (absents du déroulé)"],
 "J7":["Pink – So What","Le 5ème Beatles – Hello Goodbye","Miley Cyrus – Wrecking Ball","Couronnement roi Charles – short","ITW Sophie Adenot – ISS","Qui veut être mon associé","JT 2h"],
 "J8":["Love Actually (V1 + V2 Franck Leboeuf)","Terminator (V1 + V2 Franck Leboeuf)","Couronnement roi Charles","Poltronesofà","Poltronesofà – Franck Leboeuf","James Bond – Casino poker","Vanessa Carlton"],
-"J9":["1000% Logique","Love Cam Coldplay","Intro – Réalisateur en régie","Danse avec les stars"],
-"J10":["Maillon faible","The Voice","Fast & Furious","La Femme de ménage (en rouge au plan)"]}
+"J9":["Nos jours heureux","Céline Dion V2","Intro – Réalisateur en régie","Affaire conclue"],
+"J10":["Maillon faible","The Voice","Fast & Furious"]}
 
 # Notes lumière : effets lumière à faire en vrai au tournage (pas la description de la lumière)
 LFX={
@@ -151,7 +151,8 @@ A[196]=dict(s=GM70,f="105 mm",d="f/4",dist="3,1",h="1,50",tilt="0°",lum=A[111][
 A[2]['lec']=A[2]['lec'].replace("Smartphone tenu proche, grand-angle, tout net.","Smartphone posé sur le tableau de bord, grand-angle, tout net.")
 A[16]['lec']=A[16]['lec'].replace("Désert complètement fondu derrière : longue focale.","Désert fondu derrière (incruste ancienne), mais Camille est assez au contact : 50 mm.")
 A[78]['lec']=A[78]['lec'].replace("Champ/contrechamp avec #77 : même focale.","Champ/contrechamp avec le plan 5 : même focale (85 mm).")
-REMOVE_SEQ={"Poltronesofà – Franck Leboeuf","Intro Hotu","Tous les sports (extérieurs)","Tous les sports (studio)"}
+# PDT du 23/10 (mail Sabine J9) : 1000% Logique, Love Cam Coldplay, Danse avec les stars et La Femme de ménage ne sont plus au plan de travail — retirées (les enlever de REMOVE_SEQ pour les remettre)
+REMOVE_SEQ={"1000% Logique","Love Cam Coldplay","Danse avec les stars","La Femme de ménage (en rouge au plan)","Poltronesofà – Franck Leboeuf","Intro Hotu","Tous les sports (extérieurs)","Tous les sports (studio)"}
 def build():
     order=["J1","J2","J3","J4","J5","J6","J7","J8","J9","J10"]
     allseq=[];n=0
@@ -185,7 +186,7 @@ def build():
     return out
 
 
-CARDS={"Tous les sports (extérieurs)":[
+CARDS={"Nos jours heureux":[("Réf à venir","Revenu au plan de travail le 23/10 (lundi 26/10). Aucune réf reçue pour l’instant : envoie les images et je crée les plans avec les réglages.","—")],"Affaire conclue":[("Réf à venir","Nouveau sketch (lundi 26/10). Aucune réf reçue pour l’instant : envoie les images et je crée les plans avec les réglages.","—")],"Tous les sports (extérieurs)":[
 ("Tennis de table basse","Table de ping-pong extrêmement basse. Camille joue plié en deux et montre ses douleurs de dos. Plan serré.","Table de ping-pong très basse"),
 ("Lancer de disque","Camille lance un CD hors de sa jaquette, comme un disque d'athlétisme. Plan d'action.","CD, boîtier de CD"),
 ("Monocycle (Tour de France)","Camille en cycliste avec casque de vélo pro. Il vérifie ses roues et se déplace sur un monocycle.","Monocycle x1, casque de vélo pro"),

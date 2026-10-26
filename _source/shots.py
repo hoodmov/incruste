@@ -72,5 +72,8 @@ PLAN=[
 ("J10","JT 2h",[(N+"J11_jt_1.jpg","Plateau – présentateur au bureau (large)","Fond vert · fond = plateau Le 02H",162),(N+"J11_jt_2.jpg","Présentateur – plan poitrine","Fond vert",163),(N+"J11_jt_3.jpg","Plateau large + fenêtre d'insert","Fond vert",164),(N+"197_meteo_demain_matin.jpg","Météo – Camille devant la carte « Demain matin »","Fond vert · Camille debout à gauche cadre (sur l'Atlantique), plan américain, ¾ tourné vers la carte, la main désigne la France ; laisser libre le cartouche « DEMAIN MATIN » en haut à droite · carte incrustée en post (graphique plein cadre, nette)",197)]),
 ("J10","Fast & Furious",[("x","x","x")]*13+[(N+"FF_face.jpg","Plan de face, vitre arrière – Camille dans la miniature","Image inversée en miroir pour montrer Vin Diesel côté passager. XR vidéo : faire défiler les 12 médias dans l'écran XR, derrière la vitre, dans le même plan (sans coupe)",160),(N+"FF_trois_quarts.jpg","Plan ¾ profil latéral, vitre latérale – Camille dans la miniature","Image inversée en miroir pour montrer Vin Diesel côté passager. XR vidéo : faire défiler les 12 médias dans l'écran XR, derrière la vitre, dans le même plan (sans coupe)",161)]),
 ("J10","La Femme de ménage (en rouge au plan)",[(R(3,3),"Voiture – téléphone","Tournage XR"),(R(3,4),"Voiture – main bandée","Tournage XR"),(R(3,5),"Extérieur – voiture blanche (plaque)","Média 1 voiture arrêtée / média 2 voiture qui roule")]),
+("J9","Nos jours heureux",[]),
+("J9","Céline Dion V2",[(R(26,0),"Piano sous la pluie (V2)","Même réf que Céline Dion JO (J2) – nouvelle version : à confirmer",40)]),
+("J9","Affaire conclue",[]),
 ]
 MISSING={"J2":[],"J4":[],"J5":[],"J6":[],"J10":[]}
